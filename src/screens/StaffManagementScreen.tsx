@@ -8,6 +8,7 @@ import { RootStackParamList } from "../navigation/RootNavigator";
 import useAdminStore from "../state/adminStore";
 import useWeddingStore from "../state/weddingStore";
 import { StaffMember } from "../types/wedding";
+import { format } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -16,9 +17,12 @@ export default function StaffManagementScreen() {
   const navigation = useNavigation<NavigationProp>();
   const staffMembers = useAdminStore((s) => s.staffMembers);
   const staffAssignments = useAdminStore((s) => s.staffAssignments);
+  const assignStaffToWedding = useAdminStore((s) => s.assignStaffToWedding);
+  const unassignStaffFromWedding = useAdminStore((s) => s.unassignStaffFromWedding);
   const weddings = useWeddingStore((s) => s.weddings);
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null);
   const [newStaff, setNewStaff] = useState({
     name: "",
     email: "",
@@ -72,6 +76,101 @@ export default function StaffManagementScreen() {
         return "#9ca3af";
     }
   };
+
+  const handleAssignToWedding = (weddingId: string) => {
+    if (!selectedStaff) return;
+
+    const assignment = {
+      id: Date.now().toString(),
+      weddingId,
+      staffId: selectedStaff.id,
+      role: selectedStaff.role,
+      assignedAt: new Date().toISOString(),
+    };
+
+    assignStaffToWedding(assignment);
+    Alert.alert("Success", `${selectedStaff.name} assigned to wedding`);
+  };
+
+  const handleUnassign = (weddingId: string) => {
+    if (!selectedStaff) return;
+
+    const assignment = staffAssignments.find((a) => a.staffId === selectedStaff.id && a.weddingId === weddingId);
+    if (assignment) {
+      unassignStaffFromWedding(assignment.id);
+      Alert.alert("Success", "Staff member unassigned");
+    }
+  };
+
+  const isAssigned = (staffId: string, weddingId: string) => {
+    return staffAssignments.some((a) => a.staffId === staffId && a.weddingId === weddingId);
+  };
+
+  // Assignment Modal
+  if (selectedStaff) {
+    const activeWeddings = weddings.filter((w) => w.status !== "completed");
+    return (
+      <View className="flex-1 bg-black">
+        <LinearGradient
+          colors={["#1F1F1F", "#000000"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20 }}
+        >
+          <View className="flex-row items-center justify-between mb-6">
+            <Pressable onPress={() => setSelectedStaff(null)}>
+              <Ionicons name="arrow-back" size={24} color="#C9A961" />
+            </Pressable>
+            <Text className="text-[#C9A961] text-xl font-bold">Assign to Wedding</Text>
+            <View className="w-6" />
+          </View>
+
+          <View className="bg-neutral-900 rounded-xl p-4 border border-neutral-800 mb-4">
+            <Text className="text-neutral-100 text-lg font-semibold">{selectedStaff.name}</Text>
+            <Text className="text-neutral-400 text-sm capitalize mt-1">{selectedStaff.role}</Text>
+          </View>
+        </LinearGradient>
+
+        <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
+          <Text className="text-neutral-400 text-xs font-semibold mb-3">SELECT WEDDING</Text>
+          <View className="space-y-2 pb-8">
+            {activeWeddings.length === 0 ? (
+              <View className="items-center py-12">
+                <Text className="text-neutral-500">No active weddings</Text>
+              </View>
+            ) : (
+              activeWeddings.map((wedding) => {
+                const assigned = isAssigned(selectedStaff.id, wedding.id);
+                return (
+                  <Pressable
+                    key={wedding.id}
+                    onPress={() => (assigned ? handleUnassign(wedding.id) : handleAssignToWedding(wedding.id))}
+                    className={`rounded-xl p-4 border ${
+                      assigned
+                        ? "bg-[#C9A961]/10 border-[#C9A961]"
+                        : "bg-neutral-900 border-neutral-800"
+                    }`}
+                  >
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-1">
+                        <Text className={`text-base font-semibold ${assigned ? "text-[#C9A961]" : "text-neutral-100"}`}>
+                          {wedding.coupleName}
+                        </Text>
+                        <Text className="text-neutral-500 text-xs mt-1">
+                          {format(new Date(wedding.weddingDate), "MMM d, yyyy")}
+                        </Text>
+                      </View>
+                      {assigned && <Ionicons name="checkmark-circle" size={24} color="#C9A961" />}
+                    </View>
+                  </Pressable>
+                );
+              })
+            )}
+          </View>
+        </ScrollView>
+      </View>
+    );
+  }
 
   if (showAddModal) {
     return (
@@ -225,6 +324,7 @@ export default function StaffManagementScreen() {
               return (
                 <Pressable
                   key={staff.id}
+                  onPress={() => setSelectedStaff(staff)}
                   className="bg-neutral-900 rounded-2xl p-5 border border-neutral-800 active:opacity-70"
                 >
                   <View className="flex-row items-start justify-between mb-3">
@@ -241,9 +341,12 @@ export default function StaffManagementScreen() {
                         </View>
                       </View>
                     </View>
-                    {staff.hourlyRate && (
-                      <Text className="text-[#C9A961] text-lg font-semibold">${staff.hourlyRate}/hr</Text>
-                    )}
+                    <View className="items-end">
+                      {staff.hourlyRate && (
+                        <Text className="text-[#C9A961] text-base font-semibold">${staff.hourlyRate}/hr</Text>
+                      )}
+                      <Ionicons name="chevron-forward" size={20} color="#666" className="mt-1" />
+                    </View>
                   </View>
 
                   {(staff.email || staff.phone) && (
@@ -265,12 +368,15 @@ export default function StaffManagementScreen() {
 
                   {assignedWeddings.length > 0 && (
                     <View className="border-t border-neutral-800 pt-3 mt-3">
-                      <Text className="text-neutral-500 text-xs mb-2">ASSIGNED WEDDINGS</Text>
-                      {assignedWeddings.map((wedding) => (
+                      <Text className="text-neutral-500 text-xs mb-2">ASSIGNED WEDDINGS ({assignedWeddings.length})</Text>
+                      {assignedWeddings.slice(0, 2).map((wedding) => (
                         <Text key={wedding?.id} className="text-neutral-300 text-sm">
                           • {wedding?.coupleName}
                         </Text>
                       ))}
+                      {assignedWeddings.length > 2 && (
+                        <Text className="text-neutral-500 text-xs mt-1">+{assignedWeddings.length - 2} more</Text>
+                      )}
                     </View>
                   )}
                 </Pressable>

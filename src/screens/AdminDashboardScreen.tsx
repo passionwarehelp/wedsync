@@ -47,6 +47,12 @@ export default function AdminDashboardScreen() {
       color: "#10b981",
     },
     {
+      title: "Email Automation",
+      icon: "mail" as const,
+      screen: "EmailAutomation" as const,
+      color: "#C9A961",
+    },
+    {
       title: "Calendar",
       icon: "calendar" as const,
       screen: "AdminCalendar" as const,

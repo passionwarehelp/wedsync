@@ -233,3 +233,22 @@ export interface ClockEntry {
   totalHours?: number;
   notes?: string;
 }
+
+export interface EmailTemplate {
+  id: string;
+  name: string;
+  trigger: "2_weeks_before" | "1_week_before" | "3_days_before" | "photos_uploaded" | "after_wedding" | "manual";
+  subject: string;
+  body: string;
+  isActive: boolean;
+}
+
+export interface ScheduledEmail {
+  id: string;
+  weddingId: string;
+  templateId: string;
+  scheduledFor: string;
+  status: "pending" | "sent" | "failed";
+  sentAt?: string;
+  recipients: string[];
+}

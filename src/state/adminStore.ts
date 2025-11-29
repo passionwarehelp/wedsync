@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Invoice, StaffMember, StaffAssignment, ClockEntry } from "../types/wedding";
+import { Invoice, StaffMember, StaffAssignment, ClockEntry, EmailTemplate, ScheduledEmail } from "../types/wedding";
 
 interface AdminStore {
   // Invoices
@@ -28,6 +28,17 @@ interface AdminStore {
   addClockEntry: (entry: ClockEntry) => void;
   updateClockEntry: (id: string, updates: Partial<ClockEntry>) => void;
   deleteClockEntry: (id: string) => void;
+
+  // Email Templates
+  emailTemplates: EmailTemplate[];
+  addEmailTemplate: (template: EmailTemplate) => void;
+  updateEmailTemplate: (id: string, updates: Partial<EmailTemplate>) => void;
+  deleteEmailTemplate: (id: string) => void;
+
+  // Scheduled Emails
+  scheduledEmails: ScheduledEmail[];
+  scheduleEmail: (email: ScheduledEmail) => void;
+  updateScheduledEmail: (id: string, updates: Partial<ScheduledEmail>) => void;
 }
 
 const useAdminStore = create<AdminStore>()(
@@ -77,6 +88,23 @@ const useAdminStore = create<AdminStore>()(
           clockEntries: state.clockEntries.map((e) => (e.id === id ? { ...e, ...updates } : e)),
         })),
       deleteClockEntry: (id) => set((state) => ({ clockEntries: state.clockEntries.filter((e) => e.id !== id) })),
+
+      // Email Templates
+      emailTemplates: [],
+      addEmailTemplate: (template) => set((state) => ({ emailTemplates: [...state.emailTemplates, template] })),
+      updateEmailTemplate: (id, updates) =>
+        set((state) => ({
+          emailTemplates: state.emailTemplates.map((t) => (t.id === id ? { ...t, ...updates } : t)),
+        })),
+      deleteEmailTemplate: (id) => set((state) => ({ emailTemplates: state.emailTemplates.filter((t) => t.id !== id) })),
+
+      // Scheduled Emails
+      scheduledEmails: [],
+      scheduleEmail: (email) => set((state) => ({ scheduledEmails: [...state.scheduledEmails, email] })),
+      updateScheduledEmail: (id, updates) =>
+        set((state) => ({
+          scheduledEmails: state.scheduledEmails.map((e) => (e.id === id ? { ...e, ...updates } : e)),
+        })),
     }),
     {
       name: "admin-storage",

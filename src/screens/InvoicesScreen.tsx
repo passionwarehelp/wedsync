@@ -140,7 +140,7 @@ export default function InvoicesScreen() {
       </ScrollView>
 
       <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
-        <View className="space-y-3 pb-8">
+        <View className="space-y-2 pb-8">
           {filteredInvoices.length === 0 ? (
             <View className="items-center justify-center py-20">
               <Ionicons name="receipt-outline" size={64} color="#404040" />
@@ -153,28 +153,27 @@ export default function InvoicesScreen() {
             filteredInvoices.map((invoice) => (
               <Pressable
                 key={invoice.id}
-                className="bg-neutral-900 rounded-2xl p-5 border border-neutral-800 active:opacity-70"
+                className="bg-neutral-900 rounded-xl p-4 border border-neutral-800 active:opacity-70"
               >
-                <View className="flex-row items-start justify-between mb-3">
-                  <View className="flex-1">
-                    <Text className="text-neutral-100 text-lg font-semibold">{invoice.clientName || "Unnamed Client"}</Text>
-                    <Text className="text-neutral-500 text-sm mt-1">{invoice.invoiceNumber}</Text>
-                  </View>
-                  <View className={`px-3 py-1 rounded-full ${getStatusBg(invoice.status)}`}>
-                    <Text className={`text-xs font-semibold uppercase ${getStatusColor(invoice.status)}`}>
-                      {invoice.status}
-                    </Text>
-                  </View>
-                </View>
-
                 <View className="flex-row items-center justify-between">
-                  <View>
-                    <Text className="text-neutral-400 text-xs">Due Date</Text>
-                    <Text className="text-neutral-300 text-sm mt-1">
-                      {format(new Date(invoice.dueDate), "MMM d, yyyy")}
+                  <View className="flex-1 mr-3">
+                    <Text className="text-neutral-100 text-base font-semibold">
+                      {invoice.clientName || "Unnamed Client"}
                     </Text>
+                    <View className="flex-row items-center mt-1 space-x-2">
+                      <Text className="text-neutral-500 text-xs">{invoice.invoiceNumber}</Text>
+                      <Text className="text-neutral-700">•</Text>
+                      <Text className="text-neutral-500 text-xs">Due {format(new Date(invoice.dueDate), "MMM d")}</Text>
+                    </View>
                   </View>
-                  <Text className="text-[#C9A961] text-xl font-bold">${invoice.total.toLocaleString()}</Text>
+                  <View className="items-end">
+                    <Text className="text-[#C9A961] text-lg font-bold">${invoice.total.toLocaleString()}</Text>
+                    <View className={`px-2 py-0.5 rounded-full mt-1 ${getStatusBg(invoice.status)}`}>
+                      <Text className={`text-[10px] font-semibold uppercase ${getStatusColor(invoice.status)}`}>
+                        {invoice.status}
+                      </Text>
+                    </View>
+                  </View>
                 </View>
               </Pressable>
             ))

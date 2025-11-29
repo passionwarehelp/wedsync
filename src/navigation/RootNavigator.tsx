@@ -25,6 +25,7 @@ import InvoicesScreen from "../screens/InvoicesScreen";
 import StaffManagementScreen from "../screens/StaffManagementScreen";
 import TimeTrackingScreen from "../screens/TimeTrackingScreen";
 import AdminCalendarScreen from "../screens/AdminCalendarScreen";
+import EmailAutomationScreen from "../screens/EmailAutomationScreen";
 
 export type RootStackParamList = {
   MainTabs: undefined;
@@ -49,6 +50,7 @@ export type RootStackParamList = {
   StaffManagement: undefined;
   TimeTracking: undefined;
   AdminCalendar: undefined;
+  EmailAutomation: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -120,6 +122,7 @@ export default function RootNavigator() {
       <Stack.Screen name="StaffManagement" component={StaffManagementScreen} />
       <Stack.Screen name="TimeTracking" component={TimeTrackingScreen} />
       <Stack.Screen name="AdminCalendar" component={AdminCalendarScreen} />
+      <Stack.Screen name="EmailAutomation" component={EmailAutomationScreen} />
 
       {/* Modals */}
       <Stack.Screen
