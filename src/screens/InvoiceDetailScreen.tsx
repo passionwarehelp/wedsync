@@ -136,25 +136,27 @@ export default function InvoiceDetailScreen() {
           </Pressable>
         </View>
 
-        <View className="flex-row justify-center space-x-2 mb-4">
-          {(["draft", "sent", "paid", "overdue", "cancelled"] as const).map((status) => (
-            <Pressable
-              key={status}
-              onPress={() => handleStatusChange(status)}
-              className={`flex-1 py-2 rounded-full items-center ${
-                invoice.status === status ? "bg-[#C9A961]" : "bg-neutral-800 border border-neutral-700"
-              }`}
-            >
-              <Text
-                className={`text-xs font-semibold capitalize ${
-                  invoice.status === status ? "text-black" : "text-neutral-300"
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
+          <View className="flex-row space-x-2">
+            {(["draft", "sent", "paid", "overdue", "cancelled"] as const).map((status) => (
+              <Pressable
+                key={status}
+                onPress={() => handleStatusChange(status)}
+                className={`px-4 py-1.5 rounded-full ${
+                  invoice.status === status ? "bg-[#C9A961]" : "bg-neutral-800 border border-neutral-700"
                 }`}
               >
-                {status}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
+                <Text
+                  className={`text-xs font-semibold capitalize ${
+                    invoice.status === status ? "text-black" : "text-neutral-300"
+                  }`}
+                >
+                  {status}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </ScrollView>
       </LinearGradient>
 
       <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
