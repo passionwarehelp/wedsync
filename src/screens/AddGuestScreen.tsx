@@ -27,7 +27,8 @@ export default function AddGuestScreen() {
 
   const addGuest = useWeddingStore((s) => s.addGuest);
   const updateWedding = useWeddingStore((s) => s.updateWedding);
-  const wedding = useWeddingStore((s) => s.getWedding(weddingId));
+  // Use individual selector to avoid infinite loops
+  const wedding = useWeddingStore((s) => s.weddings.find((w) => w.id === weddingId));
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

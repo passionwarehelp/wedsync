@@ -17,7 +17,8 @@ export default function WeddingDetailScreen() {
   const route = useRoute<WeddingDetailRouteProp>();
   const { weddingId } = route.params;
 
-  const wedding = useWeddingStore((s) => s.getWedding(weddingId));
+  // Use individual selector to avoid infinite loops
+  const wedding = useWeddingStore((s) => s.weddings.find((w) => w.id === weddingId));
 
   if (!wedding) {
     return (

@@ -17,8 +17,10 @@ export default function TasksScreen() {
   const route = useRoute<TasksRouteProp>();
   const { weddingId } = route.params;
 
-  const wedding = useWeddingStore((s) => s.getWedding(weddingId));
-  const tasks = useWeddingStore((s) => s.getTasksForWedding(weddingId));
+  // Use individual selectors to avoid infinite loops
+  const wedding = useWeddingStore((s) => s.weddings.find((w) => w.id === weddingId));
+  const allTasks = useWeddingStore((s) => s.tasks);
+  const tasks = allTasks.filter((t) => t.weddingId === weddingId);
   const updateTask = useWeddingStore((s) => s.updateTask);
   const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "in-progress" | "completed">("all");
 

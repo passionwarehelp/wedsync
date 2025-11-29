@@ -16,8 +16,11 @@ export default function GuestListScreen() {
   const route = useRoute<GuestListRouteProp>();
   const { weddingId } = route.params;
 
-  const wedding = useWeddingStore((s) => s.getWedding(weddingId));
-  const guests = useWeddingStore((s) => s.getGuestsForWedding(weddingId));
+  // Use individual selectors to avoid infinite loops
+  const wedding = useWeddingStore((s) => s.weddings.find((w) => w.id === weddingId));
+  const allGuests = useWeddingStore((s) => s.guests);
+  const guests = allGuests.filter((g) => g.weddingId === weddingId);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "attending" | "declined" | "pending">("all");
 
