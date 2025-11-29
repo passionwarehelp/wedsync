@@ -142,12 +142,12 @@ export default function InvoiceDetailScreen() {
               <Pressable
                 key={status}
                 onPress={() => handleStatusChange(status)}
-                className={`px-4 py-1.5 rounded-full ${
+                className={`px-3 py-1 rounded-full ${
                   invoice.status === status ? "bg-[#C9A961]" : "bg-neutral-800 border border-neutral-700"
                 }`}
               >
                 <Text
-                  className={`text-xs font-semibold capitalize ${
+                  className={`text-[10px] font-semibold capitalize ${
                     invoice.status === status ? "text-black" : "text-neutral-300"
                   }`}
                 >
