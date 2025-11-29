@@ -105,10 +105,18 @@ export default function QRCodeScreen() {
 
         <Pressable
           onPress={handleShare}
-          className="bg-[#C9A961] rounded-2xl p-5 flex-row items-center justify-center mb-8"
+          className="bg-[#C9A961] rounded-2xl p-5 flex-row items-center justify-center mb-4"
         >
           <Ionicons name="share-outline" size={24} color="#000000" />
           <Text className="text-black text-lg font-semibold ml-3">Share QR Code</Text>
+        </Pressable>
+
+        <Pressable
+          onPress={() => navigation.navigate("GuestUpload", { qrCode: wedding.qrCode })}
+          className="bg-neutral-800 rounded-2xl p-5 flex-row items-center justify-center mb-8 border border-neutral-700"
+        >
+          <Ionicons name="eye-outline" size={24} color="#C9A961" />
+          <Text className="text-neutral-100 text-lg font-semibold ml-3">Test Guest View</Text>
         </Pressable>
 
         <View className="bg-neutral-900/50 rounded-2xl p-4 mb-8 border border-neutral-800/50">
