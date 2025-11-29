@@ -1,10 +1,13 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Ionicons } from "@expo/vector-icons";
 import { Wedding } from "../types/wedding";
 
-// Import screens (will be created)
+// Import screens
 import ProDashboardScreen from "../screens/ProDashboardScreen";
 import ClientDashboardScreen from "../screens/ClientDashboardScreen";
+import AdminDashboardScreen from "../screens/AdminDashboardScreen";
 import WeddingDetailScreen from "../screens/WeddingDetailScreen";
 import GuestListScreen from "../screens/GuestListScreen";
 import TasksScreen from "../screens/TasksScreen";
@@ -18,9 +21,15 @@ import AddTaskScreen from "../screens/AddTaskScreen";
 import AddVendorScreen from "../screens/AddVendorScreen";
 import GuestUploadScreen from "../screens/GuestUploadScreen";
 import QRCodeScreen from "../screens/QRCodeScreen";
+import InvoicesScreen from "../screens/InvoicesScreen";
+import StaffManagementScreen from "../screens/StaffManagementScreen";
+import TimeTrackingScreen from "../screens/TimeTrackingScreen";
+import AdminCalendarScreen from "../screens/AdminCalendarScreen";
 
 export type RootStackParamList = {
+  MainTabs: undefined;
   ProDashboard: undefined;
+  AdminDashboard: undefined;
   ClientDashboard: undefined;
   WeddingDetail: { weddingId: string };
   GuestList: { weddingId: string };
@@ -34,10 +43,55 @@ export type RootStackParamList = {
   AddGuest: { weddingId: string };
   AddTask: { weddingId: string };
   AddVendor: { weddingId: string };
+  AddTimelineEvent: { weddingId: string };
   GuestUpload: { qrCode: string };
+  Invoices: undefined;
+  StaffManagement: undefined;
+  TimeTracking: undefined;
+  AdminCalendar: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator();
+
+function MainTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: "#000000",
+          borderTopColor: "#1F1F1F",
+          borderTopWidth: 1,
+          paddingTop: 8,
+          paddingBottom: 8,
+          height: 70,
+        },
+        tabBarActiveTintColor: "#C9A961",
+        tabBarInactiveTintColor: "#666666",
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: "600",
+        },
+      }}
+    >
+      <Tab.Screen
+        name="Weddings"
+        component={ProDashboardScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => <Ionicons name="heart" size={size} color={color} />,
+        }}
+      />
+      <Tab.Screen
+        name="Admin"
+        component={AdminDashboardScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => <Ionicons name="briefcase" size={size} color={color} />,
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
 
 export default function RootNavigator() {
   return (
@@ -46,8 +100,11 @@ export default function RootNavigator() {
         headerShown: false,
         contentStyle: { backgroundColor: "#ffffff" },
       }}
+      initialRouteName="MainTabs"
     >
+      <Stack.Screen name="MainTabs" component={MainTabs} />
       <Stack.Screen name="ProDashboard" component={ProDashboardScreen} />
+      <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} />
       <Stack.Screen name="ClientDashboard" component={ClientDashboardScreen} />
       <Stack.Screen name="WeddingDetail" component={WeddingDetailScreen} />
       <Stack.Screen name="GuestList" component={GuestListScreen} />
@@ -57,6 +114,12 @@ export default function RootNavigator() {
       <Stack.Screen name="SeatingChart" component={SeatingChartScreen} />
       <Stack.Screen name="PhotoGallery" component={PhotoGalleryScreen} />
       <Stack.Screen name="QRCode" component={QRCodeScreen} />
+
+      {/* Admin Screens */}
+      <Stack.Screen name="Invoices" component={InvoicesScreen} />
+      <Stack.Screen name="StaffManagement" component={StaffManagementScreen} />
+      <Stack.Screen name="TimeTracking" component={TimeTrackingScreen} />
+      <Stack.Screen name="AdminCalendar" component={AdminCalendarScreen} />
 
       {/* Modals */}
       <Stack.Screen

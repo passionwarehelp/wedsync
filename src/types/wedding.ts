@@ -161,3 +161,75 @@ export interface WeddingInvite {
 
   inviteCode: string;
 }
+
+export interface Invoice {
+  id: string;
+  weddingId?: string;
+
+  clientName: string;
+  clientEmail?: string;
+  clientPhone?: string;
+
+  invoiceNumber: string;
+  invoiceDate: string;
+  dueDate: string;
+
+  items: InvoiceItem[];
+  subtotal: number;
+  tax: number;
+  total: number;
+
+  status: "draft" | "sent" | "paid" | "overdue" | "cancelled";
+  paidDate?: string;
+
+  notes?: string;
+}
+
+export interface InvoiceItem {
+  id: string;
+  description: string;
+  quantity: number;
+  rate: number;
+  amount: number;
+}
+
+export interface StaffMember {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  role: "planner" | "coordinator" | "photographer" | "videographer" | "assistant" | "other";
+  hourlyRate?: number;
+  photoUri?: string;
+}
+
+export interface StaffAssignment {
+  id: string;
+  weddingId: string;
+  staffId: string;
+  role: string;
+  assignedAt: string;
+}
+
+export interface ClockEntry {
+  id: string;
+  staffId: string;
+  weddingId?: string;
+
+  clockInTime: string;
+  clockInLocation?: {
+    latitude: number;
+    longitude: number;
+    address?: string;
+  };
+
+  clockOutTime?: string;
+  clockOutLocation?: {
+    latitude: number;
+    longitude: number;
+    address?: string;
+  };
+
+  totalHours?: number;
+  notes?: string;
+}
