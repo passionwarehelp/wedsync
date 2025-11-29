@@ -80,12 +80,12 @@ export default function AdminDashboardScreen() {
       </LinearGradient>
 
       <ScrollView className="flex-1 px-5 pt-6" showsVerticalScrollIndicator={false}>
-        <View className="space-y-3 pb-8">
+        <View className="pb-8">
           {adminSections.map((section, index) => (
             <Pressable
               key={index}
               onPress={() => navigation.navigate(section.screen as any)}
-              className="bg-neutral-900 rounded-2xl p-5 border border-neutral-800 active:opacity-70"
+              className="bg-neutral-900 rounded-2xl p-5 border border-neutral-800 active:opacity-70 mb-3"
             >
               <View className="flex-row items-center">
                 <View className="w-12 h-12 bg-[#C9A961]/10 rounded-full items-center justify-center">
@@ -109,13 +109,13 @@ export default function AdminDashboardScreen() {
         <View className="bg-neutral-900 rounded-2xl p-5 mb-8 border border-neutral-800">
           <Text className="text-neutral-100 text-lg font-semibold mb-4">Quick Stats</Text>
 
-          <View className="space-y-3">
-            <View className="flex-row justify-between items-center">
+          <View>
+            <View className="flex-row justify-between items-center mb-3">
               <Text className="text-neutral-400">Total Invoices</Text>
               <Text className="text-neutral-100 font-medium">{invoices.length}</Text>
             </View>
 
-            <View className="flex-row justify-between items-center">
+            <View className="flex-row justify-between items-center mb-3">
               <Text className="text-neutral-400">Revenue (Paid)</Text>
               <Text className="text-emerald-400 font-semibold">
                 ${invoices.filter((i) => i.status === "paid").reduce((sum, i) => sum + i.total, 0).toLocaleString()}
