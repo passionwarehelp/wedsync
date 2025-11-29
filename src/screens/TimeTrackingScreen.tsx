@@ -124,7 +124,7 @@ export default function TimeTrackingScreen() {
         <View>
           <Text className="text-neutral-400 text-sm mb-3">Select Staff Member</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
-            <View className="flex-row space-x-2">
+            <View className="flex-row">
               {staffMembers.map((staff) => {
                 const isActive = clockEntries.some((e) => e.staffId === staff.id && !e.clockOutTime);
                 const isSelected = selectedStaffId === staff.id;
@@ -132,7 +132,7 @@ export default function TimeTrackingScreen() {
                   <Pressable
                     key={staff.id}
                     onPress={() => setSelectedStaffId(staff.id)}
-                    className={`px-4 py-3 rounded-2xl flex-row items-center ${
+                    className={`px-4 py-3 rounded-2xl flex-row items-center mr-2 ${
                       isSelected
                         ? "bg-[#C9A961]"
                         : isActive
@@ -156,11 +156,11 @@ export default function TimeTrackingScreen() {
         </View>
 
         {/* Clock In/Out Buttons */}
-        <View className="flex-row space-x-3">
+        <View className="flex-row">
           <Pressable
             onPress={handleClockIn}
             disabled={!selectedStaffId || !!activeEntry}
-            className={`flex-1 rounded-2xl p-4 items-center ${
+            className={`flex-1 rounded-2xl p-4 items-center mr-3 ${
               !selectedStaffId || activeEntry ? "bg-neutral-800" : "bg-emerald-600"
             }`}
           >
@@ -214,7 +214,7 @@ export default function TimeTrackingScreen() {
       {/* Recent Entries */}
       <ScrollView className="flex-1 px-5 pt-6" showsVerticalScrollIndicator={false}>
         <Text className="text-neutral-400 text-sm font-semibold mb-4">RECENT ACTIVITY</Text>
-        <View className="space-y-3 pb-8">
+        <View className="pb-8">
           {recentEntries.length === 0 ? (
             <View className="items-center justify-center py-20">
               <Ionicons name="time-outline" size={64} color="#404040" />
@@ -223,7 +223,7 @@ export default function TimeTrackingScreen() {
             </View>
           ) : (
             recentEntries.map((entry) => (
-              <View key={entry.id} className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800">
+              <View key={entry.id} className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800 mb-3">
                 <View className="flex-row items-start justify-between mb-2">
                   <View className="flex-1">
                     <Text className="text-neutral-100 text-base font-semibold">{getStaffName(entry.staffId)}</Text>
@@ -238,15 +238,15 @@ export default function TimeTrackingScreen() {
                   )}
                 </View>
 
-                <View className="flex-row items-center space-x-4">
-                  <View className="flex-row items-center">
+                <View className="flex-row items-center">
+                  <View className="flex-row items-center mr-4">
                     <Ionicons name="enter-outline" size={14} color="#10b981" />
                     <Text className="text-neutral-400 text-xs ml-1">
                       {format(new Date(entry.clockInTime), "h:mm a")}
                     </Text>
                   </View>
                   {entry.clockOutTime && (
-                    <View className="flex-row items-center">
+                    <View className="flex-row items-center mr-4">
                       <Ionicons name="exit-outline" size={14} color="#ef4444" />
                       <Text className="text-neutral-400 text-xs ml-1">
                         {format(new Date(entry.clockOutTime), "h:mm a")}
