@@ -29,13 +29,13 @@ export default function QRCodeScreen() {
     );
   }
 
-  // Create deep link URL for guest uploads
-  const uploadUrl = `wedsync://upload/${wedding.qrCode}`;
+  // Create web URL for guest uploads (will be hosted on Cloudflare)
+  const uploadUrl = `https://wedsync.app/upload/${wedding.qrCode}`;
 
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Upload your photos for ${wedding.coupleName}'s wedding! Scan this QR code or visit: ${uploadUrl}`,
+        message: `Upload your photos for ${wedding.coupleName}'s wedding! Visit: ${uploadUrl}`,
         title: "WedSync Photo Upload",
       });
     } catch (error) {
