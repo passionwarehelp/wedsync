@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, ScrollView, Alert } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -8,7 +7,7 @@ import { RootStackParamList } from "../navigation/RootNavigator";
 import useAdminStore from "../state/adminStore";
 import useWeddingStore from "../state/weddingStore";
 import * as Location from "expo-location";
-import { format, differenceInHours } from "date-fns";
+import { format } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -17,7 +16,6 @@ export default function TimeTrackingScreen() {
   const navigation = useNavigation<NavigationProp>();
   const staffMembers = useAdminStore((s) => s.staffMembers);
   const clockEntries = useAdminStore((s) => s.clockEntries);
-  const weddings = useWeddingStore((s) => s.weddings);
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
   const [locationPermission, setLocationPermission] = useState(false);
 
