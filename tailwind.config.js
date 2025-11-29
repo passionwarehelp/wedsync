@@ -35,26 +35,29 @@ module.exports = {
   },
   darkMode: "class",
   plugins: [
-    plugin(({ matchUtilities, theme }) => {
-      const spacing = theme("spacing");
-
-      // space-{n}  ->  gap: {n}
-      matchUtilities(
-        { space: (value) => ({ gap: value }) },
-        { values: spacing, type: ["length", "number", "percentage"] }
-      );
-
-      // space-x-{n}  ->  column-gap: {n}
-      matchUtilities(
-        { "space-x": (value) => ({ columnGap: value }) },
-        { values: spacing, type: ["length", "number", "percentage"] }
-      );
-
-      // space-y-{n}  ->  row-gap: {n}
-      matchUtilities(
-        { "space-y": (value) => ({ rowGap: value }) },
-        { values: spacing, type: ["length", "number", "percentage"] }
-      );
-    }),
+    // Commented out space utilities plugin because columnGap and rowGap
+    // don't work properly in React Native and cause rendering errors.
+    // Use individual margin utilities (mr-*, mb-*) instead.
+    // plugin(({ matchUtilities, theme }) => {
+    //   const spacing = theme("spacing");
+    //
+    //   // space-{n}  ->  gap: {n}
+    //   matchUtilities(
+    //     { space: (value) => ({ gap: value }) },
+    //     { values: spacing, type: ["length", "number", "percentage"] }
+    //   );
+    //
+    //   // space-x-{n}  ->  column-gap: {n}
+    //   matchUtilities(
+    //     { "space-x": (value) => ({ columnGap: value }) },
+    //     { values: spacing, type: ["length", "number", "percentage"] }
+    //   );
+    //
+    //   // space-y-{n}  ->  row-gap: {n}
+    //   matchUtilities(
+    //     { "space-y": (value) => ({ rowGap: value }) },
+    //     { values: spacing, type: ["length", "number", "percentage"] }
+    //   );
+    // }),
   ],
 };
