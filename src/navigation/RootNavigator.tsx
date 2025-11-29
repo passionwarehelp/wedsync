@@ -17,6 +17,7 @@ import AddGuestScreen from "../screens/AddGuestScreen";
 import AddTaskScreen from "../screens/AddTaskScreen";
 import AddVendorScreen from "../screens/AddVendorScreen";
 import GuestUploadScreen from "../screens/GuestUploadScreen";
+import QRCodeScreen from "../screens/QRCodeScreen";
 
 export type RootStackParamList = {
   ProDashboard: undefined;
@@ -28,6 +29,7 @@ export type RootStackParamList = {
   Vendors: { weddingId: string };
   SeatingChart: { weddingId: string };
   PhotoGallery: { weddingId: string };
+  QRCode: { weddingId: string };
   CreateWedding: undefined;
   AddGuest: { weddingId: string };
   AddTask: { weddingId: string };
@@ -54,6 +56,7 @@ export default function RootNavigator() {
       <Stack.Screen name="Vendors" component={VendorsScreen} />
       <Stack.Screen name="SeatingChart" component={SeatingChartScreen} />
       <Stack.Screen name="PhotoGallery" component={PhotoGalleryScreen} />
+      <Stack.Screen name="QRCode" component={QRCodeScreen} />
 
       {/* Modals */}
       <Stack.Screen

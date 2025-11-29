@@ -1,8 +1,14 @@
+import { useState, useCallback } from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import * as SplashScreen from "expo-splash-screen";
 import RootNavigator from "./src/navigation/RootNavigator";
+import Splash from "./src/components/Splash";
+
+// Keep splash screen visible
+SplashScreen.preventAutoHideAsync();
 
 /*
 IMPORTANT NOTICE: DO NOT REMOVE
@@ -26,12 +32,24 @@ const openai_api_key = Constants.expoConfig.extra.apikey;
 */
 
 export default function App() {
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) {
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
+
+  if (!appIsReady) {
+    return <Splash onReady={() => setAppIsReady(true)} />;
+  }
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <SafeAreaProvider>
         <NavigationContainer>
           <RootNavigator />
-          <StatusBar style="auto" />
+          <StatusBar style="light" />
         </NavigationContainer>
       </SafeAreaProvider>
     </GestureHandlerRootView>

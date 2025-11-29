@@ -49,6 +49,7 @@ export default function WeddingDetailScreen() {
     { title: "Vendors", icon: "briefcase" as const, screen: "Vendors" as const },
     { title: "Seating Chart", icon: "grid" as const, screen: "SeatingChart" as const },
     { title: "Photo Gallery", icon: "images" as const, screen: "PhotoGallery" as const },
+    { title: "QR Code", icon: "qr-code" as const, screen: "QRCode" as const },
   ];
 
   return (

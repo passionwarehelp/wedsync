@@ -53,6 +53,12 @@ interface WeddingStore {
   updateSeatingTable: (id: string, updates: Partial<SeatingTable>) => void;
   deleteSeatingTable: (id: string) => void;
   getSeatingForWedding: (weddingId: string) => SeatingTable[];
+
+  // Photos
+  photos: Photo[];
+  addPhoto: (photo: Photo) => void;
+  deletePhoto: (id: string) => void;
+  getPhotosForWedding: (weddingId: string) => Photo[];
 }
 
 const useWeddingStore = create<WeddingStore>()(
@@ -125,6 +131,12 @@ const useWeddingStore = create<WeddingStore>()(
         })),
       deleteSeatingTable: (id) => set((state) => ({ seatingTables: state.seatingTables.filter((t) => t.id !== id) })),
       getSeatingForWedding: (weddingId) => get().seatingTables.filter((t) => t.weddingId === weddingId),
+
+      // Photos
+      photos: [],
+      addPhoto: (photo) => set((state) => ({ photos: [...state.photos, photo] })),
+      deletePhoto: (id) => set((state) => ({ photos: state.photos.filter((p) => p.id !== id) })),
+      getPhotosForWedding: (weddingId) => get().photos.filter((p) => p.weddingId === weddingId),
     }),
     {
       name: "wedding-storage",

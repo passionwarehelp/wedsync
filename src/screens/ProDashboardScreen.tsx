@@ -8,12 +8,14 @@ import { RootStackParamList } from "../navigation/RootNavigator";
 import useWeddingStore from "../state/weddingStore";
 import { format } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
+import { Swipeable } from "react-native-gesture-handler";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function ProDashboardScreen() {
   const navigation = useNavigation<NavigationProp>();
   const weddings = useWeddingStore((s) => s.weddings);
+  const deleteWedding = useWeddingStore((s) => s.deleteWedding);
   const [searchQuery, setSearchQuery] = useState("");
 
   const activeWeddings = weddings.filter((w) => w.status !== "completed");
@@ -23,6 +25,18 @@ export default function ProDashboardScreen() {
       w.partnerOneName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       w.partnerTwoName.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const renderRightActions = (weddingId: string) => {
+    return (
+      <Pressable
+        onPress={() => deleteWedding(weddingId)}
+        className="bg-red-600 justify-center items-center px-6 rounded-r-2xl"
+      >
+        <Ionicons name="trash-outline" size={24} color="white" />
+        <Text className="text-white text-xs mt-1 font-medium">Delete</Text>
+      </Pressable>
+    );
+  };
 
   return (
     <View className="flex-1 bg-black">
@@ -71,68 +85,73 @@ export default function ProDashboardScreen() {
         ) : (
           <View className="space-y-4 pb-8">
             {filteredWeddings.map((wedding) => (
-              <Pressable
+              <Swipeable
                 key={wedding.id}
-                onPress={() => navigation.navigate("WeddingDetail", { weddingId: wedding.id })}
-                className="bg-neutral-900 rounded-2xl overflow-hidden border border-neutral-800 active:opacity-70"
+                renderRightActions={() => renderRightActions(wedding.id)}
+                overshootRight={false}
               >
-                <View className="p-5">
-                  <View className="flex-row items-start justify-between mb-3">
-                    <View className="flex-1">
-                      <Text className="text-neutral-100 text-xl font-semibold">{wedding.coupleName}</Text>
-                      <Text className="text-neutral-400 text-sm mt-1">
-                        {wedding.partnerOneName} & {wedding.partnerTwoName}
-                      </Text>
-                    </View>
-                    <View
-                      className={`px-3 py-1 rounded-full ${
-                        wedding.status === "upcoming" ? "bg-emerald-900" : "bg-blue-900"
-                      }`}
-                    >
-                      <Text
-                        className={`text-xs font-medium ${
-                          wedding.status === "upcoming" ? "text-emerald-400" : "text-blue-400"
+                <Pressable
+                  onPress={() => navigation.navigate("WeddingDetail", { weddingId: wedding.id })}
+                  className="bg-neutral-900 rounded-2xl overflow-hidden border border-neutral-800 active:opacity-70"
+                >
+                  <View className="p-5">
+                    <View className="flex-row items-start justify-between mb-3">
+                      <View className="flex-1">
+                        <Text className="text-neutral-100 text-xl font-semibold">{wedding.coupleName}</Text>
+                        <Text className="text-neutral-400 text-sm mt-1">
+                          {wedding.partnerOneName} & {wedding.partnerTwoName}
+                        </Text>
+                      </View>
+                      <View
+                        className={`px-3 py-1 rounded-full ${
+                          wedding.status === "upcoming" ? "bg-emerald-900" : "bg-blue-900"
                         }`}
                       >
-                        {wedding.status}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <View className="flex-row items-center mb-4">
-                    <Ionicons name="calendar-outline" size={16} color="#C9A961" />
-                    <Text className="text-neutral-300 text-sm ml-2">
-                      {format(new Date(wedding.weddingDate), "MMMM d, yyyy")}
-                    </Text>
-                    {wedding.venue && (
-                      <>
-                        <View className="w-1 h-1 rounded-full bg-neutral-600 mx-3" />
-                        <Ionicons name="location-outline" size={16} color="#C9A961" />
-                        <Text className="text-neutral-300 text-sm ml-1 flex-1" numberOfLines={1}>
-                          {wedding.venue}
+                        <Text
+                          className={`text-xs font-medium ${
+                            wedding.status === "upcoming" ? "text-emerald-400" : "text-blue-400"
+                          }`}
+                        >
+                          {wedding.status}
                         </Text>
-                      </>
-                    )}
+                      </View>
+                    </View>
+
+                    <View className="flex-row items-center mb-4">
+                      <Ionicons name="calendar-outline" size={16} color="#C9A961" />
+                      <Text className="text-neutral-300 text-sm ml-2">
+                        {format(new Date(wedding.weddingDate), "MMMM d, yyyy")}
+                      </Text>
+                      {wedding.venue && (
+                        <>
+                          <View className="w-1 h-1 rounded-full bg-neutral-600 mx-3" />
+                          <Ionicons name="location-outline" size={16} color="#C9A961" />
+                          <Text className="text-neutral-300 text-sm ml-1 flex-1" numberOfLines={1}>
+                            {wedding.venue}
+                          </Text>
+                        </>
+                      )}
+                    </View>
+
+                    <View className="flex-row items-center space-x-6">
+                      <View className="flex-row items-center">
+                        <Ionicons name="people-outline" size={18} color="#9CA3AF" />
+                        <Text className="text-neutral-400 text-sm ml-2">
+                          {wedding.rsvpCount}/{wedding.guestCount}
+                        </Text>
+                      </View>
+                      <View className="flex-row items-center">
+                        <Ionicons name="checkmark-circle-outline" size={18} color="#9CA3AF" />
+                        <Text className="text-neutral-400 text-sm ml-2">
+                          {wedding.tasksCompleted}/{wedding.totalTasks}
+                        </Text>
+                      </View>
+                    </View>
                   </View>
 
-                  <View className="flex-row items-center space-x-6">
-                    <View className="flex-row items-center">
-                      <Ionicons name="people-outline" size={18} color="#9CA3AF" />
-                      <Text className="text-neutral-400 text-sm ml-2">
-                        {wedding.rsvpCount}/{wedding.guestCount}
-                      </Text>
-                    </View>
-                    <View className="flex-row items-center">
-                      <Ionicons name="checkmark-circle-outline" size={18} color="#9CA3AF" />
-                      <Text className="text-neutral-400 text-sm ml-2">
-                        {wedding.tasksCompleted}/{wedding.totalTasks}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-
-                <View style={{ height: 1, backgroundColor: "#C9A961", opacity: 0.3 }} />
-              </Pressable>
+                  <View style={{ height: 1, backgroundColor: "#C9A961", opacity: 0.3 }} />
+                </Pressable>
+              </Swipeable>
             ))}
           </View>
         )}
