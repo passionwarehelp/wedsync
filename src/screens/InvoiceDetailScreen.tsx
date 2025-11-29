@@ -136,12 +136,12 @@ export default function InvoiceDetailScreen() {
           </Pressable>
         </View>
 
-        <View className="flex-row space-x-2 mb-4">
+        <View className="flex-row justify-center space-x-2 mb-4">
           {(["draft", "sent", "paid", "overdue", "cancelled"] as const).map((status) => (
             <Pressable
               key={status}
               onPress={() => handleStatusChange(status)}
-              className={`px-3 py-2 rounded-full ${
+              className={`flex-1 py-2 rounded-full items-center ${
                 invoice.status === status ? "bg-[#C9A961]" : "bg-neutral-800 border border-neutral-700"
               }`}
             >
