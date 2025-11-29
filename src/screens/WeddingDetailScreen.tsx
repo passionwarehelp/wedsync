@@ -35,6 +35,8 @@ export default function WeddingDetailScreen() {
       title: "Guest List",
       icon: "people" as const,
       screen: "GuestList" as const,
+      addScreen: "AddGuest" as const,
+      addIcon: "person-add" as const,
       count: wedding.rsvpCount,
       total: wedding.guestCount,
     },
@@ -42,14 +44,40 @@ export default function WeddingDetailScreen() {
       title: "Tasks",
       icon: "checkmark-circle" as const,
       screen: "Tasks" as const,
+      addScreen: "AddTask" as const,
+      addIcon: "add-circle" as const,
       count: wedding.tasksCompleted,
       total: wedding.totalTasks,
     },
-    { title: "Timeline", icon: "time" as const, screen: "Timeline" as const },
-    { title: "Vendors", icon: "briefcase" as const, screen: "Vendors" as const },
-    { title: "Seating Chart", icon: "grid" as const, screen: "SeatingChart" as const },
-    { title: "Photo Gallery", icon: "images" as const, screen: "PhotoGallery" as const },
-    { title: "QR Code", icon: "qr-code" as const, screen: "QRCode" as const },
+    {
+      title: "Timeline",
+      icon: "time" as const,
+      screen: "Timeline" as const,
+      addScreen: "AddTimelineEvent" as const,
+      addIcon: "calendar" as const,
+    },
+    {
+      title: "Vendors",
+      icon: "briefcase" as const,
+      screen: "Vendors" as const,
+      addScreen: "AddVendor" as const,
+      addIcon: "add" as const,
+    },
+    {
+      title: "Seating Chart",
+      icon: "grid" as const,
+      screen: "SeatingChart" as const,
+    },
+    {
+      title: "Photo Gallery",
+      icon: "images" as const,
+      screen: "PhotoGallery" as const,
+    },
+    {
+      title: "QR Code",
+      icon: "qr-code" as const,
+      screen: "QRCode" as const,
+    },
   ];
 
   return (
@@ -103,6 +131,17 @@ export default function WeddingDetailScreen() {
                   </Text>
                 )}
               </View>
+              {item.addScreen ? (
+                <Pressable
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    navigation.navigate(item.addScreen as any, { weddingId });
+                  }}
+                  className="w-10 h-10 bg-[#C9A961] rounded-full items-center justify-center mr-3 active:opacity-70"
+                >
+                  <Ionicons name={item.addIcon} size={20} color="#000000" />
+                </Pressable>
+              ) : null}
               <Ionicons name="chevron-forward" size={20} color="#6B7280" />
             </Pressable>
           ))}
