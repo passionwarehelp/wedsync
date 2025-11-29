@@ -47,7 +47,16 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <SafeAreaProvider>
-        <NavigationContainer>
+        <NavigationContainer
+          linking={{
+            prefixes: ["wedsync://"],
+            config: {
+              screens: {
+                GuestUpload: "upload/:qrCode",
+              },
+            },
+          }}
+        >
           <RootNavigator />
           <StatusBar style="light" />
         </NavigationContainer>
