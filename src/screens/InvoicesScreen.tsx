@@ -117,27 +117,29 @@ export default function InvoicesScreen() {
       </LinearGradient>
 
       {/* Status Filter */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-5 py-4">
-        <View className="flex-row space-x-2">
-          {(["all", "draft", "sent", "paid", "overdue", "cancelled"] as const).map((status) => (
-            <Pressable
-              key={status}
-              onPress={() => setFilterStatus(status)}
-              className={`px-4 py-2 rounded-full ${
-                filterStatus === status ? "bg-[#C9A961]" : "bg-neutral-800 border border-neutral-700"
-              }`}
-            >
-              <Text
-                className={`text-sm font-semibold capitalize ${
-                  filterStatus === status ? "text-black" : "text-neutral-300"
+      <View className="px-5 py-4">
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View className="flex-row space-x-2">
+            {(["all", "draft", "sent", "paid", "overdue", "cancelled"] as const).map((status) => (
+              <Pressable
+                key={status}
+                onPress={() => setFilterStatus(status)}
+                className={`px-3 py-1 rounded-full ${
+                  filterStatus === status ? "bg-[#C9A961]" : "bg-neutral-800 border border-neutral-700"
                 }`}
               >
-                {status}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-      </ScrollView>
+                <Text
+                  className={`text-xs font-semibold capitalize ${
+                    filterStatus === status ? "text-black" : "text-neutral-300"
+                  }`}
+                >
+                  {status}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </ScrollView>
+      </View>
 
       <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
         <View className="space-y-2 pb-8">
