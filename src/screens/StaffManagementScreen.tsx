@@ -10,6 +10,7 @@ import useWeddingStore from "../state/weddingStore";
 import { StaffMember } from "../types/wedding";
 import { format } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
+import { Swipeable } from "react-native-gesture-handler";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -19,6 +20,7 @@ export default function StaffManagementScreen() {
   const staffAssignments = useAdminStore((s) => s.staffAssignments);
   const assignStaffToWedding = useAdminStore((s) => s.assignStaffToWedding);
   const unassignStaffFromWedding = useAdminStore((s) => s.unassignStaffFromWedding);
+  const deleteStaffMember = useAdminStore((s) => s.deleteStaffMember);
   const weddings = useWeddingStore((s) => s.weddings);
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -75,6 +77,27 @@ export default function StaffManagementScreen() {
       default:
         return "#9ca3af";
     }
+  };
+
+  const renderRightActions = (staffId: string) => {
+    return (
+      <Pressable
+        onPress={() => {
+          Alert.alert("Delete Staff Member", "Are you sure you want to delete this staff member?", [
+            { text: "Cancel", style: "cancel" },
+            {
+              text: "Delete",
+              style: "destructive",
+              onPress: () => deleteStaffMember(staffId),
+            },
+          ]);
+        }}
+        className="bg-red-600 justify-center items-center px-6 rounded-r-2xl"
+      >
+        <Ionicons name="trash-outline" size={24} color="white" />
+        <Text className="text-white text-xs mt-1 font-medium">Delete</Text>
+      </Pressable>
+    );
   };
 
   const handleAssignToWedding = (weddingId: string) => {
@@ -322,64 +345,69 @@ export default function StaffManagementScreen() {
             filteredStaff.map((staff) => {
               const assignedWeddings = getAssignedWeddings(staff.id);
               return (
-                <Pressable
+                <Swipeable
                   key={staff.id}
-                  onPress={() => setSelectedStaff(staff)}
-                  className="bg-neutral-900 rounded-2xl p-5 border border-neutral-800 active:opacity-70"
+                  renderRightActions={() => renderRightActions(staff.id)}
+                  overshootRight={false}
                 >
-                  <View className="flex-row items-start justify-between mb-3">
-                    <View className="flex-1">
-                      <Text className="text-neutral-100 text-lg font-semibold">{staff.name}</Text>
-                      <View className="flex-row items-center mt-2">
-                        <View
-                          className="px-2 py-1 rounded-full"
-                          style={{ backgroundColor: `${getRoleColor(staff.role)}20` }}
-                        >
-                          <Text className="text-xs font-semibold capitalize" style={{ color: getRoleColor(staff.role) }}>
-                            {staff.role}
-                          </Text>
+                  <Pressable
+                    onPress={() => setSelectedStaff(staff)}
+                    className="bg-neutral-900 rounded-2xl p-5 border border-neutral-800 active:opacity-70"
+                  >
+                    <View className="flex-row items-start justify-between mb-3">
+                      <View className="flex-1">
+                        <Text className="text-neutral-100 text-lg font-semibold">{staff.name}</Text>
+                        <View className="flex-row items-center mt-2">
+                          <View
+                            className="px-2 py-1 rounded-full"
+                            style={{ backgroundColor: `${getRoleColor(staff.role)}20` }}
+                          >
+                            <Text className="text-xs font-semibold capitalize" style={{ color: getRoleColor(staff.role) }}>
+                              {staff.role}
+                            </Text>
+                          </View>
                         </View>
                       </View>
+                      <View className="items-end">
+                        {staff.hourlyRate && (
+                          <Text className="text-[#C9A961] text-base font-semibold">${staff.hourlyRate}/hr</Text>
+                        )}
+                        <Ionicons name="chevron-forward" size={20} color="#666" className="mt-1" />
+                      </View>
                     </View>
-                    <View className="items-end">
-                      {staff.hourlyRate && (
-                        <Text className="text-[#C9A961] text-base font-semibold">${staff.hourlyRate}/hr</Text>
-                      )}
-                      <Ionicons name="chevron-forward" size={20} color="#666" className="mt-1" />
-                    </View>
-                  </View>
 
-                  {(staff.email || staff.phone) && (
-                    <View className="space-y-1 mb-3">
-                      {staff.email && (
-                        <View className="flex-row items-center">
-                          <Ionicons name="mail" size={14} color="#666" />
-                          <Text className="text-neutral-400 text-sm ml-2">{staff.email}</Text>
-                        </View>
-                      )}
-                      {staff.phone && (
-                        <View className="flex-row items-center">
-                          <Ionicons name="call" size={14} color="#666" />
-                          <Text className="text-neutral-400 text-sm ml-2">{staff.phone}</Text>
-                        </View>
-                      )}
-                    </View>
-                  )}
+                    {(staff.email || staff.phone) && (
+                      <View className="space-y-1 mb-3">
+                        {staff.email && (
+                          <View className="flex-row items-center">
+                            <Ionicons name="mail" size={14} color="#666" />
+                            <Text className="text-neutral-400 text-sm ml-2">{staff.email}</Text>
+                          </View>
+                        )}
+                        {staff.phone && (
+                          <View className="flex-row items-center">
+                            <Ionicons name="call" size={14} color="#666" />
+                            <Text className="text-neutral-400 text-sm ml-2">{staff.phone}</Text>
+                          </View>
+                        )}
+                      </View>
+                    )}
 
-                  {assignedWeddings.length > 0 && (
-                    <View className="border-t border-neutral-800 pt-3 mt-3">
-                      <Text className="text-neutral-500 text-xs mb-2">ASSIGNED WEDDINGS ({assignedWeddings.length})</Text>
-                      {assignedWeddings.slice(0, 2).map((wedding) => (
-                        <Text key={wedding?.id} className="text-neutral-300 text-sm">
-                          • {wedding?.coupleName}
-                        </Text>
-                      ))}
-                      {assignedWeddings.length > 2 && (
-                        <Text className="text-neutral-500 text-xs mt-1">+{assignedWeddings.length - 2} more</Text>
-                      )}
-                    </View>
-                  )}
-                </Pressable>
+                    {assignedWeddings.length > 0 && (
+                      <View className="border-t border-neutral-800 pt-3 mt-3">
+                        <Text className="text-neutral-500 text-xs mb-2">ASSIGNED WEDDINGS ({assignedWeddings.length})</Text>
+                        {assignedWeddings.slice(0, 2).map((wedding) => (
+                          <Text key={wedding?.id} className="text-neutral-300 text-sm">
+                            • {wedding?.coupleName}
+                          </Text>
+                        ))}
+                        {assignedWeddings.length > 2 && (
+                          <Text className="text-neutral-500 text-xs mt-1">+{assignedWeddings.length - 2} more</Text>
+                        )}
+                      </View>
+                    )}
+                  </Pressable>
+                </Swipeable>
               );
             })
           )}

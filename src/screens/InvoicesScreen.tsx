@@ -75,7 +75,7 @@ export default function InvoicesScreen() {
       status: "draft",
     };
     useAdminStore.getState().addInvoice(newInvoice);
-    // Navigate to invoice detail (to be created)
+    navigation.navigate("InvoiceDetail" as any, { invoiceId: newInvoice.id });
   };
 
   return (
@@ -153,6 +153,7 @@ export default function InvoicesScreen() {
             filteredInvoices.map((invoice) => (
               <Pressable
                 key={invoice.id}
+                onPress={() => navigation.navigate("InvoiceDetail" as any, { invoiceId: invoice.id })}
                 className="bg-neutral-900 rounded-xl p-4 border border-neutral-800 active:opacity-70"
               >
                 <View className="flex-row items-center justify-between">

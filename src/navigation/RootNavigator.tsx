@@ -26,6 +26,7 @@ import StaffManagementScreen from "../screens/StaffManagementScreen";
 import TimeTrackingScreen from "../screens/TimeTrackingScreen";
 import AdminCalendarScreen from "../screens/AdminCalendarScreen";
 import EmailAutomationScreen from "../screens/EmailAutomationScreen";
+import InvoiceDetailScreen from "../screens/InvoiceDetailScreen";
 
 export type RootStackParamList = {
   MainTabs: undefined;
@@ -47,6 +48,7 @@ export type RootStackParamList = {
   AddTimelineEvent: { weddingId: string };
   GuestUpload: { qrCode: string };
   Invoices: undefined;
+  InvoiceDetail: { invoiceId: string };
   StaffManagement: undefined;
   TimeTracking: undefined;
   AdminCalendar: undefined;
@@ -119,6 +121,7 @@ export default function RootNavigator() {
 
       {/* Admin Screens */}
       <Stack.Screen name="Invoices" component={InvoicesScreen} />
+      <Stack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} />
       <Stack.Screen name="StaffManagement" component={StaffManagementScreen} />
       <Stack.Screen name="TimeTracking" component={TimeTrackingScreen} />
       <Stack.Screen name="AdminCalendar" component={AdminCalendarScreen} />
