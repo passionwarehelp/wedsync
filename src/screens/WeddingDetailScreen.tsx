@@ -21,7 +21,7 @@ export default function WeddingDetailScreen() {
 
   if (!wedding) {
     return (
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-black">
         <View className="flex-1 items-center justify-center">
           <Text className="text-neutral-500">Wedding not found</Text>
         </View>
@@ -51,33 +51,33 @@ export default function WeddingDetailScreen() {
   ];
 
   return (
-    <View className="flex-1 bg-neutral-50">
+    <View className="flex-1 bg-black">
       <LinearGradient
-        colors={["#C9A961", "#F4E8D0"]}
+        colors={["#1F1F1F", "#000000"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={{ paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20 }}
       >
         <Pressable onPress={() => navigation.goBack()} className="mb-6">
-          <Ionicons name="arrow-back" size={24} color="white" />
+          <Ionicons name="arrow-back" size={24} color="#C9A961" />
         </Pressable>
 
-        <Text className="text-white text-3xl font-bold mb-2">{wedding.coupleName}</Text>
-        <Text className="text-white/90 text-lg mb-4">
+        <Text className="text-[#C9A961] text-3xl font-bold mb-2">{wedding.coupleName}</Text>
+        <Text className="text-neutral-400 text-lg mb-4">
           {wedding.partnerOneName} & {wedding.partnerTwoName}
         </Text>
 
         <View className="flex-row items-center">
-          <Ionicons name="calendar" size={18} color="white" />
-          <Text className="text-white/90 text-base ml-2">
+          <Ionicons name="calendar" size={18} color="#C9A961" />
+          <Text className="text-neutral-300 text-base ml-2">
             {format(new Date(wedding.weddingDate), "MMMM d, yyyy")}
           </Text>
         </View>
 
         {wedding.venue && (
           <View className="flex-row items-center mt-2">
-            <Ionicons name="location" size={18} color="white" />
-            <Text className="text-white/90 text-base ml-2">{wedding.venue}</Text>
+            <Ionicons name="location" size={18} color="#C9A961" />
+            <Text className="text-neutral-300 text-base ml-2">{wedding.venue}</Text>
           </View>
         )}
       </LinearGradient>
@@ -88,20 +88,20 @@ export default function WeddingDetailScreen() {
             <Pressable
               key={index}
               onPress={() => navigation.navigate(item.screen, { weddingId })}
-              className="bg-white rounded-2xl p-5 flex-row items-center shadow-sm active:opacity-70"
+              className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 active:opacity-70"
             >
-              <View className="w-12 h-12 bg-amber-50 rounded-full items-center justify-center">
+              <View className="w-12 h-12 bg-[#C9A961]/10 rounded-full items-center justify-center">
                 <Ionicons name={item.icon} size={24} color="#C9A961" />
               </View>
               <View className="flex-1 ml-4">
-                <Text className="text-neutral-800 text-lg font-medium">{item.title}</Text>
+                <Text className="text-neutral-100 text-lg font-medium">{item.title}</Text>
                 {item.count !== undefined && item.total !== undefined && (
                   <Text className="text-neutral-500 text-sm mt-1">
                     {item.count} of {item.total}
                   </Text>
                 )}
               </View>
-              <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+              <Ionicons name="chevron-forward" size={20} color="#6B7280" />
             </Pressable>
           ))}
         </View>

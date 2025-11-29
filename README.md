@@ -15,13 +15,13 @@ WedSync is designed for **wedding professionals** (planners, videographers, phot
 - **Search & Filter** - Quickly find any wedding
 - **Status Tracking** - Track planning status and upcoming events
 - **Quick Stats** - See guest counts and task progress at a glance
-- **Elegant UI** - Premium gold gradient design with clean iOS aesthetics
+- **Premium Black & Gold UI** - Luxurious dark theme with gold accents
 
 ### Wedding Detail View
 - **Client Information** - Partner names, wedding date, venue details
 - **Quick Navigation** - Access all wedding management tools from one screen
 - **Progress Overview** - Visual indicators for completion status
-- **Beautiful Design** - Cohesive gold and white theme throughout
+- **Elegant Design** - Black background with gold (#C9A961) highlights
 
 ### Guest List Management ✅
 - **Full Guest Database** - Store complete guest information
@@ -33,70 +33,43 @@ WedSync is designed for **wedding professionals** (planners, videographers, phot
 - **Contact Information** - Store emails and phone numbers
 - **Add Guests** - Beautiful modal form with all necessary fields
 
+### Task Management ✅
+- **Complete Task System** - Create and track wedding tasks
+- **Interactive Status** - Tap to toggle between pending → in-progress → completed
+- **Category Icons** - Visual indicators for venue, catering, photography, etc.
+- **Priority Levels** - High, medium, low with color coding
+- **Due Dates** - Track deadlines
+- **Filter by Status** - View all, pending, in-progress, or completed tasks
+- **Strike-through Completed** - Visual completion feedback
+
 ### Wedding Creation
 - **Quick Setup** - Create new wedding projects in seconds
 - **Client Details** - Store partner names and wedding date
 - **Venue Information** - Track location details
+- **Dark Calendar Picker** - Fixed readability with dark theme
 - **Unique QR Codes** - Auto-generated for each wedding
 
-## 🚧 Features In Development
+## 🎨 Design Excellence
 
-### Tasks & Timeline System
-- Task management with categories (venue, catering, photography, etc.)
-- Priority levels and due dates
-- Timeline builder for day-of schedule
-- Ceremony, reception, photos scheduling
+### Black & Gold Premium Theme
+- **Deep Black Background** (#000000) for sophistication
+- **Gold Accents** (#C9A961) for luxury and elegance
+- **Subtle Gradients** for depth and dimension
+- **Clean Typography** with optimal contrast
+- **Professional Feel** - Like a high-end wedding invitation
 
-### Seating Chart Builder
-- Visual drag-and-drop table layout
-- Assign guests to tables
-- Table capacity management
-- Print/export functionality
+### Status Color System
+- **Emerald** for attending/success
+- **Red** for declined/high priority
+- **Amber** for pending/medium priority
+- **Blue** for in-progress/low priority
 
-### Vendor Management
-- Contract tracking
-- Payment status monitoring
-- Vendor contact information
-- Document storage
-
-### SnapSync - Guest Photo Upload Portal
-- QR code scanning for guests
-- Real-time photo uploads
-- Moderated gallery
-- Download and sharing capabilities
-
-### Client Portal
-- Beautiful branded experience for couples
-- View-only access to their wedding details
-- RSVP management
-- Photo gallery access
-- Timeline viewing
-
-## 🏗️ Technical Architecture
-
-### State Management
-- **Zustand** for global state with AsyncStorage persistence
-- Separate stores for weddings and photos
-- Individual selectors to prevent re-render loops
-
-### Navigation
-- **React Navigation** native stack for performance
-- Modal presentations for creation flows
-- Deep linking support for QR codes
-
-### Design System
-- **NativeWind** (Tailwind for React Native) for styling
-- **Gold (#C9A961) & White** color scheme
-- **Ionicons** for consistent iconography
-- **Linear Gradients** for premium feel
-
-### Data Models
-- Weddings
-- Guests (with RSVP tracking)
-- Tasks & Timeline Events
-- Vendors & Payments
-- Photos & Gallery
-- Seating Tables
+### iOS Native Excellence
+- **Dark Mode** optimized throughout
+- **Smooth interactions** with proper active states
+- **Calendar with themeVariant="dark"** - readable date picker
+- **Gold splash screen** with beautiful heart logo
+- **Border accents** instead of heavy shadows
 
 ## 📁 Project Structure
 
@@ -104,17 +77,17 @@ WedSync is designed for **wedding professionals** (planners, videographers, phot
 src/
 ├── components/        # Reusable UI components
 ├── screens/          # Main app screens
-│   ├── ProDashboardScreen.tsx      ✅ Complete
-│   ├── WeddingDetailScreen.tsx     ✅ Complete
-│   ├── GuestListScreen.tsx         ✅ Complete
-│   ├── AddGuestScreen.tsx          ✅ Complete
-│   ├── CreateWeddingScreen.tsx     ✅ Complete
-│   ├── TasksScreen.tsx             🚧 In Progress
-│   ├── TimelineScreen.tsx          🚧 In Progress
-│   ├── VendorsScreen.tsx           🚧 In Progress
-│   ├── SeatingChartScreen.tsx      🚧 In Progress
-│   ├── PhotoGalleryScreen.tsx      🚧 In Progress
-│   └── GuestUploadScreen.tsx       🚧 In Progress
+│   ├── ProDashboardScreen.tsx      ✅ Black Theme
+│   ├── WeddingDetailScreen.tsx     ✅ Black Theme
+│   ├── GuestListScreen.tsx         ✅ Black Theme
+│   ├── AddGuestScreen.tsx          ✅ Black Theme
+│   ├── TasksScreen.tsx             ✅ Black Theme
+│   ├── CreateWeddingScreen.tsx     ✅ Black Theme
+│   ├── TimelineScreen.tsx          🚧 To be styled
+│   ├── VendorsScreen.tsx           🚧 To be styled
+│   ├── SeatingChartScreen.tsx      🚧 To be styled
+│   ├── PhotoGalleryScreen.tsx      🚧 To be styled
+│   └── GuestUploadScreen.tsx       🚧 To be styled
 ├── navigation/       # Navigation configuration
 ├── state/           # Zustand stores
 │   ├── weddingStore.ts  ✅ Complete
@@ -122,82 +95,58 @@ src/
 ├── types/           # TypeScript definitions
 │   └── wedding.ts       ✅ Complete
 └── utils/           # Helper functions
+```
 
 ## 🎨 Design Philosophy
 
 **Black-Tie Tech Experience**
-- Think Airtable meets Pinterest, dressed in Vera Wang
+- Luxurious black background with gold accents
+- Think high-end wedding invitation meets modern app
 - Clean, modern, intuitive
 - Built to impress clients while empowering professionals
 - Mobile-first with iOS Human Interface Guidelines
-- Premium materials: gradients, shadows, smooth animations
+- Premium materials: gradients, borders, smooth animations
 
 **Color Palette**
 - Primary: Gold (#C9A961)
-- Secondary: Light Gold (#F4E8D0)
-- Background: Neutral 50
-- Text: Neutral 800
-- Accents: Emerald (success), Red (declined), Amber (pending)
-
-## 📱 User Flow
-
-1. **Pro creates wedding** → Partners' names, date, venue
-2. **Add guests** → Names, contacts, categories, RSVP status
-3. **Manage tasks** → Track vendor bookings, dress fittings, etc.
-4. **Build timeline** → Ceremony, cocktails, reception schedule
-5. **Track vendors** → Contracts, payments, contacts
-6. **Create seating chart** → Drag-and-drop table assignments
-7. **Share QR code** → Guests upload photos during event
-8. **Deliver excellence** → Stress-free wedding day with everything organized
-
-## 🔄 Current Status
-
-**Phase 1: Foundation** ✅ Complete
-- Data models and types
-- State management
-- Navigation structure
-- Pro dashboard
-- Wedding creation
-- Guest list management (full CRUD)
-
-**Phase 2: Core Features** 🚧 In Progress
-- Tasks and timeline system
-- Vendor tracking
-- Seating chart builder
-- Photo gallery (SnapSync)
-
-**Phase 3: Client Experience** 📋 Planned
-- Client portal
-- Branded invitations
-- RSVP forms
-- Client photo viewing
-
-**Phase 4: Polish** 📋 Planned
-- Animations and transitions
-- Haptic feedback
-- Advanced search
-- Data export
-- Print layouts
+- Background: Pure Black (#000000)
+- Cards: Neutral 900
+- Text: Neutral 100 (headings), Neutral 300-400 (body)
+- Accents: Emerald (success), Red (declined), Amber (pending), Blue (in-progress)
+- Borders: Neutral 800
 
 ## 🚀 Getting Started
 
 The app is running in the Vibecode environment. Simply:
 1. View the app through the Vibecode mobile app
-2. Create your first wedding from the Pro Dashboard
-3. Add guests, tasks, vendors, and more
-4. Everything auto-saves to device storage
+2. Beautiful gold heart splash screen on launch
+3. Create your first wedding from the Pro Dashboard
+4. Add guests, tasks, vendors, and more
+5. Everything auto-saves to device storage
+
+## 📱 What's New
+
+### Latest Updates
+- ✅ **Full Black Theme** - Luxurious dark design throughout
+- ✅ **Splash Screen** - Gold heart logo on black background
+- ✅ **Fixed Calendar** - Dark theme picker, no more white-on-white
+- ✅ **Gold Button Accents** - Premium feel on all interactive elements
+- ✅ **Improved Contrast** - Readable text on dark backgrounds
+- ✅ **Border Styling** - Elegant card separation with neutral borders
 
 ## 💡 Next Steps
 
-1. Complete Tasks & Timeline screens
-2. Implement Vendor tracking
-3. Build Seating Chart with drag-and-drop
+1. Complete Timeline view with black theme
+2. Implement Vendor tracking with dark styling
+3. Build Seating Chart with black theme
 4. Create SnapSync guest upload portal
-5. Polish UI with animations
-6. Add client portal view
+5. Add more animations and haptics
+6. Implement client portal view
 
 ---
 
 **Built with love using:** React Native 0.76.7, Expo SDK 53, TypeScript, Zustand, React Navigation, NativeWind
 
 **For:** Wedding professionals who demand excellence
+
+**Theme:** Black & Gold Luxury
