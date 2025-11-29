@@ -80,7 +80,7 @@ export default function GuestListScreen() {
           />
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="space-x-2">
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <Pressable
             onPress={() => setFilterStatus("all")}
             className={`px-4 py-2 rounded-full mr-2 ${
@@ -138,9 +138,9 @@ export default function GuestListScreen() {
             </Text>
           </View>
         ) : (
-          <View className="space-y-3 pb-6">
-            {filteredGuests.map((guest) => (
-              <View key={guest.id} className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800">
+          <View className="pb-6">
+            {filteredGuests.map((guest, index) => (
+              <View key={guest.id} className={`bg-neutral-900 rounded-2xl p-4 border border-neutral-800${index < filteredGuests.length - 1 ? " mb-3" : ""}`}>
                 <View className="flex-row items-start justify-between">
                   <View className="flex-1">
                     <Text className="text-neutral-100 text-lg font-semibold">{guest.name}</Text>
@@ -181,9 +181,9 @@ export default function GuestListScreen() {
                   </View>
                 </View>
 
-                <View className="flex-row items-center mt-3 space-x-4">
+                <View className="flex-row items-center mt-3">
                   {guest.tableNumber && (
-                    <View className="flex-row items-center">
+                    <View className={`flex-row items-center${guest.category ? " mr-4" : ""}`}>
                       <Ionicons name="restaurant-outline" size={16} color="#9CA3AF" />
                       <Text className="text-neutral-400 text-sm ml-1">Table {guest.tableNumber}</Text>
                     </View>

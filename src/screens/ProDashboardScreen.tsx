@@ -83,8 +83,8 @@ export default function ProDashboardScreen() {
             </Text>
           </View>
         ) : (
-          <View className="space-y-4 pb-8">
-            {filteredWeddings.map((wedding) => (
+          <View className="pb-8">
+            {filteredWeddings.map((wedding, index) => (
               <Swipeable
                 key={wedding.id}
                 renderRightActions={() => renderRightActions(wedding.id)}
@@ -92,7 +92,7 @@ export default function ProDashboardScreen() {
               >
                 <Pressable
                   onPress={() => navigation.navigate("WeddingDetail", { weddingId: wedding.id })}
-                  className="bg-neutral-900 rounded-2xl overflow-hidden border border-neutral-800 active:opacity-70"
+                  className={`bg-neutral-900 rounded-2xl overflow-hidden border border-neutral-800 active:opacity-70${index < filteredWeddings.length - 1 ? " mb-4" : ""}`}
                 >
                   <View className="p-5">
                     <View className="flex-row items-start justify-between mb-3">
@@ -133,8 +133,8 @@ export default function ProDashboardScreen() {
                       )}
                     </View>
 
-                    <View className="flex-row items-center space-x-6">
-                      <View className="flex-row items-center">
+                    <View className="flex-row items-center">
+                      <View className="flex-row items-center mr-6">
                         <Ionicons name="people-outline" size={18} color="#9CA3AF" />
                         <Text className="text-neutral-400 text-sm ml-2">
                           {wedding.rsvpCount}/{wedding.guestCount}

@@ -119,12 +119,12 @@ export default function InvoicesScreen() {
       {/* Status Filter */}
       <View className="px-5 py-4">
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View className="flex-row space-x-2">
-            {(["all", "draft", "sent", "paid", "overdue", "cancelled"] as const).map((status) => (
+          <View className="flex-row">
+            {(["all", "draft", "sent", "paid", "overdue", "cancelled"] as const).map((status, index, array) => (
               <Pressable
                 key={status}
                 onPress={() => setFilterStatus(status)}
-                className={`px-3 py-1 rounded-full ${
+                className={`px-3 py-1 rounded-full${index < array.length - 1 ? " mr-2" : ""} ${
                   filterStatus === status ? "bg-[#C9A961]" : "bg-neutral-800 border border-neutral-700"
                 }`}
               >
@@ -142,7 +142,7 @@ export default function InvoicesScreen() {
       </View>
 
       <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
-        <View className="space-y-2 pb-8">
+        <View className="pb-8">
           {filteredInvoices.length === 0 ? (
             <View className="items-center justify-center py-20">
               <Ionicons name="receipt-outline" size={64} color="#404040" />
@@ -152,20 +152,20 @@ export default function InvoicesScreen() {
               </Text>
             </View>
           ) : (
-            filteredInvoices.map((invoice) => (
+            filteredInvoices.map((invoice, index) => (
               <Pressable
                 key={invoice.id}
                 onPress={() => navigation.navigate("InvoiceDetail" as any, { invoiceId: invoice.id })}
-                className="bg-neutral-900 rounded-xl p-4 border border-neutral-800 active:opacity-70"
+                className={`bg-neutral-900 rounded-xl p-4 border border-neutral-800 active:opacity-70${index < filteredInvoices.length - 1 ? " mb-2" : ""}`}
               >
                 <View className="flex-row items-center justify-between">
                   <View className="flex-1 mr-3">
                     <Text className="text-neutral-100 text-base font-semibold">
                       {invoice.clientName || "Unnamed Client"}
                     </Text>
-                    <View className="flex-row items-center mt-1 space-x-2">
-                      <Text className="text-neutral-500 text-xs">{invoice.invoiceNumber}</Text>
-                      <Text className="text-neutral-700">•</Text>
+                    <View className="flex-row items-center mt-1">
+                      <Text className="text-neutral-500 text-xs mr-2">{invoice.invoiceNumber}</Text>
+                      <Text className="text-neutral-700 mr-2">•</Text>
                       <Text className="text-neutral-500 text-xs">Due {format(new Date(invoice.dueDate), "MMM d")}</Text>
                     </View>
                   </View>

@@ -113,12 +113,12 @@ export default function WeddingDetailScreen() {
       </LinearGradient>
 
       <ScrollView className="flex-1 px-5 pt-6" showsVerticalScrollIndicator={false}>
-        <View className="space-y-3 pb-8">
+        <View className="pb-8">
           {menuItems.map((item, index) => (
             <Pressable
               key={index}
               onPress={() => navigation.navigate(item.screen, { weddingId })}
-              className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 active:opacity-70"
+              className={`bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 active:opacity-70${index < menuItems.length - 1 ? " mb-3" : ""}`}
             >
               <View className="w-12 h-12 bg-[#C9A961]/10 rounded-full items-center justify-center">
                 <Ionicons name={item.icon} size={24} color="#C9A961" />

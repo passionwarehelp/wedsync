@@ -140,8 +140,8 @@ export default function EmailAutomationScreen() {
         </LinearGradient>
 
         <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
-          <View className="space-y-4 pb-8">
-            <View>
+          <View className="pb-8">
+            <View className="mb-4">
               <Text className="text-neutral-400 text-sm mb-2">Template Name *</Text>
               <TextInput
                 value={newTemplate.name}
@@ -152,16 +152,16 @@ export default function EmailAutomationScreen() {
               />
             </View>
 
-            <View>
+            <View className="mb-4">
               <Text className="text-neutral-400 text-sm mb-2">When to Send</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View className="flex-row space-x-2">
+                <View className="flex-row">
                   {(["2_weeks_before", "1_week_before", "3_days_before", "photos_uploaded", "after_wedding", "manual"] as const).map(
-                    (trigger) => (
+                    (trigger, index, array) => (
                       <Pressable
                         key={trigger}
                         onPress={() => setNewTemplate({ ...newTemplate, trigger })}
-                        className={`px-4 py-2 rounded-full ${
+                        className={`px-4 py-2 rounded-full${index < array.length - 1 ? " mr-2" : ""} ${
                           newTemplate.trigger === trigger ? "bg-[#C9A961]" : "bg-neutral-800 border border-neutral-700"
                         }`}
                       >
@@ -179,7 +179,7 @@ export default function EmailAutomationScreen() {
               </ScrollView>
             </View>
 
-            <View>
+            <View className="mb-4">
               <Text className="text-neutral-400 text-sm mb-2">Subject Line *</Text>
               <TextInput
                 value={newTemplate.subject}
@@ -190,7 +190,7 @@ export default function EmailAutomationScreen() {
               />
             </View>
 
-            <View>
+            <View className="mb-4">
               <Text className="text-neutral-400 text-sm mb-2">Email Body *</Text>
               <TextInput
                 value={newTemplate.body}
@@ -257,9 +257,9 @@ export default function EmailAutomationScreen() {
             </Pressable>
           </View>
         ) : (
-          <View className="space-y-2 pb-8">
-            {emailTemplates.map((template) => (
-              <View key={template.id} className="bg-neutral-900 rounded-xl p-4 border border-neutral-800">
+          <View className="pb-8">
+            {emailTemplates.map((template, index) => (
+              <View key={template.id} className={`bg-neutral-900 rounded-xl p-4 border border-neutral-800${index < emailTemplates.length - 1 ? " mb-2" : ""}`}>
                 <View className="flex-row items-start justify-between mb-3">
                   <View className="flex-1 mr-3">
                     <Text className="text-neutral-100 text-base font-semibold">{template.name}</Text>

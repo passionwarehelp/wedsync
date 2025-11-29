@@ -63,10 +63,10 @@ export default function AdminCalendarScreen() {
             <Text className="text-[#C9A961] text-3xl font-bold">Calendar</Text>
             <Text className="text-neutral-400 text-base mt-1">{format(currentDate, "MMMM yyyy")}</Text>
           </View>
-          <View className="flex-row space-x-2">
+          <View className="flex-row">
             <Pressable
               onPress={previousMonth}
-              className="w-10 h-10 bg-neutral-800 rounded-full items-center justify-center border border-neutral-700"
+              className="w-10 h-10 bg-neutral-800 rounded-full items-center justify-center border border-neutral-700 mr-2"
             >
               <Ionicons name="chevron-back" size={20} color="#C9A961" />
             </Pressable>
@@ -138,12 +138,12 @@ export default function AdminCalendarScreen() {
                 <Text className="text-neutral-500 text-sm mt-2">No events on this day</Text>
               </View>
             ) : (
-              <View className="space-y-3">
+              <View>
                 {selectedEvents.weddings.map((wedding) => (
                   <Pressable
                     key={wedding.id}
                     onPress={() => navigation.navigate("WeddingDetail", { weddingId: wedding.id })}
-                    className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800 active:opacity-70"
+                    className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800 active:opacity-70 mb-3"
                   >
                     <View className="flex-row items-center">
                       <View className="w-10 h-10 bg-pink-900/30 rounded-full items-center justify-center mr-3">
@@ -161,7 +161,7 @@ export default function AdminCalendarScreen() {
                 {selectedEvents.tasks.map((task) => (
                   <View
                     key={task.id}
-                    className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800"
+                    className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800 mb-3"
                   >
                     <View className="flex-row items-center">
                       <View className="w-10 h-10 bg-blue-900/30 rounded-full items-center justify-center mr-3">
@@ -199,12 +199,12 @@ export default function AdminCalendarScreen() {
         {/* Legend */}
         <View className="bg-neutral-900 rounded-2xl p-5 mb-8 border border-neutral-800">
           <Text className="text-neutral-100 text-base font-semibold mb-3">Legend</Text>
-          <View className="space-y-2">
-            <View className="flex-row items-center">
+          <View>
+            <View className="flex-row items-center mb-2">
               <Ionicons name="heart" size={16} color="#ec4899" />
               <Text className="text-neutral-400 text-sm ml-2">Weddings</Text>
             </View>
-            <View className="flex-row items-center">
+            <View className="flex-row items-center mb-2">
               <Ionicons name="checkmark-circle" size={16} color="#60a5fa" />
               <Text className="text-neutral-400 text-sm ml-2">Task Deadlines</Text>
             </View>

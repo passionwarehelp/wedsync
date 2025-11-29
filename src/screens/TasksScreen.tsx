@@ -97,7 +97,7 @@ export default function TasksScreen() {
           </Pressable>
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="space-x-2">
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <Pressable
             onPress={() => setFilterStatus("all")}
             className={`px-4 py-2 rounded-full mr-2 ${filterStatus === "all" ? "bg-[#C9A961]" : "bg-neutral-800"}`}
@@ -149,12 +149,12 @@ export default function TasksScreen() {
             <Text className="text-neutral-600 text-sm mt-2">Tap + to add your first task</Text>
           </View>
         ) : (
-          <View className="space-y-3 pb-6">
-            {filteredTasks.map((task) => (
+          <View className="pb-6">
+            {filteredTasks.map((task, index) => (
               <Pressable
                 key={task.id}
                 onLongPress={() => toggleTaskStatus(task.id, task.status)}
-                className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800 active:opacity-70"
+                className={`bg-neutral-900 rounded-2xl p-4 border border-neutral-800 active:opacity-70${index < filteredTasks.length - 1 ? " mb-3" : ""}`}
               >
                 <View className="flex-row items-start">
                   <Pressable
@@ -191,9 +191,9 @@ export default function TasksScreen() {
                       <Text className="text-neutral-400 text-sm mb-2">{task.description}</Text>
                     )}
 
-                    <View className="flex-row items-center space-x-3">
+                    <View className="flex-row items-center">
                       {task.dueDate && (
-                        <View className="flex-row items-center">
+                        <View className={`flex-row items-center${task.priority ? " mr-3" : ""}`}>
                           <Ionicons name="calendar-outline" size={14} color="#9CA3AF" />
                           <Text className="text-neutral-500 text-xs ml-1">
                             {format(new Date(task.dueDate), "MMM d")}

@@ -82,14 +82,14 @@ export default function QRCodeScreen() {
             <Text className="text-neutral-100 text-lg font-semibold flex-1">How it works</Text>
           </View>
 
-          <View className="space-y-4">
-            <View className="flex-row">
+          <View>
+            <View className="flex-row mb-4">
               <Text className="text-[#C9A961] font-bold mr-3">1.</Text>
               <Text className="text-neutral-300 flex-1">
                 Print this QR code and display it at your event
               </Text>
             </View>
-            <View className="flex-row">
+            <View className="flex-row mb-4">
               <Text className="text-[#C9A961] font-bold mr-3">2.</Text>
               <Text className="text-neutral-300 flex-1">
                 Guests scan with their phone camera

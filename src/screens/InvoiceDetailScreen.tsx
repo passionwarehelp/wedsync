@@ -137,12 +137,12 @@ export default function InvoiceDetailScreen() {
         </View>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
-          <View className="flex-row space-x-2">
-            {(["draft", "sent", "paid", "overdue", "cancelled"] as const).map((status) => (
+          <View className="flex-row">
+            {(["draft", "sent", "paid", "overdue", "cancelled"] as const).map((status, index, array) => (
               <Pressable
                 key={status}
                 onPress={() => handleStatusChange(status)}
-                className={`px-3 py-1 rounded-full ${
+                className={`px-3 py-1 rounded-full${index < array.length - 1 ? " mr-2" : ""} ${
                   invoice.status === status ? "bg-[#C9A961]" : "bg-neutral-800 border border-neutral-700"
                 }`}
               >
@@ -160,9 +160,9 @@ export default function InvoiceDetailScreen() {
       </LinearGradient>
 
       <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
-        <View className="space-y-4 pb-8">
+        <View className="pb-8">
           {/* Client Info */}
-          <View>
+          <View className="mb-4">
             <Text className="text-neutral-400 text-sm mb-2">Client Name *</Text>
             <TextInput
               value={clientName}
@@ -173,7 +173,7 @@ export default function InvoiceDetailScreen() {
             />
           </View>
 
-          <View>
+          <View className="mb-4">
             <Text className="text-neutral-400 text-sm mb-2">Client Email</Text>
             <TextInput
               value={clientEmail}
@@ -187,7 +187,7 @@ export default function InvoiceDetailScreen() {
           </View>
 
           {/* Due Date */}
-          <View>
+          <View className="mb-4">
             <Text className="text-neutral-400 text-sm mb-2">Due Date</Text>
             <Pressable
               onPress={() => setShowDatePicker(true)}
@@ -210,7 +210,7 @@ export default function InvoiceDetailScreen() {
           </View>
 
           {/* Line Items */}
-          <View>
+          <View className="mb-4">
             <View className="flex-row items-center justify-between mb-3">
               <Text className="text-neutral-100 text-lg font-semibold">Items</Text>
               <Pressable onPress={addLineItem} className="bg-[#C9A961] px-4 py-2 rounded-full">
@@ -224,9 +224,9 @@ export default function InvoiceDetailScreen() {
                 <Text className="text-neutral-500 text-sm mt-2">No items added yet</Text>
               </View>
             ) : (
-              <View className="space-y-2">
+              <View>
                 {items.map((item, index) => (
-                  <View key={item.id} className="bg-neutral-900 rounded-xl p-4 border border-neutral-800">
+                  <View key={item.id} className={`bg-neutral-900 rounded-xl p-4 border border-neutral-800${index < items.length - 1 ? " mb-2" : ""}`}>
                     <View className="flex-row items-center justify-between mb-3">
                       <Text className="text-neutral-400 text-xs">ITEM {index + 1}</Text>
                       <Pressable onPress={() => removeLineItem(item.id)}>
@@ -242,8 +242,8 @@ export default function InvoiceDetailScreen() {
                       className="bg-neutral-800 text-neutral-100 rounded-lg p-3 mb-2 border border-neutral-700"
                     />
 
-                    <View className="flex-row space-x-2">
-                      <View className="flex-1">
+                    <View className="flex-row">
+                      <View className="flex-1 mr-2">
                         <Text className="text-neutral-500 text-xs mb-1">Quantity</Text>
                         <TextInput
                           value={item.quantity.toString()}
@@ -255,7 +255,7 @@ export default function InvoiceDetailScreen() {
                         />
                       </View>
 
-                      <View className="flex-1">
+                      <View className="flex-1 mr-2">
                         <Text className="text-neutral-500 text-xs mb-1">Rate ($)</Text>
                         <TextInput
                           value={item.rate.toString()}
@@ -281,7 +281,7 @@ export default function InvoiceDetailScreen() {
           </View>
 
           {/* Totals */}
-          <View className="bg-neutral-900 rounded-xl p-4 border border-neutral-800">
+          <View className="bg-neutral-900 rounded-xl p-4 border border-neutral-800 mb-4">
             <View className="flex-row justify-between mb-2">
               <Text className="text-neutral-400">Subtotal</Text>
               <Text className="text-neutral-100 font-semibold">${subtotal.toFixed(2)}</Text>
@@ -310,7 +310,7 @@ export default function InvoiceDetailScreen() {
           </View>
 
           {/* Notes */}
-          <View>
+          <View className="mb-4">
             <Text className="text-neutral-400 text-sm mb-2">Notes</Text>
             <TextInput
               value={notes}

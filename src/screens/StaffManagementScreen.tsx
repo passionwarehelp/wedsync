@@ -156,19 +156,19 @@ export default function StaffManagementScreen() {
 
         <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
           <Text className="text-neutral-400 text-xs font-semibold mb-3">SELECT WEDDING</Text>
-          <View className="space-y-2 pb-8">
+          <View className="pb-8">
             {activeWeddings.length === 0 ? (
               <View className="items-center py-12">
                 <Text className="text-neutral-500">No active weddings</Text>
               </View>
             ) : (
-              activeWeddings.map((wedding) => {
+              activeWeddings.map((wedding, index) => {
                 const assigned = isAssigned(selectedStaff.id, wedding.id);
                 return (
                   <Pressable
                     key={wedding.id}
                     onPress={() => (assigned ? handleUnassign(wedding.id) : handleAssignToWedding(wedding.id))}
-                    className={`rounded-xl p-4 border ${
+                    className={`rounded-xl p-4 border${index < activeWeddings.length - 1 ? " mb-2" : ""} ${
                       assigned
                         ? "bg-[#C9A961]/10 border-[#C9A961]"
                         : "bg-neutral-900 border-neutral-800"
@@ -216,8 +216,8 @@ export default function StaffManagementScreen() {
         </LinearGradient>
 
         <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
-          <View className="space-y-4 pb-8">
-            <View>
+          <View className="pb-8">
+            <View className="mb-4">
               <Text className="text-neutral-400 text-sm mb-2">Name *</Text>
               <TextInput
                 value={newStaff.name}
@@ -228,7 +228,7 @@ export default function StaffManagementScreen() {
               />
             </View>
 
-            <View>
+            <View className="mb-4">
               <Text className="text-neutral-400 text-sm mb-2">Email</Text>
               <TextInput
                 value={newStaff.email}
@@ -241,7 +241,7 @@ export default function StaffManagementScreen() {
               />
             </View>
 
-            <View>
+            <View className="mb-4">
               <Text className="text-neutral-400 text-sm mb-2">Phone</Text>
               <TextInput
                 value={newStaff.phone}
@@ -253,7 +253,7 @@ export default function StaffManagementScreen() {
               />
             </View>
 
-            <View>
+            <View className="mb-4">
               <Text className="text-neutral-400 text-sm mb-2">Role</Text>
               <View className="flex-row flex-wrap gap-2">
                 {(["planner", "coordinator", "photographer", "videographer", "assistant", "other"] as const).map(
@@ -334,7 +334,7 @@ export default function StaffManagementScreen() {
       </LinearGradient>
 
       <ScrollView className="flex-1 px-5 pt-6" showsVerticalScrollIndicator={false}>
-        <View className="space-y-3 pb-8">
+        <View className="pb-8">
           {filteredStaff.length === 0 ? (
             <View className="items-center justify-center py-20">
               <Ionicons name="people-outline" size={64} color="#404040" />
@@ -342,7 +342,7 @@ export default function StaffManagementScreen() {
               <Text className="text-neutral-600 text-sm mt-2">Add your first team member to get started</Text>
             </View>
           ) : (
-            filteredStaff.map((staff) => {
+            filteredStaff.map((staff, index) => {
               const assignedWeddings = getAssignedWeddings(staff.id);
               return (
                 <Swipeable
@@ -352,7 +352,7 @@ export default function StaffManagementScreen() {
                 >
                   <Pressable
                     onPress={() => setSelectedStaff(staff)}
-                    className="bg-neutral-900 rounded-2xl p-5 border border-neutral-800 active:opacity-70"
+                    className={`bg-neutral-900 rounded-2xl p-5 border border-neutral-800 active:opacity-70${index < filteredStaff.length - 1 ? " mb-3" : ""}`}
                   >
                     <View className="flex-row items-start justify-between mb-3">
                       <View className="flex-1">
@@ -377,9 +377,9 @@ export default function StaffManagementScreen() {
                     </View>
 
                     {(staff.email || staff.phone) && (
-                      <View className="space-y-1 mb-3">
+                      <View className="mb-3">
                         {staff.email && (
-                          <View className="flex-row items-center">
+                          <View className={`flex-row items-center${staff.phone ? " mb-1" : ""}`}>
                             <Ionicons name="mail" size={14} color="#666" />
                             <Text className="text-neutral-400 text-sm ml-2">{staff.email}</Text>
                           </View>

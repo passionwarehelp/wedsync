@@ -115,11 +115,11 @@ export default function GuestUploadScreen() {
           </Text>
         </View>
 
-        <View className="flex-row space-x-3">
+        <View className="flex-row">
           <Pressable
             onPress={takePhoto}
             disabled={uploading}
-            className="flex-1 bg-[#C9A961] rounded-2xl py-4 items-center active:opacity-70"
+            className="flex-1 bg-[#C9A961] rounded-2xl py-4 items-center active:opacity-70 mr-3"
           >
             <Ionicons name="camera-outline" size={28} color="#000000" />
             <Text className="text-black text-base font-semibold mt-2">Take Photo</Text>
