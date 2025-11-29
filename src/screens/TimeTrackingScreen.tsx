@@ -12,6 +12,7 @@ import { LinearGradient } from "expo-linear-gradient";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
+// Time Tracking Screen - Staff clock in/out management
 export default function TimeTrackingScreen() {
   const navigation = useNavigation<NavigationProp>();
   const staffMembers = useAdminStore((s) => s.staffMembers);
