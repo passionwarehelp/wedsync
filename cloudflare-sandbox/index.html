@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WedSync - Guest Photo Upload</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding-top: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #C9A961;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #999;
+            font-size: 16px;
+        }
+
+        .card {
+            background: #1f1f1f;
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .upload-area {
+            border: 2px dashed #C9A961;
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            background: rgba(201, 169, 97, 0.05);
+            border-color: #d4b76f;
+        }
+
+        .upload-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 18px;
+            color: #C9A961;
+            margin-bottom: 5px;
+        }
+
+        .upload-hint {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .btn {
+            background: #C9A961;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #d4b76f;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #2a2a2a;
+            color: #C9A961;
+            border: 1px solid #444;
+        }
+
+        .btn-secondary:hover {
+            background: #333;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .preview-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .info-box {
+            background: rgba(201, 169, 97, 0.1);
+            border: 1px solid rgba(201, 169, 97, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #C9A961;
+            margin-top: 20px;
+        }
+
+        .qr-code {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">📸</div>
+            <h1 id="coupleName">Loading...</h1>
+            <p class="subtitle">Share your photos from the celebration</p>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            ✓ Photos uploaded successfully!
+        </div>
+
+        <div class="card">
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">Tap to select photos</div>
+                <div class="upload-hint">Or drag and drop photos here</div>
+            </div>
+
+            <input type="file" id="fileInput" accept="image/*" multiple>
+
+            <button class="btn" onclick="document.getElementById('fileInput').click()">
+                Choose Photos
+            </button>
+
+            <button class="btn btn-secondary" onclick="takePicture()">
+                📸 Take a Photo
+            </button>
+
+            <div class="preview-grid" id="previewGrid"></div>
+
+            <button class="btn" id="uploadBtn" style="display: none; margin-top: 20px;" onclick="uploadPhotos()">
+                Upload <span id="photoCount"></span> Photos
+            </button>
+        </div>
+
+        <div class="info-box">
+            ℹ️ Your photos will be added to the wedding gallery for everyone to enjoy. By uploading, you agree to share these photos with the couple.
+        </div>
+
+        <div class="qr-code" id="qrCode"></div>
+    </div>
+
+    <script>
+        let selectedFiles = [];
+
+        // Get QR code from URL
+        const urlPath = window.location.pathname;
+        const qrCode = urlPath.split('/upload/')[1] || 'demo-qr-code';
+
+        // Mock wedding data (in production, this would fetch from your API)
+        const mockWeddings = {
+            'demo-qr-code': 'Sarah & Michael',
+            // Add more as needed
+        };
+
+        // Set couple name
+        document.getElementById('coupleName').textContent = mockWeddings[qrCode] || 'Wedding Celebration';
+        document.getElementById('qrCode').textContent = `QR Code: ${qrCode}`;
+
+        // File input handler
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            handleFiles(e.target.files);
+        });
+
+        // Drag and drop
+        const uploadArea = document.querySelector('.upload-area');
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = 'rgba(201, 169, 97, 0.1)';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.background = '';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = '';
+            handleFiles(e.dataTransfer.files);
+        });
+
+        function handleFiles(files) {
+            selectedFiles = [...selectedFiles, ...Array.from(files)];
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const previewGrid = document.getElementById('previewGrid');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const photoCount = document.getElementById('photoCount');
+
+            previewGrid.innerHTML = '';
+
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const div = document.createElement('div');
+                    div.className = 'preview-item';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        <button class="preview-remove" onclick="removePhoto(${index})">×</button>
+                    `;
+                    previewGrid.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            if (selectedFiles.length > 0) {
+                uploadBtn.style.display = 'block';
+                photoCount.textContent = selectedFiles.length;
+            } else {
+                uploadBtn.style.display = 'none';
+            }
+        }
+
+        function removePhoto(index) {
+            selectedFiles.splice(index, 1);
+            updatePreview();
+        }
+
+        function takePicture() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.capture = 'environment';
+            input.onchange = (e) => handleFiles(e.target.files);
+            input.click();
+        }
+
+        async function uploadPhotos() {
+            const successMessage = document.getElementById('successMessage');
+            const uploadBtn = document.getElementById('uploadBtn');
+
+            uploadBtn.textContent = 'Uploading...';
+            uploadBtn.disabled = true;
+
+            // Simulate upload (in production, this would send to your API)
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Show success
+            successMessage.classList.add('show');
+            setTimeout(() => successMessage.classList.remove('show'), 5000);
+
+            // Reset
+            selectedFiles = [];
+            updatePreview();
+            uploadBtn.textContent = 'Upload Photos';
+            uploadBtn.disabled = false;
+
+            // In production, send to your Cloudflare Worker/API:
+            /*
+            const formData = new FormData();
+            selectedFiles.forEach(file => formData.append('photos', file));
+            formData.append('qrCode', qrCode);
+
+            await fetch('https://api.wedsync.app/upload', {
+                method: 'POST',
+                body: formData
+            });
+            */
+        }
+    </script>
+</body>
+</html>

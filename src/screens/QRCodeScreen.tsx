@@ -29,13 +29,14 @@ export default function QRCodeScreen() {
     );
   }
 
-  // Create deep link URL for guest uploads in Vibecode app
-  const uploadUrl = `wedsync://upload/${wedding.qrCode}`;
+  // Sandbox URL for testing (will be replaced with Cloudflare production URL)
+  // For now, this points to a test environment that simulates guest uploads
+  const uploadUrl = `https://wedsync-sandbox.pages.dev/upload/${wedding.qrCode}`;
 
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Upload your photos for ${wedding.coupleName}'s wedding! Scan the QR code to upload.`,
+        message: `Upload your photos for ${wedding.coupleName}'s wedding!\n\nScan the QR code or visit: ${uploadUrl}`,
         title: "WedSync Photo Upload",
       });
     } catch (error) {
