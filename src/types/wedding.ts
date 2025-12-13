@@ -120,6 +120,8 @@ export interface Photo {
   weddingId: string;
 
   uri: string;
+  mediaType?: "photo" | "video";
+  thumbnailUri?: string;
   uploadedBy: "guest" | "pro" | "client";
   uploadedByName?: string;
 

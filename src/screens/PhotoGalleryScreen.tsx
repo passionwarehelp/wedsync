@@ -9,11 +9,12 @@ import useWeddingStore from "../state/weddingStore";
 import usePhotoStore from "../state/photoStore";
 import { LinearGradient } from "expo-linear-gradient";
 import { format } from "date-fns";
+import { useVideoPlayer, VideoView } from "expo-video";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type PhotoGalleryRouteProp = RouteProp<RootStackParamList, "PhotoGallery">;
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 const imageSize = (width - 60) / 3; // 3 columns with padding
 
 export default function PhotoGalleryScreen() {
@@ -28,12 +29,48 @@ export default function PhotoGalleryScreen() {
   const toggleFavorite = usePhotoStore((s) => s.toggleFavorite);
 
   // Filter photos for this wedding using useMemo
-  const photos = useMemo(() => {
+  const media = useMemo(() => {
     return allPhotos.filter((p) => p.weddingId === weddingId);
   }, [allPhotos, weddingId]);
 
-  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
-  const [filter, setFilter] = useState<"all" | "favorites">("all");
+  const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
+  const [filter, setFilter] = useState<"all" | "photos" | "videos" | "favorites">("all");
+
+  // Get the selected media item for video player
+  const selectedItem = useMemo(() => {
+    return media.find((m) => m.id === selectedMedia);
+  }, [media, selectedMedia]);
+
+  // Video player for selected video
+  const player = useVideoPlayer(
+    selectedItem?.mediaType === "video" ? selectedItem.uri : null,
+    (player) => {
+      player.loop = false;
+    }
+  );
+
+  const filteredMedia = useMemo(() => {
+    switch (filter) {
+      case "photos":
+        return media.filter((m) => m.mediaType !== "video");
+      case "videos":
+        return media.filter((m) => m.mediaType === "video");
+      case "favorites":
+        return media.filter((m) => m.isFavorite);
+      default:
+        return media;
+    }
+  }, [media, filter]);
+
+  const sortedMedia = useMemo(() => {
+    return [...filteredMedia].sort(
+      (a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
+    );
+  }, [filteredMedia]);
+
+  const photoCount = useMemo(() => media.filter((m) => m.mediaType !== "video").length, [media]);
+  const videoCount = useMemo(() => media.filter((m) => m.mediaType === "video").length, [media]);
+  const favoriteCount = useMemo(() => media.filter((m) => m.isFavorite).length, [media]);
 
   if (!wedding) {
     return (
@@ -44,11 +81,6 @@ export default function PhotoGalleryScreen() {
       </SafeAreaView>
     );
   }
-
-  const filteredPhotos = filter === "favorites" ? photos.filter((p) => p.isFavorite) : photos;
-  const sortedPhotos = [...filteredPhotos].sort(
-    (a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
-  );
 
   return (
     <View className="flex-1 bg-black">
@@ -64,7 +96,7 @@ export default function PhotoGalleryScreen() {
 
         <View className="flex-row items-center justify-between mb-4">
           <View className="flex-1">
-            <Text className="text-[#C9A961] text-3xl font-bold mb-2">Photo Gallery</Text>
+            <Text className="text-[#C9A961] text-3xl font-bold mb-2">Gallery</Text>
             <Text className="text-neutral-400 text-base">{wedding.coupleName}</Text>
           </View>
           <Pressable
@@ -75,42 +107,61 @@ export default function PhotoGalleryScreen() {
           </Pressable>
         </View>
 
-        <View className="flex-row">
+        {/* Filter tabs */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-1">
           <Pressable
             onPress={() => setFilter("all")}
-            className={`flex-1 py-3 rounded-xl mr-2 ${filter === "all" ? "bg-[#C9A961]" : "bg-neutral-900 border border-neutral-800"}`}
+            className={`px-4 py-2 rounded-full mx-1 ${filter === "all" ? "bg-[#C9A961]" : "bg-neutral-900 border border-neutral-800"}`}
           >
-            <Text
-              className={`text-center font-semibold ${filter === "all" ? "text-black" : "text-neutral-400"}`}
-            >
-              All ({photos.length})
+            <Text className={`font-semibold ${filter === "all" ? "text-black" : "text-neutral-400"}`}>
+              All ({media.length})
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setFilter("photos")}
+            className={`px-4 py-2 rounded-full mx-1 ${filter === "photos" ? "bg-[#C9A961]" : "bg-neutral-900 border border-neutral-800"}`}
+          >
+            <Text className={`font-semibold ${filter === "photos" ? "text-black" : "text-neutral-400"}`}>
+              Photos ({photoCount})
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setFilter("videos")}
+            className={`px-4 py-2 rounded-full mx-1 ${filter === "videos" ? "bg-[#C9A961]" : "bg-neutral-900 border border-neutral-800"}`}
+          >
+            <Text className={`font-semibold ${filter === "videos" ? "text-black" : "text-neutral-400"}`}>
+              Videos ({videoCount})
             </Text>
           </Pressable>
           <Pressable
             onPress={() => setFilter("favorites")}
-            className={`flex-1 py-3 rounded-xl ml-2 ${filter === "favorites" ? "bg-[#C9A961]" : "bg-neutral-900 border border-neutral-800"}`}
+            className={`px-4 py-2 rounded-full mx-1 ${filter === "favorites" ? "bg-[#C9A961]" : "bg-neutral-900 border border-neutral-800"}`}
           >
-            <Text
-              className={`text-center font-semibold ${filter === "favorites" ? "text-black" : "text-neutral-400"}`}
-            >
-              Favorites ({photos.filter((p) => p.isFavorite).length})
+            <Text className={`font-semibold ${filter === "favorites" ? "text-black" : "text-neutral-400"}`}>
+              Favorites ({favoriteCount})
             </Text>
           </Pressable>
-        </View>
+        </ScrollView>
       </LinearGradient>
 
-      {sortedPhotos.length === 0 ? (
+      {sortedMedia.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8">
           <View className="w-24 h-24 bg-neutral-900 rounded-full items-center justify-center mb-6 border-2 border-neutral-800">
             <Ionicons name="images-outline" size={48} color="#C9A961" />
           </View>
           <Text className="text-neutral-300 text-xl font-semibold mb-2 text-center">
-            {filter === "favorites" ? "No Favorite Photos" : "No Photos Yet"}
+            {filter === "favorites"
+              ? "No Favorites"
+              : filter === "videos"
+                ? "No Videos"
+                : filter === "photos"
+                  ? "No Photos"
+                  : "No Media Yet"}
           </Text>
           <Text className="text-neutral-500 text-center mb-8">
             {filter === "favorites"
-              ? "Mark photos as favorites by tapping the heart icon"
-              : "Upload photos from your library or receive guest uploads via QR code"}
+              ? "Mark items as favorites by tapping the heart icon"
+              : "Upload photos or videos from your library"}
           </Text>
           {filter === "all" && (
             <Pressable
@@ -118,21 +169,32 @@ export default function PhotoGalleryScreen() {
               className="bg-[#C9A961] rounded-2xl px-8 py-4 flex-row items-center active:opacity-70"
             >
               <Ionicons name="cloud-upload" size={24} color="#000000" />
-              <Text className="text-black text-lg font-semibold ml-3">Upload Photos</Text>
+              <Text className="text-black text-lg font-semibold ml-3">Upload Media</Text>
             </Pressable>
           )}
         </View>
       ) : (
         <ScrollView className="flex-1 px-5 pt-6" showsVerticalScrollIndicator={false}>
           <View className="flex-row flex-wrap -mx-1 pb-8">
-            {sortedPhotos.map((photo) => (
-              <View key={photo.id} className="w-1/3 p-1">
+            {sortedMedia.map((item) => (
+              <View key={item.id} className="w-1/3 p-1">
                 <Pressable
-                  onPress={() => setSelectedPhoto(photo.id)}
+                  onPress={() => setSelectedMedia(item.id)}
                   className="relative bg-neutral-900 rounded-xl overflow-hidden"
                   style={{ height: imageSize }}
                 >
-                  <Image source={{ uri: photo.uri }} className="w-full h-full" resizeMode="cover" />
+                  <Image
+                    source={{ uri: item.thumbnailUri || item.uri }}
+                    className="w-full h-full"
+                    resizeMode="cover"
+                  />
+                  {item.mediaType === "video" && (
+                    <View className="absolute inset-0 items-center justify-center">
+                      <View className="w-10 h-10 bg-black/60 rounded-full items-center justify-center">
+                        <Ionicons name="play" size={20} color="#FFFFFF" />
+                      </View>
+                    </View>
+                  )}
                   <LinearGradient
                     colors={["transparent", "rgba(0,0,0,0.6)"]}
                     style={{
@@ -140,24 +202,24 @@ export default function PhotoGalleryScreen() {
                       bottom: 0,
                       left: 0,
                       right: 0,
-                      height: 60,
+                      height: 50,
                     }}
                   />
                   <Pressable
-                    onPress={() => toggleFavorite(photo.id)}
-                    className="absolute top-2 right-2 w-8 h-8 bg-black/50 rounded-full items-center justify-center"
+                    onPress={() => toggleFavorite(item.id)}
+                    className="absolute top-2 right-2 w-7 h-7 bg-black/50 rounded-full items-center justify-center"
                   >
                     <Ionicons
-                      name={photo.isFavorite ? "heart" : "heart-outline"}
-                      size={18}
-                      color={photo.isFavorite ? "#C9A961" : "#FFFFFF"}
+                      name={item.isFavorite ? "heart" : "heart-outline"}
+                      size={16}
+                      color={item.isFavorite ? "#C9A961" : "#FFFFFF"}
                     />
                   </Pressable>
-                  <View className="absolute bottom-2 left-2">
-                    <Text className="text-white text-xs font-medium">
-                      {photo.uploadedByName || "Guest"}
-                    </Text>
-                  </View>
+                  {item.mediaType === "video" && (
+                    <View className="absolute bottom-2 left-2 bg-black/60 px-1.5 py-0.5 rounded">
+                      <Text className="text-white text-[10px] font-medium">VIDEO</Text>
+                    </View>
+                  )}
                 </Pressable>
               </View>
             ))}
@@ -165,51 +227,58 @@ export default function PhotoGalleryScreen() {
         </ScrollView>
       )}
 
-      {/* Simple photo detail view */}
-      {selectedPhoto && (
-        <Pressable
-          onPress={() => setSelectedPhoto(null)}
-          className="absolute inset-0 bg-black/95 items-center justify-center"
-        >
-          {(() => {
-            const photo = photos.find((p) => p.id === selectedPhoto);
-            if (!photo) return null;
+      {/* Full screen media viewer */}
+      {selectedMedia && selectedItem && (
+        <View className="absolute inset-0 bg-black">
+          <SafeAreaView className="flex-1">
+            <View className="flex-row items-center justify-between px-5 py-4">
+              <Pressable onPress={() => setSelectedMedia(null)}>
+                <Ionicons name="close" size={32} color="#C9A961" />
+              </Pressable>
+              <Pressable onPress={() => toggleFavorite(selectedItem.id)}>
+                <Ionicons
+                  name={selectedItem.isFavorite ? "heart" : "heart-outline"}
+                  size={32}
+                  color={selectedItem.isFavorite ? "#C9A961" : "#FFFFFF"}
+                />
+              </Pressable>
+            </View>
 
-            return (
-              <View className="w-full h-full">
-                <SafeAreaView className="flex-1">
-                  <View className="flex-row items-center justify-between px-5 mb-4">
-                    <Pressable onPress={() => setSelectedPhoto(null)}>
-                      <Ionicons name="close" size={32} color="#C9A961" />
-                    </Pressable>
-                    <Pressable onPress={() => toggleFavorite(photo.id)}>
-                      <Ionicons
-                        name={photo.isFavorite ? "heart" : "heart-outline"}
-                        size={32}
-                        color={photo.isFavorite ? "#C9A961" : "#FFFFFF"}
-                      />
-                    </Pressable>
+            <View className="flex-1 items-center justify-center">
+              {selectedItem.mediaType === "video" ? (
+                <VideoView
+                  player={player}
+                  style={{ width: width, height: height * 0.6 }}
+                  contentFit="contain"
+                  allowsFullscreen
+                  allowsPictureInPicture
+                />
+              ) : (
+                <Image
+                  source={{ uri: selectedItem.uri }}
+                  style={{ width: width, height: height * 0.6 }}
+                  resizeMode="contain"
+                />
+              )}
+            </View>
+
+            <View className="px-5 pb-6">
+              <View className="flex-row items-center mb-2">
+                {selectedItem.mediaType === "video" && (
+                  <View className="bg-[#C9A961]/20 px-2 py-1 rounded mr-2">
+                    <Text className="text-[#C9A961] text-xs font-semibold">VIDEO</Text>
                   </View>
-                  <View className="flex-1 items-center justify-center">
-                    <Image
-                      source={{ uri: photo.uri }}
-                      className="w-full h-full"
-                      resizeMode="contain"
-                    />
-                  </View>
-                  <View className="px-5 pb-6">
-                    <Text className="text-neutral-100 text-lg font-semibold mb-1">
-                      {photo.uploadedByName || "Guest"}
-                    </Text>
-                    <Text className="text-neutral-400 text-sm">
-                      {format(new Date(photo.uploadedAt), "MMM d, yyyy 'at' h:mm a")}
-                    </Text>
-                  </View>
-                </SafeAreaView>
+                )}
+                <Text className="text-neutral-100 text-lg font-semibold">
+                  {selectedItem.uploadedByName || "Guest"}
+                </Text>
               </View>
-            );
-          })()}
-        </Pressable>
+              <Text className="text-neutral-400 text-sm">
+                {format(new Date(selectedItem.uploadedAt), "MMM d, yyyy 'at' h:mm a")}
+              </Text>
+            </View>
+          </SafeAreaView>
+        </View>
       )}
     </View>
   );
