@@ -6,6 +6,7 @@ import {
   ScrollView,
   Dimensions,
   Modal,
+  TextInput,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
@@ -31,13 +32,12 @@ const CANVAS_HEIGHT = 500;
 
 interface DraggableTableProps {
   table: SeatingTable;
-  guests: Guest[];
   onPositionChange: (id: string, x: number, y: number) => void;
   onTablePress: (table: SeatingTable) => void;
   allGuests: Guest[];
 }
 
-function DraggableTable({ table, guests, onPositionChange, onTablePress, allGuests }: DraggableTableProps) {
+function DraggableTable({ table, onPositionChange, onTablePress, allGuests }: DraggableTableProps) {
   const translateX = useSharedValue(table.x || 50);
   const translateY = useSharedValue(table.y || 50);
   const scale = useSharedValue(1);
@@ -135,10 +135,12 @@ export default function SeatingChartScreen() {
   const guests = useMemo(() => allGuests.filter((g) => g.weddingId === weddingId), [allGuests, weddingId]);
 
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showCapacityModal, setShowCapacityModal] = useState(false);
   const [showTableModal, setShowTableModal] = useState(false);
   const [showGuestModal, setShowGuestModal] = useState(false);
   const [selectedTable, setSelectedTable] = useState<SeatingTable | null>(null);
   const [selectedShape, setSelectedShape] = useState<"round" | "square" | "rectangle">("round");
+  const [tableCapacity, setTableCapacity] = useState("8");
 
   const unseatedGuests = guests.filter((g) => {
     const isSeated = tables.some((t) => t.guestIds.includes(g.id));
@@ -154,23 +156,33 @@ export default function SeatingChartScreen() {
     setShowTableModal(true);
   };
 
-  const handleAddTable = (shape: "round" | "square" | "rectangle") => {
+  const handleSelectShape = (shape: "round" | "square" | "rectangle") => {
+    setSelectedShape(shape);
+    // Set default capacity based on shape
+    const defaultCapacity = shape === "rectangle" ? "10" : shape === "round" ? "8" : "4";
+    setTableCapacity(defaultCapacity);
+    setShowAddModal(false);
+    setShowCapacityModal(true);
+  };
+
+  const handleConfirmTable = () => {
+    const capacity = parseInt(tableCapacity) || 8;
     const newTableNumber = tables.length + 1;
-    const capacity = shape === "rectangle" ? 10 : shape === "round" ? 8 : 4;
 
     const newTable: SeatingTable = {
       id: Date.now().toString(),
       weddingId,
       tableNumber: newTableNumber,
       capacity,
-      shape,
+      shape: selectedShape,
       x: 50 + (tables.length % 3) * 100,
       y: 50 + Math.floor(tables.length / 3) * 100,
       guestIds: [],
     };
 
     addSeatingTable(newTable);
-    setShowAddModal(false);
+    setShowCapacityModal(false);
+    setTableCapacity("8");
   };
 
   const handleAssignGuest = (guestId: string) => {
@@ -197,7 +209,6 @@ export default function SeatingChartScreen() {
   const handleDeleteTable = () => {
     if (!selectedTable) return;
 
-    // Remove table assignments from guests
     selectedTable.guestIds.forEach((guestId) => {
       updateGuest(guestId, { tableNumber: undefined });
     });
@@ -290,7 +301,6 @@ export default function SeatingChartScreen() {
               <DraggableTable
                 key={table.id}
                 table={table}
-                guests={guests}
                 allGuests={guests}
                 onPositionChange={handlePositionChange}
                 onTablePress={handleTablePress}
@@ -346,7 +356,7 @@ export default function SeatingChartScreen() {
         </View>
       </ScrollView>
 
-      {/* Add Table Modal */}
+      {/* Step 1: Select Shape Modal */}
       <Modal visible={showAddModal} transparent animationType="slide">
         <View className="flex-1 justify-end bg-black/70">
           <View className="bg-neutral-900 rounded-t-3xl p-6">
@@ -357,45 +367,136 @@ export default function SeatingChartScreen() {
               </Pressable>
             </View>
 
-            <Text className="text-neutral-400 text-sm mb-4">Choose a table shape:</Text>
+            <Text className="text-neutral-400 text-sm mb-4">Step 1: Choose a table shape</Text>
 
             <View className="flex-row justify-between mb-6">
               <Pressable
-                onPress={() => handleAddTable("round")}
+                onPress={() => handleSelectShape("round")}
                 className="flex-1 bg-neutral-800 rounded-xl p-4 items-center mr-3 border border-neutral-700 active:bg-neutral-700"
               >
                 <View className="w-16 h-16 rounded-full bg-[#C9A961] items-center justify-center mb-2">
-                  <Text className="text-black font-bold">8</Text>
+                  <Ionicons name="ellipse-outline" size={32} color="#000" />
                 </View>
                 <Text className="text-neutral-300 font-medium">Round</Text>
-                <Text className="text-neutral-500 text-xs">8 seats</Text>
               </Pressable>
 
               <Pressable
-                onPress={() => handleAddTable("square")}
+                onPress={() => handleSelectShape("square")}
                 className="flex-1 bg-neutral-800 rounded-xl p-4 items-center mr-3 border border-neutral-700 active:bg-neutral-700"
               >
                 <View className="w-14 h-14 rounded-lg bg-[#C9A961] items-center justify-center mb-2">
-                  <Text className="text-black font-bold">4</Text>
+                  <Ionicons name="square-outline" size={28} color="#000" />
                 </View>
                 <Text className="text-neutral-300 font-medium">Square</Text>
-                <Text className="text-neutral-500 text-xs">4 seats</Text>
               </Pressable>
 
               <Pressable
-                onPress={() => handleAddTable("rectangle")}
+                onPress={() => handleSelectShape("rectangle")}
                 className="flex-1 bg-neutral-800 rounded-xl p-4 items-center border border-neutral-700 active:bg-neutral-700"
               >
                 <View
                   className="bg-[#C9A961] items-center justify-center mb-2"
                   style={{ width: 70, height: 40, borderRadius: 6 }}
                 >
-                  <Text className="text-black font-bold">10</Text>
+                  <Ionicons name="tablet-landscape-outline" size={24} color="#000" />
                 </View>
                 <Text className="text-neutral-300 font-medium">Rectangle</Text>
-                <Text className="text-neutral-500 text-xs">10 seats</Text>
               </Pressable>
             </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Step 2: Enter Capacity Modal */}
+      <Modal visible={showCapacityModal} transparent animationType="slide">
+        <View className="flex-1 justify-end bg-black/70">
+          <View className="bg-neutral-900 rounded-t-3xl p-6">
+            <View className="flex-row items-center justify-between mb-6">
+              <Pressable onPress={() => {
+                setShowCapacityModal(false);
+                setShowAddModal(true);
+              }}>
+                <Ionicons name="arrow-back" size={24} color="#C9A961" />
+              </Pressable>
+              <Text className="text-neutral-100 text-xl font-bold">Table Capacity</Text>
+              <Pressable onPress={() => setShowCapacityModal(false)}>
+                <Ionicons name="close" size={24} color="#9CA3AF" />
+              </Pressable>
+            </View>
+
+            <Text className="text-neutral-400 text-sm mb-4">Step 2: How many people can sit at this table?</Text>
+
+            {/* Shape Preview */}
+            <View className="items-center mb-6">
+              {selectedShape === "round" && (
+                <View className="w-20 h-20 rounded-full bg-[#C9A961] items-center justify-center">
+                  <Text className="text-black font-bold text-xl">{tableCapacity}</Text>
+                </View>
+              )}
+              {selectedShape === "square" && (
+                <View className="w-16 h-16 rounded-lg bg-[#C9A961] items-center justify-center">
+                  <Text className="text-black font-bold text-xl">{tableCapacity}</Text>
+                </View>
+              )}
+              {selectedShape === "rectangle" && (
+                <View className="bg-[#C9A961] items-center justify-center" style={{ width: 90, height: 50, borderRadius: 8 }}>
+                  <Text className="text-black font-bold text-xl">{tableCapacity}</Text>
+                </View>
+              )}
+              <Text className="text-neutral-500 text-sm mt-2 capitalize">{selectedShape} Table</Text>
+            </View>
+
+            {/* Capacity Input */}
+            <View className="mb-6">
+              <Text className="text-neutral-300 text-sm font-medium mb-2">Number of Seats</Text>
+              <TextInput
+                value={tableCapacity}
+                onChangeText={setTableCapacity}
+                placeholder="Enter capacity"
+                placeholderTextColor="#6B7280"
+                keyboardType="number-pad"
+                className="bg-neutral-800 rounded-xl px-4 py-4 text-center text-2xl text-neutral-100 border border-neutral-700"
+              />
+            </View>
+
+            {/* Quick Select */}
+            <View className="flex-row justify-center mb-6">
+              {[4, 6, 8, 10, 12].map((num) => (
+                <Pressable
+                  key={num}
+                  onPress={() => setTableCapacity(num.toString())}
+                  className={`w-12 h-12 rounded-full items-center justify-center mx-1 ${
+                    tableCapacity === num.toString()
+                      ? "bg-[#C9A961]"
+                      : "bg-neutral-800 border border-neutral-700"
+                  }`}
+                >
+                  <Text
+                    className={`font-bold ${
+                      tableCapacity === num.toString() ? "text-black" : "text-neutral-400"
+                    }`}
+                  >
+                    {num}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+
+            <Pressable
+              onPress={handleConfirmTable}
+              disabled={!tableCapacity || parseInt(tableCapacity) < 1}
+              className={`rounded-xl py-4 items-center ${
+                tableCapacity && parseInt(tableCapacity) >= 1 ? "bg-[#C9A961]" : "bg-neutral-800"
+              }`}
+            >
+              <Text
+                className={`text-lg font-semibold ${
+                  tableCapacity && parseInt(tableCapacity) >= 1 ? "text-black" : "text-neutral-600"
+                }`}
+              >
+                Add Table
+              </Text>
+            </Pressable>
           </View>
         </View>
       </Modal>

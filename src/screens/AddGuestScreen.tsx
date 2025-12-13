@@ -178,11 +178,13 @@ export default function AddGuestScreen() {
           <View className="mb-5">
             <Text className="text-neutral-300 text-sm font-medium mb-3">RSVP Status</Text>
             <View className="flex-row">
-              {RSVP_OPTIONS.map((option) => (
+              {RSVP_OPTIONS.map((option, index) => (
                 <Pressable
                   key={option.value}
                   onPress={() => setRsvpStatus(option.value)}
-                  className={`flex-1 py-3 rounded-xl items-center mr-2 last:mr-0 ${
+                  className={`flex-1 py-3 rounded-xl items-center ${
+                    index < RSVP_OPTIONS.length - 1 ? "mr-2" : ""
+                  } ${
                     rsvpStatus === option.value
                       ? option.bg + " border-2"
                       : "bg-neutral-900 border border-neutral-800"
