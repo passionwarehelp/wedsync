@@ -29,8 +29,9 @@ export default function QRCodeScreen() {
     );
   }
 
-  // Production URL that guests will scan - uses dedicated upload subdomain
-  const uploadUrl = `https://upload.mywedsync.com/${wedding.qrCode}`;
+  // TEMPORARY: Using Worker default URL until custom domain propagates
+  // TODO: Change back to https://upload.mywedsync.com/${wedding.qrCode} once DNS is set up
+  const uploadUrl = `https://wedsync-guest-upload.passionwarehelp.workers.dev/${wedding.qrCode}`;
 
   const handleShare = async () => {
     try {
