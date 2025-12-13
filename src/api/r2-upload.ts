@@ -179,10 +179,12 @@ export async function uploadToR2(options: UploadOptions): Promise<UploadResult> 
         mediaType,
       };
     } else {
-      console.error(`❌ R2 upload failed: ${response.status} - ${response.body}`);
-
-      // Fall back to local storage
-      console.log("📦 Falling back to local storage...");
+      // R2 requires authentication - for now, fall back to local storage
+      // To enable R2 uploads, you need either:
+      // 1. A backend API that generates presigned upload URLs
+      // 2. A Cloudflare Worker that handles authenticated uploads
+      console.log(`⚠️ R2 requires authentication (status: ${response.status})`);
+      console.log("📦 Storing locally instead...");
       return await storeLocally(weddingId, fileUri, mediaType, contentType, fileName);
     }
   } catch (error) {
