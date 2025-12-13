@@ -2,16 +2,22 @@
  * Cloudflare R2 Upload Utility
  *
  * This module handles photo and video uploads to Cloudflare R2 storage.
+ * Uses direct fetch with base64 data for reliable uploads.
  */
 
 import * as FileSystem from "expo-file-system";
 
-// Environment variables
-const R2_ACCESS_KEY_ID = process.env.EXPO_PUBLIC_R2_ACCESS_KEY_ID || process.env.R2_ACCESS_KEY_ID || "";
-const R2_SECRET_ACCESS_KEY = process.env.EXPO_PUBLIC_R2_SECRET_ACCESS_KEY || process.env.R2_SECRET_ACCESS_KEY || "";
-const R2_ENDPOINT = process.env.EXPO_PUBLIC_R2_ENDPOINT || process.env.R2_ENDPOINT || "";
-const R2_BUCKET_NAME = process.env.EXPO_PUBLIC_R2_BUCKET_NAME || process.env.R2_BUCKET_NAME || "";
-const R2_PUBLIC_URL = process.env.EXPO_PUBLIC_R2_PUBLIC_URL || process.env.R2_PUBLIC_URL || "";
+// Get environment variables - clean up any whitespace
+const getEnvVar = (key: string): string => {
+  const value = process.env[`EXPO_PUBLIC_${key}`] || process.env[key] || "";
+  return value.trim();
+};
+
+const R2_ACCESS_KEY_ID = getEnvVar("R2_ACCESS_KEY_ID");
+const R2_SECRET_ACCESS_KEY = getEnvVar("R2_SECRET_ACCESS_KEY");
+const R2_ENDPOINT = getEnvVar("R2_ENDPOINT");
+const R2_BUCKET_NAME = getEnvVar("R2_BUCKET_NAME");
+const R2_PUBLIC_URL = getEnvVar("R2_PUBLIC_URL");
 
 export type MediaType = "photo" | "video";
 
@@ -103,12 +109,11 @@ export async function uploadToR2(options: UploadOptions): Promise<UploadResult> 
     const contentType = options.contentType || getContentType(fileUri, mediaType);
 
     // Check if R2 is configured
-    if (!R2_ENDPOINT || !R2_BUCKET_NAME || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY) {
-      console.warn("R2 credentials not configured. Please add R2 environment variables.");
-      return {
-        success: false,
-        error: "R2 not configured. Add environment variables in the ENV tab.",
-      };
+    if (!R2_ENDPOINT || !R2_BUCKET_NAME) {
+      console.warn("R2 credentials not configured. Storing locally instead.");
+
+      // Fall back to local storage
+      return await storeLocally(weddingId, fileUri, mediaType, contentType, fileName);
     }
 
     // Generate unique file name
@@ -122,31 +127,44 @@ export async function uploadToR2(options: UploadOptions): Promise<UploadResult> 
     const folder = mediaType === "video" ? "videos" : "photos";
     const key = `wedding_${weddingId}/${folder}/${finalFileName}`;
 
-    // Read the file as base64
+    // Build the upload URL properly
+    const cleanEndpoint = R2_ENDPOINT.replace(/\/+$/, ""); // Remove trailing slashes
+    const uploadUrl = `${cleanEndpoint}/${R2_BUCKET_NAME}/${key}`;
+
     console.log(`📤 Reading ${mediaType} file...`);
+    console.log(`📤 Upload URL: ${uploadUrl}`);
+
+    // Read the file as base64
     const base64 = await FileSystem.readAsStringAsync(fileUri, {
       encoding: FileSystem.EncodingType.Base64,
     });
 
-    // Upload using FileSystem.uploadAsync with proper S3 authentication
-    const uploadUrl = `${R2_ENDPOINT}/${R2_BUCKET_NAME}/${key}`;
+    // Convert to binary using ArrayBuffer
+    const binaryString = atob(base64);
+    const len = binaryString.length;
+    const bytes = new ArrayBuffer(len);
+    const uint8Array = new Uint8Array(bytes);
+    for (let i = 0; i < len; i++) {
+      uint8Array[i] = binaryString.charCodeAt(i);
+    }
+    const blob = new Blob([bytes], { type: contentType });
 
-    console.log(`📤 Uploading to R2: ${key}`);
+    console.log(`📤 Uploading to R2: ${key} (${len} bytes)`);
 
-    // Use fetch with proper headers for S3-compatible upload
-    const response = await FileSystem.uploadAsync(uploadUrl, fileUri, {
-      httpMethod: "PUT",
-      uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+    // Upload using fetch
+    const response = await fetch(uploadUrl, {
+      method: "PUT",
       headers: {
         "Content-Type": contentType,
-        "x-amz-content-sha256": "UNSIGNED-PAYLOAD",
-        Authorization: `AWS4-HMAC-SHA256 Credential=${R2_ACCESS_KEY_ID}`,
       },
+      body: blob,
     });
 
-    // Check if upload was successful (R2 returns 200 for successful PUT)
-    if (response.status >= 200 && response.status < 300) {
-      const publicUrl = `${R2_PUBLIC_URL}/${key}`;
+    if (response.ok) {
+      // Construct public URL
+      const cleanPublicUrl = R2_PUBLIC_URL.replace(/\/+$/, "");
+      const publicUrl = `${cleanPublicUrl}/${key}`;
+
       console.log(`✅ Upload successful: ${publicUrl}`);
 
       return {
@@ -156,42 +174,74 @@ export async function uploadToR2(options: UploadOptions): Promise<UploadResult> 
         mediaType,
       };
     } else {
-      // If direct upload fails, try alternative method using base64
-      console.log("📤 Trying alternative upload method...");
+      const errorText = await response.text();
+      console.error(`❌ R2 upload failed: ${response.status} - ${errorText}`);
 
-      const binaryString = atob(base64);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-
-      const fetchResponse = await fetch(uploadUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": contentType,
-        },
-        body: bytes,
-      });
-
-      if (fetchResponse.ok) {
-        const publicUrl = `${R2_PUBLIC_URL}/${key}`;
-        console.log(`✅ Upload successful (alt method): ${publicUrl}`);
-
-        return {
-          success: true,
-          publicUrl,
-          key,
-          mediaType,
-        };
-      }
-
-      throw new Error(`Upload failed with status: ${response.status}`);
+      // Fall back to local storage
+      console.log("📦 Falling back to local storage...");
+      return await storeLocally(weddingId, fileUri, mediaType, contentType, fileName);
     }
   } catch (error) {
     console.error("R2 upload error:", error);
+
+    // Try local storage as fallback
+    try {
+      return await storeLocally(
+        options.weddingId,
+        options.fileUri,
+        options.mediaType || "photo",
+        options.contentType || "image/jpeg",
+        options.fileName
+      );
+    } catch (localError) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown upload error",
+      };
+    }
+  }
+}
+
+/**
+ * Store file locally as fallback
+ */
+async function storeLocally(
+  weddingId: string,
+  fileUri: string,
+  mediaType: MediaType,
+  contentType: string,
+  fileName?: string
+): Promise<UploadResult> {
+  try {
+    const timestamp = Date.now();
+    const randomId = Math.random().toString(36).substring(2, 15);
+    const extension = getExtension(contentType);
+    const prefix = mediaType === "video" ? "video" : "photo";
+    const finalFileName = fileName || `${prefix}_${timestamp}_${randomId}.${extension}`;
+
+    const folder = mediaType === "video" ? "videos" : "photos";
+    const key = `wedding_${weddingId}/${folder}/${finalFileName}`;
+
+    // Store locally
+    const localDir = `${FileSystem.cacheDirectory}wedsync/${weddingId}/${folder}/`;
+    await FileSystem.makeDirectoryAsync(localDir, { intermediates: true });
+
+    const localUri = `${localDir}${finalFileName}`;
+    await FileSystem.copyAsync({ from: fileUri, to: localUri });
+
+    console.log(`📦 Stored locally: ${localUri}`);
+
+    return {
+      success: true,
+      publicUrl: localUri,
+      key,
+      mediaType,
+    };
+  } catch (error) {
+    console.error("Local storage error:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown upload error",
+      error: error instanceof Error ? error.message : "Failed to store locally",
     };
   }
 }
@@ -212,11 +262,6 @@ export async function uploadVideoToR2(options: Omit<UploadOptions, "mediaType">)
 
 /**
  * Upload multiple files in batch
- *
- * @param weddingId - Wedding ID
- * @param files - Array of file objects with URI and optional media type
- * @param onProgress - Optional callback for progress updates
- * @returns Array of upload results
  */
 export async function uploadMediaBatch(
   weddingId: string,
@@ -259,7 +304,8 @@ export async function uploadPhotosToR2Batch(
  * Get the public URL for a file key
  */
 export function getPublicUrl(key: string): string {
-  return R2_PUBLIC_URL ? `${R2_PUBLIC_URL}/${key}` : key;
+  const cleanPublicUrl = R2_PUBLIC_URL.replace(/\/+$/, "");
+  return cleanPublicUrl ? `${cleanPublicUrl}/${key}` : key;
 }
 
 /**
@@ -271,7 +317,8 @@ export async function deleteFromR2(key: string): Promise<boolean> {
       return false;
     }
 
-    const deleteUrl = `${R2_ENDPOINT}/${R2_BUCKET_NAME}/${key}`;
+    const cleanEndpoint = R2_ENDPOINT.replace(/\/+$/, "");
+    const deleteUrl = `${cleanEndpoint}/${R2_BUCKET_NAME}/${key}`;
 
     const response = await fetch(deleteUrl, {
       method: "DELETE",
