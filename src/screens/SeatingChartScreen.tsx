@@ -7,6 +7,8 @@ import {
   Dimensions,
   Modal,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
@@ -409,96 +411,101 @@ export default function SeatingChartScreen() {
 
       {/* Step 2: Enter Capacity Modal */}
       <Modal visible={showCapacityModal} transparent animationType="slide">
-        <View className="flex-1 justify-end bg-black/70">
-          <View className="bg-neutral-900 rounded-t-3xl p-6">
-            <View className="flex-row items-center justify-between mb-6">
-              <Pressable onPress={() => {
-                setShowCapacityModal(false);
-                setShowAddModal(true);
-              }}>
-                <Ionicons name="arrow-back" size={24} color="#C9A961" />
-              </Pressable>
-              <Text className="text-neutral-100 text-xl font-bold">Table Capacity</Text>
-              <Pressable onPress={() => setShowCapacityModal(false)}>
-                <Ionicons name="close" size={24} color="#9CA3AF" />
-              </Pressable>
-            </View>
+        <KeyboardAvoidingView
+          className="flex-1 justify-end"
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <View className="flex-1 justify-end bg-black/70">
+            <View className="bg-neutral-900 rounded-t-3xl p-6">
+              <View className="flex-row items-center justify-between mb-6">
+                <Pressable onPress={() => {
+                  setShowCapacityModal(false);
+                  setShowAddModal(true);
+                }}>
+                  <Ionicons name="arrow-back" size={24} color="#C9A961" />
+                </Pressable>
+                <Text className="text-neutral-100 text-xl font-bold">Table Capacity</Text>
+                <Pressable onPress={() => setShowCapacityModal(false)}>
+                  <Ionicons name="close" size={24} color="#9CA3AF" />
+                </Pressable>
+              </View>
 
-            <Text className="text-neutral-400 text-sm mb-4">Step 2: How many people can sit at this table?</Text>
+              <Text className="text-neutral-400 text-sm mb-4">Step 2: How many people can sit at this table?</Text>
 
-            {/* Shape Preview */}
-            <View className="items-center mb-6">
-              {selectedShape === "round" && (
-                <View className="w-20 h-20 rounded-full bg-[#C9A961] items-center justify-center">
-                  <Text className="text-black font-bold text-xl">{tableCapacity}</Text>
-                </View>
-              )}
-              {selectedShape === "square" && (
-                <View className="w-16 h-16 rounded-lg bg-[#C9A961] items-center justify-center">
-                  <Text className="text-black font-bold text-xl">{tableCapacity}</Text>
-                </View>
-              )}
-              {selectedShape === "rectangle" && (
-                <View className="bg-[#C9A961] items-center justify-center" style={{ width: 90, height: 50, borderRadius: 8 }}>
-                  <Text className="text-black font-bold text-xl">{tableCapacity}</Text>
-                </View>
-              )}
-              <Text className="text-neutral-500 text-sm mt-2 capitalize">{selectedShape} Table</Text>
-            </View>
+              {/* Shape Preview */}
+              <View className="items-center mb-6">
+                {selectedShape === "round" && (
+                  <View className="w-20 h-20 rounded-full bg-[#C9A961] items-center justify-center">
+                    <Text className="text-black font-bold text-xl">{tableCapacity}</Text>
+                  </View>
+                )}
+                {selectedShape === "square" && (
+                  <View className="w-16 h-16 rounded-lg bg-[#C9A961] items-center justify-center">
+                    <Text className="text-black font-bold text-xl">{tableCapacity}</Text>
+                  </View>
+                )}
+                {selectedShape === "rectangle" && (
+                  <View className="bg-[#C9A961] items-center justify-center" style={{ width: 90, height: 50, borderRadius: 8 }}>
+                    <Text className="text-black font-bold text-xl">{tableCapacity}</Text>
+                  </View>
+                )}
+                <Text className="text-neutral-500 text-sm mt-2 capitalize">{selectedShape} Table</Text>
+              </View>
 
-            {/* Capacity Input */}
-            <View className="mb-6">
-              <Text className="text-neutral-300 text-sm font-medium mb-2">Number of Seats</Text>
-              <TextInput
-                value={tableCapacity}
-                onChangeText={setTableCapacity}
-                placeholder="Enter capacity"
-                placeholderTextColor="#6B7280"
-                keyboardType="number-pad"
-                className="bg-neutral-800 rounded-xl px-4 py-4 text-center text-2xl text-neutral-100 border border-neutral-700"
-              />
-            </View>
+              {/* Capacity Input */}
+              <View className="mb-6">
+                <Text className="text-neutral-300 text-sm font-medium mb-2">Number of Seats</Text>
+                <TextInput
+                  value={tableCapacity}
+                  onChangeText={setTableCapacity}
+                  placeholder="Enter capacity"
+                  placeholderTextColor="#6B7280"
+                  keyboardType="number-pad"
+                  className="bg-neutral-800 rounded-xl px-4 py-4 text-center text-2xl text-neutral-100 border border-neutral-700"
+                />
+              </View>
 
-            {/* Quick Select */}
-            <View className="flex-row justify-center mb-6">
-              {[4, 6, 8, 10, 12].map((num) => (
-                <Pressable
-                  key={num}
-                  onPress={() => setTableCapacity(num.toString())}
-                  className={`w-12 h-12 rounded-full items-center justify-center mx-1 ${
-                    tableCapacity === num.toString()
-                      ? "bg-[#C9A961]"
-                      : "bg-neutral-800 border border-neutral-700"
-                  }`}
-                >
-                  <Text
-                    className={`font-bold ${
-                      tableCapacity === num.toString() ? "text-black" : "text-neutral-400"
+              {/* Quick Select */}
+              <View className="flex-row justify-center mb-6">
+                {[4, 6, 8, 10, 12].map((num) => (
+                  <Pressable
+                    key={num}
+                    onPress={() => setTableCapacity(num.toString())}
+                    className={`w-12 h-12 rounded-full items-center justify-center mx-1 ${
+                      tableCapacity === num.toString()
+                        ? "bg-[#C9A961]"
+                        : "bg-neutral-800 border border-neutral-700"
                     }`}
                   >
-                    {num}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
+                    <Text
+                      className={`font-bold ${
+                        tableCapacity === num.toString() ? "text-black" : "text-neutral-400"
+                      }`}
+                    >
+                      {num}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
 
-            <Pressable
-              onPress={handleConfirmTable}
-              disabled={!tableCapacity || parseInt(tableCapacity) < 1}
-              className={`rounded-xl py-4 items-center ${
-                tableCapacity && parseInt(tableCapacity) >= 1 ? "bg-[#C9A961]" : "bg-neutral-800"
-              }`}
-            >
-              <Text
-                className={`text-lg font-semibold ${
-                  tableCapacity && parseInt(tableCapacity) >= 1 ? "text-black" : "text-neutral-600"
+              <Pressable
+                onPress={handleConfirmTable}
+                disabled={!tableCapacity || parseInt(tableCapacity) < 1}
+                className={`rounded-xl py-4 items-center ${
+                  tableCapacity && parseInt(tableCapacity) >= 1 ? "bg-[#C9A961]" : "bg-neutral-800"
                 }`}
               >
-                Add Table
-              </Text>
-            </Pressable>
+                <Text
+                  className={`text-lg font-semibold ${
+                    tableCapacity && parseInt(tableCapacity) >= 1 ? "text-black" : "text-neutral-600"
+                  }`}
+                >
+                  Add Table
+                </Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Table Details Modal */}
