@@ -7,10 +7,22 @@
 
 import * as FileSystem from "expo-file-system";
 
-// Get environment variables - clean up any whitespace
+// Get environment variables - clean up any whitespace and extract valid URL
 const getEnvVar = (key: string): string => {
   const value = process.env[`EXPO_PUBLIC_${key}`] || process.env[key] || "";
-  return value.trim();
+  // Clean up the value - trim whitespace and try to extract a valid URL if corrupted
+  let cleaned = value.trim();
+
+  // If the value contains "https://", extract from there
+  const httpsIndex = cleaned.indexOf("https://");
+  if (httpsIndex > 0) {
+    cleaned = cleaned.substring(httpsIndex);
+  }
+
+  // Remove any trailing numbers that shouldn't be there (like "...cloudflarestorage.com2")
+  cleaned = cleaned.replace(/\.com\d+/, ".com");
+
+  return cleaned;
 };
 
 const R2_ACCESS_KEY_ID = getEnvVar("R2_ACCESS_KEY_ID");
@@ -18,6 +30,13 @@ const R2_SECRET_ACCESS_KEY = getEnvVar("R2_SECRET_ACCESS_KEY");
 const R2_ENDPOINT = getEnvVar("R2_ENDPOINT");
 const R2_BUCKET_NAME = getEnvVar("R2_BUCKET_NAME");
 const R2_PUBLIC_URL = getEnvVar("R2_PUBLIC_URL");
+
+// Log the cleaned values on first load (remove in production)
+console.log("📦 R2 Config:", {
+  endpoint: R2_ENDPOINT ? R2_ENDPOINT.substring(0, 50) + "..." : "NOT SET",
+  bucket: R2_BUCKET_NAME || "NOT SET",
+  publicUrl: R2_PUBLIC_URL ? R2_PUBLIC_URL.substring(0, 50) + "..." : "NOT SET",
+});
 
 export type MediaType = "photo" | "video";
 
