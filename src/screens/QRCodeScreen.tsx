@@ -29,8 +29,8 @@ export default function QRCodeScreen() {
     );
   }
 
-  // Production URL that guests will scan
-  const uploadUrl = `https://mywedsync.com/upload/${wedding.qrCode}`;
+  // Production URL that guests will scan - uses dedicated upload subdomain
+  const uploadUrl = `https://upload.mywedsync.com/${wedding.qrCode}`;
 
   const handleShare = async () => {
     try {
