@@ -146,15 +146,25 @@ export async function uploadToR2(options: UploadOptions): Promise<UploadResult> 
     const folder = mediaType === "video" ? "videos" : "photos";
     const key = `wedding_${weddingId}/${folder}/${finalFileName}`;
 
-    // Build the upload URL properly
+    // Build the upload URL
+    // If using a Cloudflare Worker, the endpoint IS the worker URL and we don't need bucket name
+    // If using direct R2, we need endpoint/bucket/key
     const cleanEndpoint = R2_ENDPOINT.replace(/\/+$/, ""); // Remove trailing slashes
-    const uploadUrl = `${cleanEndpoint}/${R2_BUCKET_NAME}/${key}`;
 
-    console.log(`📤 Reading ${mediaType} file...`);
+    // Check if endpoint is a workers.dev URL (Cloudflare Worker)
+    const isWorkerEndpoint = cleanEndpoint.includes("workers.dev");
+
+    // Worker URL: https://worker.subdomain.workers.dev/key
+    // Direct R2 URL: https://account.r2.cloudflarestorage.com/bucket/key
+    const uploadUrl = isWorkerEndpoint
+      ? `${cleanEndpoint}/${key}`
+      : `${cleanEndpoint}/${R2_BUCKET_NAME}/${key}`;
+
     console.log(`📤 Upload URL: ${uploadUrl}`);
+    console.log(`📤 Using ${isWorkerEndpoint ? "Worker" : "Direct R2"} endpoint`);
 
     // Use FileSystem.uploadAsync for direct file upload
-    console.log(`📤 Uploading to R2: ${key}`);
+    console.log(`📤 Uploading ${mediaType}: ${key}`);
 
     const response = await FileSystem.uploadAsync(uploadUrl, fileUri, {
       httpMethod: "PUT",
