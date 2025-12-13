@@ -30,7 +30,7 @@ export default function QRCodeScreen() {
   }
 
   // Production URL that guests will scan - uses dedicated upload subdomain
-  const uploadUrl = `https://upload.mywedsync.com/${wedding.qrCode}`;
+  const uploadUrl = `https://upload.mywedsync.com/${wedding.qrCode}?couple=${encodeURIComponent(wedding.coupleName)}`;
 
   const handleShare = async () => {
     try {
@@ -66,10 +66,10 @@ export default function QRCodeScreen() {
           </View>
 
           <Text className="text-neutral-300 text-xl font-semibold mt-8 mb-2 text-center">
-            {wedding.coupleName}
+            {wedding.coupleName} Wedding
           </Text>
           <Text className="text-neutral-500 text-sm text-center px-8">
-            Guests can scan this QR code to upload photos from their phones
+            Guests can scan this QR code to upload photos and videos
           </Text>
         </View>
 
