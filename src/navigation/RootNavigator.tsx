@@ -27,6 +27,7 @@ import TimeTrackingScreen from "../screens/TimeTrackingScreen";
 import AdminCalendarScreen from "../screens/AdminCalendarScreen";
 import EmailAutomationScreen from "../screens/EmailAutomationScreen";
 import InvoiceDetailScreen from "../screens/InvoiceDetailScreen";
+import PhotographerUploadScreen from "../screens/PhotographerUploadScreen";
 
 export type RootStackParamList = {
   MainTabs: undefined;
@@ -41,6 +42,7 @@ export type RootStackParamList = {
   SeatingChart: { weddingId: string };
   PhotoGallery: { weddingId: string };
   QRCode: { weddingId: string };
+  PhotographerUpload: { weddingId: string };
   CreateWedding: undefined;
   AddGuest: { weddingId: string };
   AddTask: { weddingId: string };
@@ -118,6 +120,7 @@ export default function RootNavigator() {
       <Stack.Screen name="SeatingChart" component={SeatingChartScreen} />
       <Stack.Screen name="PhotoGallery" component={PhotoGalleryScreen} />
       <Stack.Screen name="QRCode" component={QRCodeScreen} />
+      <Stack.Screen name="PhotographerUpload" component={PhotographerUploadScreen} />
 
       {/* Admin Screens */}
       <Stack.Screen name="Invoices" component={InvoicesScreen} />

@@ -72,6 +72,8 @@ export default function WeddingDetailScreen() {
       title: "Photo Gallery",
       icon: "images" as const,
       screen: "PhotoGallery" as const,
+      addScreen: "PhotographerUpload" as const,
+      addIcon: "camera" as const,
     },
     {
       title: "QR Code",
