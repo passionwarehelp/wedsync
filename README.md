@@ -50,15 +50,19 @@ WedSync is designed for **wedding professionals** (planners, videographers, phot
 - **Unique QR Codes** - Auto-generated for each wedding
 
 ### Photo Management ✅
-- **Photographer Upload** - Upload multiple photos from device library
+- **Photographer Upload** - Upload multiple photos and videos from device library
 - **Photo Gallery** - Beautiful grid view with 3-column layout
+- **Video Support** - Full video upload and playback with expo-video
 - **Favorites System** - Mark and filter favorite photos
-- **Full-Screen View** - Tap any photo for detailed view
+- **Media Filters** - Filter by All/Photos/Videos/Favorites
+- **Full-Screen View** - Tap any photo or video for detailed view
 - **Upload Metadata** - Track who uploaded and when
-- **QR Code Integration** - Ready for guest photo uploads
-- **Local Storage** - Photos cached locally (R2 cloud storage ready)
-- **Batch Upload** - Select and upload multiple photos at once
-- **Progress Tracking** - Visual upload progress indicator
+- **QR Code Integration** - Unique QR codes per wedding for guest uploads
+- **Guest Upload Portal** - Beautiful guest-facing upload page with R2 cloud storage
+- **Progress Tracking** - Visual upload progress with percentage and count
+- **Cloudflare R2 Storage** - Photos and videos stored in cloud via Worker
+- **Batch Upload** - Select and upload multiple photos/videos at once
+- **Media Type Detection** - Automatic detection of photos vs videos
 
 ## 🎨 Design Excellence
 
@@ -94,13 +98,13 @@ src/
 │   ├── AddGuestScreen.tsx          ✅ Black Theme
 │   ├── TasksScreen.tsx             ✅ Black Theme
 │   ├── CreateWeddingScreen.tsx     ✅ Black Theme
-│   ├── PhotoGalleryScreen.tsx      ✅ Black Theme
-│   ├── PhotographerUploadScreen.tsx ✅ Black Theme
-│   ├── QRCodeScreen.tsx            ✅ Black Theme
+│   ├── PhotoGalleryScreen.tsx      ✅ Black Theme + Videos
+│   ├── PhotographerUploadScreen.tsx ✅ Black Theme + Videos
+│   ├── QRCodeScreen.tsx            ✅ Black Theme + Production URL
+│   ├── GuestUploadScreen.tsx       ✅ Black Theme + R2 Upload + Videos
 │   ├── TimelineScreen.tsx          🚧 To be styled
 │   ├── VendorsScreen.tsx           🚧 To be styled
-│   ├── SeatingChartScreen.tsx      🚧 To be styled
-│   └── GuestUploadScreen.tsx       🚧 To be styled
+│   └── SeatingChartScreen.tsx      🚧 To be styled
 ├── navigation/       # Navigation configuration
 ├── state/           # Zustand stores
 │   ├── weddingStore.ts  ✅ Complete
@@ -142,6 +146,12 @@ The app is running in the Vibecode environment. Simply:
 ## 📱 What's New
 
 ### Latest Updates
+- ✅ **Full QR Code System** - Unique codes per wedding with production URL
+- ✅ **Guest Upload Portal** - Beautiful upload page with R2 cloud storage
+- ✅ **Video Support** - Full video upload and playback throughout app
+- ✅ **Upload Progress** - Real-time progress bars with percentage and count
+- ✅ **Cloudflare Worker Integration** - Seamless R2 uploads via authenticated Worker
+- ✅ **Media Type Detection** - Automatic photo vs video classification
 - ✅ **Full Black Theme** - Luxurious dark design throughout
 - ✅ **Splash Screen** - Gold heart logo on black background
 - ✅ **Fixed Calendar** - Dark theme picker, no more white-on-white
@@ -154,48 +164,54 @@ The app is running in the Vibecode environment. Simply:
 1. Complete Timeline view with black theme
 2. Implement Vendor tracking with dark styling
 3. Build Seating Chart with black theme
-4. Complete Guest upload portal (QR code flow)
-5. Connect Cloudflare R2 for production photo storage
-6. Add more animations and haptics
-7. Implement client portal view
+4. Add more animations and haptics
+5. Implement client portal view
+6. Add photo/video download functionality
+7. Implement guest name capture on upload
 
 ---
 
-## 📸 Photo Upload System
+## 📸 Photo & Video Upload System
 
 ### Current Implementation
-- **Local Storage**: Photos are cached in the app's file system
-- **Prefix Organization**: Uses `wedding_<id>/photos/` structure
-- **Ready for Cloud**: Built to easily integrate with Cloudflare R2
+- **Cloud Storage**: Photos and videos uploaded to Cloudflare R2 via authenticated Worker
+- **Guest Uploads**: QR code system with unique codes per wedding
+- **Photographer Uploads**: Professional upload interface with batch support
+- **Media Organization**: Organized by `wedding_<id>/photos/` and `wedding_<id>/videos/`
+- **Progress Tracking**: Real-time upload progress with percentage
+- **Video Support**: Full video upload and playback with expo-video
 
-### To Enable Cloudflare R2 (Production)
+### Cloudflare R2 Setup (Production)
 
-1. **Complete Cloudflare Setup** (from earlier steps):
-   - Create R2 bucket named `wedsync-media`
-   - Connect custom domain `media.mywedsync.com`
-   - Configure CORS policy
-   - Generate API tokens
+**Status: ✅ Complete and Working**
 
-2. **Add Environment Variables** in Vibecode ENV tab:
+1. **Cloudflare Configuration**:
+   - R2 bucket: `wedsync-media`
+   - Custom domain: `media.mywedsync.com`
+   - CORS configured for web uploads
+   - API tokens generated
+
+2. **Environment Variables** (in Vibecode ENV tab):
    ```
-   R2_ACCESS_KEY_ID=<your_access_key>
-   R2_SECRET_ACCESS_KEY=<your_secret_key>
-   R2_ENDPOINT=https://<account_id>.r2.cloudflarestorage.com
-   R2_BUCKET_NAME=wedsync-media
+   R2_ENDPOINT=https://wedsync-upload.passionwarehelp.workers.dev
    R2_PUBLIC_URL=https://media.mywedsync.com
+   R2_BUCKET_NAME=wedsync-media
    ```
 
-3. **Backend API Required** (future):
-   - Generate presigned upload URLs
-   - Validate uploads
-   - Store photo metadata in database
+3. **Cloudflare Worker**:
+   - URL: `https://wedsync-upload.passionwarehelp.workers.dev`
+   - Handles authenticated uploads to R2
+   - Bound to WEDSYNC_BUCKET
+   - CORS enabled for app uploads
 
 ### How It Works Now
-- Photographer selects photos from device library
-- Photos are copied to local cache directory
-- Organized by wedding ID automatically
+- Photographers and guests select photos/videos from device
+- Media automatically uploads to R2 via Worker
+- Organized by wedding ID and media type
+- Public URLs generated for viewing
 - Photo metadata stored in Zustand
-- Ready to switch to R2 when backend is available
+- Video playback with expo-video
+- Progress tracking during upload
 
 ---
 

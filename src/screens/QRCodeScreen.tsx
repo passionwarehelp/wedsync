@@ -29,9 +29,8 @@ export default function QRCodeScreen() {
     );
   }
 
-  // Sandbox URL for testing (will be replaced with Cloudflare production URL)
-  // For now, this points to a test environment that simulates guest uploads
-  const uploadUrl = `https://wedsync-sandbox.pages.dev/upload/${wedding.qrCode}`;
+  // Production URL that guests will scan
+  const uploadUrl = `https://mywedsync.com/upload/${wedding.qrCode}`;
 
   const handleShare = async () => {
     try {

@@ -5,54 +5,95 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/RootNavigator";
 import useWeddingStore from "../state/weddingStore";
+import usePhotoStore from "../state/photoStore";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
+import { uploadMediaBatch, isVideoFile, MediaType } from "../api/r2-upload";
 
 type GuestUploadRouteProp = RouteProp<RootStackParamList, "GuestUpload">;
+
+interface UploadedMedia {
+  uri: string;
+  thumbnailUri?: string;
+  mediaType: MediaType;
+}
 
 export default function GuestUploadScreen() {
   const route = useRoute<GuestUploadRouteProp>();
   const { qrCode } = route.params;
 
   const wedding = useWeddingStore((s) => s.weddings.find((w) => w.qrCode === qrCode));
-  const addPhoto = useWeddingStore((s) => s.addPhoto);
+  const addPhoto = usePhotoStore((s) => s.addPhoto);
 
-  const [uploadedPhotos, setUploadedPhotos] = useState<string[]>([]);
+  const [uploadedMedia, setUploadedMedia] = useState<UploadedMedia[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({ completed: 0, total: 0 });
 
-  const pickImage = async () => {
+  const pickMedia = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permission Denied", "We need access to your photos to upload them.");
+      Alert.alert("Permission Denied", "We need access to your photos and videos to upload them.");
       return;
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
+      mediaTypes: ["images", "videos"],
       allowsMultipleSelection: true,
       quality: 0.8,
+      videoMaxDuration: 60,
     });
 
     if (!result.canceled && wedding) {
       setUploading(true);
-      const newPhotos: string[] = [];
+      setUploadProgress({ completed: 0, total: result.assets.length });
 
-      for (const asset of result.assets) {
-        const photo = {
-          id: Date.now().toString() + Math.random(),
-          weddingId: wedding.id,
-          uri: asset.uri,
-          uploadedBy: "guest" as const,
-          uploadedAt: new Date().toISOString(),
-          isFavorite: false,
-          isApproved: false,
-        };
-        addPhoto(photo);
-        newPhotos.push(asset.uri);
+      try {
+        // Upload media to R2 via Worker
+        const uploadResults = await uploadMediaBatch(
+          wedding.id,
+          result.assets.map((asset) => ({
+            uri: asset.uri,
+            mediaType: isVideoFile(asset.uri, asset.type) ? "video" : "photo",
+          })),
+          (completed, total) => {
+            setUploadProgress({ completed, total });
+          }
+        );
+
+        // Add successful uploads to photo store and local state
+        const newMedia: UploadedMedia[] = [];
+        for (let i = 0; i < uploadResults.length; i++) {
+          const uploadResult = uploadResults[i];
+          if (uploadResult.success && uploadResult.publicUrl) {
+            const asset = result.assets[i];
+            const photo = {
+              id: Date.now().toString() + Math.random(),
+              weddingId: wedding.id,
+              uri: uploadResult.publicUrl,
+              thumbnailUri: asset.uri,
+              mediaType: uploadResult.mediaType || "photo",
+              uploadedBy: "guest" as const,
+              uploadedAt: new Date().toISOString(),
+              isFavorite: false,
+              isApproved: false,
+            };
+            addPhoto(photo);
+            newMedia.push({
+              uri: asset.uri,
+              thumbnailUri: asset.uri,
+              mediaType: uploadResult.mediaType || "photo",
+            });
+          }
+        }
+
+        setUploadedMedia([...uploadedMedia, ...newMedia]);
+      } catch (error) {
+        console.error("Upload error:", error);
+        Alert.alert("Upload Failed", "There was an error uploading your media. Please try again.");
+      } finally {
+        setUploading(false);
+        setUploadProgress({ completed: 0, total: 0 });
       }
-
-      setUploadedPhotos([...uploadedPhotos, ...newPhotos]);
-      setUploading(false);
     }
   };
 
@@ -70,18 +111,44 @@ export default function GuestUploadScreen() {
 
     if (!result.canceled && wedding) {
       setUploading(true);
-      const photo = {
-        id: Date.now().toString(),
-        weddingId: wedding.id,
-        uri: result.assets[0].uri,
-        uploadedBy: "guest" as const,
-        uploadedAt: new Date().toISOString(),
-        isFavorite: false,
-        isApproved: false,
-      };
-      addPhoto(photo);
-      setUploadedPhotos([...uploadedPhotos, result.assets[0].uri]);
-      setUploading(false);
+      setUploadProgress({ completed: 0, total: 1 });
+
+      try {
+        const asset = result.assets[0];
+        // Upload to R2 via Worker
+        const uploadResults = await uploadMediaBatch(
+          wedding.id,
+          [{ uri: asset.uri, mediaType: "photo" }],
+          (completed, total) => {
+            setUploadProgress({ completed, total });
+          }
+        );
+
+        if (uploadResults[0].success && uploadResults[0].publicUrl) {
+          const photo = {
+            id: Date.now().toString(),
+            weddingId: wedding.id,
+            uri: uploadResults[0].publicUrl,
+            thumbnailUri: asset.uri,
+            mediaType: "photo" as const,
+            uploadedBy: "guest" as const,
+            uploadedAt: new Date().toISOString(),
+            isFavorite: false,
+            isApproved: false,
+          };
+          addPhoto(photo);
+          setUploadedMedia([
+            ...uploadedMedia,
+            { uri: asset.uri, thumbnailUri: asset.uri, mediaType: "photo" },
+          ]);
+        }
+      } catch (error) {
+        console.error("Upload error:", error);
+        Alert.alert("Upload Failed", "There was an error uploading your photo. Please try again.");
+      } finally {
+        setUploading(false);
+        setUploadProgress({ completed: 0, total: 0 });
+      }
     }
   };
 
@@ -126,12 +193,12 @@ export default function GuestUploadScreen() {
           </Pressable>
 
           <Pressable
-            onPress={pickImage}
+            onPress={pickMedia}
             disabled={uploading}
             className="flex-1 bg-neutral-800 rounded-2xl py-4 items-center border border-neutral-700 active:opacity-70"
           >
             <Ionicons name="images-outline" size={28} color="#C9A961" />
-            <Text className="text-neutral-100 text-base font-semibold mt-2">Choose Photos</Text>
+            <Text className="text-neutral-100 text-base font-semibold mt-2">Choose Media</Text>
           </Pressable>
         </View>
       </LinearGradient>
@@ -139,41 +206,79 @@ export default function GuestUploadScreen() {
       <ScrollView className="flex-1 px-5 pt-6" showsVerticalScrollIndicator={false}>
         {uploading && (
           <View className="bg-neutral-900 rounded-2xl p-6 mb-4 border border-neutral-800">
-            <View className="flex-row items-center">
-              <Ionicons name="cloud-upload-outline" size={24} color="#C9A961" />
-              <Text className="text-neutral-100 text-base ml-3 font-medium">Uploading photos...</Text>
+            <View className="flex-row items-center justify-between mb-3">
+              <View className="flex-row items-center flex-1">
+                <Ionicons name="cloud-upload-outline" size={24} color="#C9A961" />
+                <Text className="text-neutral-100 text-base ml-3 font-medium">
+                  Uploading to cloud...
+                </Text>
+              </View>
             </View>
+            {uploadProgress.total > 0 && (
+              <View>
+                <View className="flex-row justify-between mb-2">
+                  <Text className="text-neutral-400 text-sm">
+                    {uploadProgress.completed} of {uploadProgress.total}
+                  </Text>
+                  <Text className="text-neutral-400 text-sm">
+                    {Math.round((uploadProgress.completed / uploadProgress.total) * 100)}%
+                  </Text>
+                </View>
+                <View className="h-2 bg-neutral-800 rounded-full overflow-hidden">
+                  <View
+                    className="h-full bg-[#C9A961]"
+                    style={{
+                      width: `${(uploadProgress.completed / uploadProgress.total) * 100}%`,
+                    }}
+                  />
+                </View>
+              </View>
+            )}
           </View>
         )}
 
-        {uploadedPhotos.length > 0 && (
+        {uploadedMedia.length > 0 && (
           <View className="mb-6">
             <View className="flex-row items-center justify-between mb-4">
               <Text className="text-neutral-100 text-xl font-bold">Your Uploads</Text>
               <View className="bg-emerald-900 px-3 py-1 rounded-full">
-                <Text className="text-emerald-400 text-sm font-medium">{uploadedPhotos.length} photos</Text>
+                <Text className="text-emerald-400 text-sm font-medium">
+                  {uploadedMedia.length} {uploadedMedia.length === 1 ? "item" : "items"}
+                </Text>
               </View>
             </View>
 
             <View className="flex-row flex-wrap">
-              {uploadedPhotos.map((uri, index) => (
+              {uploadedMedia.map((item, index) => (
                 <View key={index} className="w-[31%] aspect-square mr-[3.5%] mb-3 rounded-xl overflow-hidden">
-                  <Image source={{ uri }} className="w-full h-full" resizeMode="cover" />
+                  <Image source={{ uri: item.uri }} className="w-full h-full" resizeMode="cover" />
+                  {item.mediaType === "video" && (
+                    <View className="absolute inset-0 items-center justify-center">
+                      <View className="w-10 h-10 bg-black/60 rounded-full items-center justify-center">
+                        <Ionicons name="play" size={20} color="#FFFFFF" />
+                      </View>
+                    </View>
+                  )}
                   <View className="absolute top-2 right-2 bg-emerald-500 rounded-full p-1">
                     <Ionicons name="checkmark" size={14} color="white" />
                   </View>
+                  {item.mediaType === "video" && (
+                    <View className="absolute bottom-2 left-2 bg-black/60 px-1.5 py-0.5 rounded">
+                      <Text className="text-white text-[10px] font-medium">VIDEO</Text>
+                    </View>
+                  )}
                 </View>
               ))}
             </View>
           </View>
         )}
 
-        {uploadedPhotos.length === 0 && !uploading && (
+        {uploadedMedia.length === 0 && !uploading && (
           <View className="items-center justify-center py-20 px-8">
             <Ionicons name="images-outline" size={64} color="#404040" />
-            <Text className="text-neutral-500 text-lg mt-4 text-center">No photos uploaded yet</Text>
+            <Text className="text-neutral-500 text-lg mt-4 text-center">No media uploaded yet</Text>
             <Text className="text-neutral-600 text-sm mt-2 text-center">
-              Tap the buttons above to add your photos to the wedding gallery
+              Tap the buttons above to add your photos and videos to the wedding gallery
             </Text>
           </View>
         )}
