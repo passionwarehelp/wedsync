@@ -134,33 +134,19 @@ export async function uploadToR2(options: UploadOptions): Promise<UploadResult> 
     console.log(`📤 Reading ${mediaType} file...`);
     console.log(`📤 Upload URL: ${uploadUrl}`);
 
-    // Read the file as base64
-    const base64 = await FileSystem.readAsStringAsync(fileUri, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
+    // Use FileSystem.uploadAsync for direct file upload
+    console.log(`📤 Uploading to R2: ${key}`);
 
-    // Convert to binary using ArrayBuffer
-    const binaryString = atob(base64);
-    const len = binaryString.length;
-    const bytes = new ArrayBuffer(len);
-    const uint8Array = new Uint8Array(bytes);
-    for (let i = 0; i < len; i++) {
-      uint8Array[i] = binaryString.charCodeAt(i);
-    }
-    const blob = new Blob([bytes], { type: contentType });
-
-    console.log(`📤 Uploading to R2: ${key} (${len} bytes)`);
-
-    // Upload using fetch
-    const response = await fetch(uploadUrl, {
-      method: "PUT",
+    const response = await FileSystem.uploadAsync(uploadUrl, fileUri, {
+      httpMethod: "PUT",
+      uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
       headers: {
         "Content-Type": contentType,
       },
-      body: blob,
     });
 
-    if (response.ok) {
+    // FileSystem.uploadAsync returns { status, headers, body }
+    if (response.status >= 200 && response.status < 300) {
       // Construct public URL
       const cleanPublicUrl = R2_PUBLIC_URL.replace(/\/+$/, "");
       const publicUrl = `${cleanPublicUrl}/${key}`;
@@ -174,8 +160,7 @@ export async function uploadToR2(options: UploadOptions): Promise<UploadResult> 
         mediaType,
       };
     } else {
-      const errorText = await response.text();
-      console.error(`❌ R2 upload failed: ${response.status} - ${errorText}`);
+      console.error(`❌ R2 upload failed: ${response.status} - ${response.body}`);
 
       // Fall back to local storage
       console.log("📦 Falling back to local storage...");
