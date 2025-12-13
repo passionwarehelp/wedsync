@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { View, Text, Pressable, ScrollView, Image, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -22,8 +22,15 @@ export default function PhotoGalleryScreen() {
   const { weddingId } = route.params;
 
   const wedding = useWeddingStore((s) => s.weddings.find((w) => w.id === weddingId));
-  const photos = usePhotoStore((s) => s.getPhotosForWedding(weddingId));
+
+  // Get all photos and filter outside selector to avoid infinite loop
+  const allPhotos = usePhotoStore((s) => s.photos);
   const toggleFavorite = usePhotoStore((s) => s.toggleFavorite);
+
+  // Filter photos for this wedding using useMemo
+  const photos = useMemo(() => {
+    return allPhotos.filter((p) => p.weddingId === weddingId);
+  }, [allPhotos, weddingId]);
 
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "favorites">("all");
