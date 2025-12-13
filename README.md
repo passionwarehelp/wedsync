@@ -104,7 +104,8 @@ src/
 │   ├── GuestUploadScreen.tsx       ✅ Black Theme + R2 Upload + Videos
 │   ├── TimelineScreen.tsx          🚧 To be styled
 │   ├── VendorsScreen.tsx           🚧 To be styled
-│   └── SeatingChartScreen.tsx      🚧 To be styled
+│   ├── SeatingChartScreen.tsx      ✅ Black Theme + Drag & Drop
+│   └── AddGuestScreen.tsx          ✅ Black Theme
 ├── navigation/       # Navigation configuration
 ├── state/           # Zustand stores
 │   ├── weddingStore.ts  ✅ Complete
@@ -146,6 +147,8 @@ The app is running in the Vibecode environment. Simply:
 ## 📱 What's New
 
 ### Latest Updates
+- ✅ **Seating Chart with Drag & Drop** - Add tables (round, square, rectangle), drag to position, assign guests
+- ✅ **Add Guest Screen Redesign** - Clean black theme with category/RSVP chips
 - ✅ **Full QR Code System** - Unique codes per wedding with production URL
 - ✅ **Guest Upload Portal** - Beautiful upload page with R2 cloud storage
 - ✅ **Video Support** - Full video upload and playback throughout app

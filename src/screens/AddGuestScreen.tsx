@@ -9,16 +9,29 @@ import {
   Platform,
   Switch,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigator";
 import useWeddingStore from "../state/weddingStore";
-import { Picker } from "@react-native-picker/picker";
+import { LinearGradient } from "expo-linear-gradient";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type AddGuestRouteProp = RouteProp<RootStackParamList, "AddGuest">;
+
+const CATEGORIES = [
+  { label: "Friends", value: "friends", icon: "people" },
+  { label: "Family", value: "family", icon: "heart" },
+  { label: "Bridal Party", value: "bridal-party", icon: "sparkles" },
+  { label: "VIP", value: "vip", icon: "star" },
+  { label: "Other", value: "other", icon: "ellipsis-horizontal" },
+] as const;
+
+const RSVP_OPTIONS = [
+  { label: "Pending", value: "pending", color: "#F59E0B", bg: "bg-amber-900" },
+  { label: "Attending", value: "attending", color: "#10B981", bg: "bg-emerald-900" },
+  { label: "Declined", value: "declined", color: "#EF4444", bg: "bg-red-900" },
+] as const;
 
 export default function AddGuestScreen() {
   const navigation = useNavigation<NavigationProp>();
@@ -27,7 +40,6 @@ export default function AddGuestScreen() {
 
   const addGuest = useWeddingStore((s) => s.addGuest);
   const updateWedding = useWeddingStore((s) => s.updateWedding);
-  // Use individual selector to avoid infinite loops
   const wedding = useWeddingStore((s) => s.weddings.find((w) => w.id === weddingId));
 
   const [name, setName] = useState("");
@@ -58,7 +70,6 @@ export default function AddGuestScreen() {
 
     addGuest(newGuest);
 
-    // Update wedding guest count
     if (wedding) {
       const newGuestCount = wedding.guestCount + (plusOne ? 2 : 1);
       const newRsvpCount =
@@ -73,126 +84,169 @@ export default function AddGuestScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+    <View className="flex-1 bg-black">
       <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === "ios" ? "padding" : "height"}>
-        <View className="px-6 pt-4 pb-4 border-b border-neutral-200">
+        <LinearGradient
+          colors={["#1F1F1F", "#000000"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ paddingTop: 60, paddingBottom: 20, paddingHorizontal: 20 }}
+        >
           <View className="flex-row items-center justify-between">
-            <Pressable onPress={() => navigation.goBack()}>
-              <Ionicons name="close" size={28} color="#374151" />
+            <Pressable onPress={() => navigation.goBack()} className="w-10 h-10 items-center justify-center">
+              <Ionicons name="close" size={28} color="#C9A961" />
             </Pressable>
-            <Text className="text-neutral-800 text-xl font-semibold">Add Guest</Text>
-            <View style={{ width: 28 }} />
+            <Text className="text-neutral-100 text-xl font-semibold">Add Guest</Text>
+            <View className="w-10" />
           </View>
-        </View>
+        </LinearGradient>
 
-        <ScrollView className="flex-1 px-6 pt-6" showsVerticalScrollIndicator={false}>
+        <ScrollView
+          className="flex-1 px-5"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingTop: 20, paddingBottom: 20 }}
+        >
+          {/* Guest Name */}
           <View className="mb-5">
-            <Text className="text-neutral-700 text-sm font-medium mb-2">Guest Name *</Text>
+            <Text className="text-neutral-300 text-sm font-medium mb-2">Guest Name *</Text>
             <TextInput
               value={name}
               onChangeText={setName}
               placeholder="Enter guest name"
-              placeholderTextColor="#9CA3AF"
-              className="bg-neutral-50 rounded-xl px-4 py-4 text-base text-neutral-800 border border-neutral-200"
+              placeholderTextColor="#6B7280"
+              className="bg-neutral-900 rounded-xl px-4 py-4 text-base text-neutral-100 border border-neutral-800"
             />
           </View>
 
+          {/* Email */}
           <View className="mb-5">
-            <Text className="text-neutral-700 text-sm font-medium mb-2">Email</Text>
+            <Text className="text-neutral-300 text-sm font-medium mb-2">Email</Text>
             <TextInput
               value={email}
               onChangeText={setEmail}
               placeholder="guest@email.com"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor="#6B7280"
               keyboardType="email-address"
               autoCapitalize="none"
-              className="bg-neutral-50 rounded-xl px-4 py-4 text-base text-neutral-800 border border-neutral-200"
+              className="bg-neutral-900 rounded-xl px-4 py-4 text-base text-neutral-100 border border-neutral-800"
             />
           </View>
 
+          {/* Phone */}
           <View className="mb-5">
-            <Text className="text-neutral-700 text-sm font-medium mb-2">Phone</Text>
+            <Text className="text-neutral-300 text-sm font-medium mb-2">Phone</Text>
             <TextInput
               value={phone}
               onChangeText={setPhone}
               placeholder="(555) 123-4567"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor="#6B7280"
               keyboardType="phone-pad"
-              className="bg-neutral-50 rounded-xl px-4 py-4 text-base text-neutral-800 border border-neutral-200"
+              className="bg-neutral-900 rounded-xl px-4 py-4 text-base text-neutral-100 border border-neutral-800"
             />
           </View>
 
+          {/* Category */}
           <View className="mb-5">
-            <Text className="text-neutral-700 text-sm font-medium mb-2">Category</Text>
-            <View className="bg-neutral-50 rounded-xl border border-neutral-200 overflow-hidden">
-              <Picker
-                selectedValue={category}
-                onValueChange={(value) => setCategory(value)}
-                style={{ height: 150 }}
-              >
-                <Picker.Item label="Friends" value="friends" />
-                <Picker.Item label="Family" value="family" />
-                <Picker.Item label="Bridal Party" value="bridal-party" />
-                <Picker.Item label="VIP" value="vip" />
-                <Picker.Item label="Other" value="other" />
-              </Picker>
+            <Text className="text-neutral-300 text-sm font-medium mb-3">Category</Text>
+            <View className="flex-row flex-wrap">
+              {CATEGORIES.map((cat) => (
+                <Pressable
+                  key={cat.value}
+                  onPress={() => setCategory(cat.value)}
+                  className={`flex-row items-center px-4 py-2.5 rounded-full mr-2 mb-2 ${
+                    category === cat.value ? "bg-[#C9A961]" : "bg-neutral-900 border border-neutral-800"
+                  }`}
+                >
+                  <Ionicons
+                    name={cat.icon as any}
+                    size={16}
+                    color={category === cat.value ? "#000000" : "#9CA3AF"}
+                  />
+                  <Text
+                    className={`ml-2 font-medium ${
+                      category === cat.value ? "text-black" : "text-neutral-400"
+                    }`}
+                  >
+                    {cat.label}
+                  </Text>
+                </Pressable>
+              ))}
             </View>
           </View>
 
+          {/* RSVP Status */}
           <View className="mb-5">
-            <Text className="text-neutral-700 text-sm font-medium mb-2">RSVP Status</Text>
-            <View className="bg-neutral-50 rounded-xl border border-neutral-200 overflow-hidden">
-              <Picker
-                selectedValue={rsvpStatus}
-                onValueChange={(value) => setRsvpStatus(value)}
-                style={{ height: 150 }}
-              >
-                <Picker.Item label="Pending" value="pending" />
-                <Picker.Item label="Attending" value="attending" />
-                <Picker.Item label="Declined" value="declined" />
-              </Picker>
+            <Text className="text-neutral-300 text-sm font-medium mb-3">RSVP Status</Text>
+            <View className="flex-row">
+              {RSVP_OPTIONS.map((option) => (
+                <Pressable
+                  key={option.value}
+                  onPress={() => setRsvpStatus(option.value)}
+                  className={`flex-1 py-3 rounded-xl items-center mr-2 last:mr-0 ${
+                    rsvpStatus === option.value
+                      ? option.bg + " border-2"
+                      : "bg-neutral-900 border border-neutral-800"
+                  }`}
+                  style={rsvpStatus === option.value ? { borderColor: option.color } : {}}
+                >
+                  <Text
+                    className={`font-semibold ${
+                      rsvpStatus === option.value ? "text-white" : "text-neutral-500"
+                    }`}
+                  >
+                    {option.label}
+                  </Text>
+                </Pressable>
+              ))}
             </View>
           </View>
 
+          {/* Plus One Toggle */}
           <View className="mb-5">
-            <View className="flex-row items-center justify-between bg-neutral-50 rounded-xl px-4 py-4 border border-neutral-200">
-              <View>
-                <Text className="text-neutral-800 text-base font-medium">Plus One</Text>
+            <View className="flex-row items-center justify-between bg-neutral-900 rounded-xl px-4 py-4 border border-neutral-800">
+              <View className="flex-1 mr-4">
+                <Text className="text-neutral-100 text-base font-medium">Plus One</Text>
                 <Text className="text-neutral-500 text-sm mt-1">Allow guest to bring a partner</Text>
               </View>
               <Switch
                 value={plusOne}
                 onValueChange={setPlusOne}
-                trackColor={{ false: "#D1D5DB", true: "#C9A961" }}
+                trackColor={{ false: "#404040", true: "#C9A961" }}
                 thumbColor="#FFFFFF"
               />
             </View>
           </View>
 
+          {/* Plus One Name */}
           {plusOne && (
-            <View className="mb-8">
-              <Text className="text-neutral-700 text-sm font-medium mb-2">Plus One Name</Text>
+            <View className="mb-5">
+              <Text className="text-neutral-300 text-sm font-medium mb-2">Plus One Name</Text>
               <TextInput
                 value={plusOneName}
                 onChangeText={setPlusOneName}
                 placeholder="Enter plus one name (optional)"
-                placeholderTextColor="#9CA3AF"
-                className="bg-neutral-50 rounded-xl px-4 py-4 text-base text-neutral-800 border border-neutral-200"
+                placeholderTextColor="#6B7280"
+                className="bg-neutral-900 rounded-xl px-4 py-4 text-base text-neutral-100 border border-neutral-800"
               />
             </View>
           )}
         </ScrollView>
 
-        <View className="px-6 pb-6 pt-4 border-t border-neutral-200">
+        {/* Add Button */}
+        <View className="px-5 pb-8 pt-4 bg-black border-t border-neutral-900">
           <Pressable
             onPress={handleAdd}
             disabled={!name.trim()}
-            className={`rounded-xl py-4 items-center ${name.trim() ? "bg-[#C9A961]" : "bg-neutral-300"}`}
+            className={`rounded-xl py-4 items-center ${
+              name.trim() ? "bg-[#C9A961] active:opacity-80" : "bg-neutral-800"
+            }`}
           >
-            <Text className="text-white text-lg font-semibold">Add Guest</Text>
+            <Text className={`text-lg font-semibold ${name.trim() ? "text-black" : "text-neutral-600"}`}>
+              Add Guest
+            </Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
