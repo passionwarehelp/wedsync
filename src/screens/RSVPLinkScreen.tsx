@@ -19,8 +19,13 @@ export default function RSVPLinkScreen() {
   const { weddingId } = route.params;
   const insets = useSafeAreaInsets();
 
-  const wedding = useWeddingStore((s) => s.weddings.find((w) => w.id === weddingId));
-  const guests = useWeddingStore((s) => s.guests.filter((g) => g.weddingId === weddingId));
+  // Use individual selectors to avoid infinite loops
+  const weddings = useWeddingStore((s) => s.weddings);
+  const allGuests = useWeddingStore((s) => s.guests);
+
+  // Filter outside selector
+  const wedding = weddings.find((w) => w.id === weddingId);
+  const guests = allGuests.filter((g) => g.weddingId === weddingId);
 
   if (!wedding) {
     return (
