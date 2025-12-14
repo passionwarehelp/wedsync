@@ -11,14 +11,11 @@ import AdminDashboardScreen from "../screens/AdminDashboardScreen";
 import WeddingDetailScreen from "../screens/WeddingDetailScreen";
 import GuestListScreen from "../screens/GuestListScreen";
 import TasksScreen from "../screens/TasksScreen";
-import TimelineScreen from "../screens/TimelineScreen";
-import VendorsScreen from "../screens/VendorsScreen";
 import SeatingChartScreen from "../screens/SeatingChartScreen";
 import PhotoGalleryScreen from "../screens/PhotoGalleryScreen";
 import CreateWeddingScreen from "../screens/CreateWeddingScreen";
 import AddGuestScreen from "../screens/AddGuestScreen";
 import AddTaskScreen from "../screens/AddTaskScreen";
-import AddVendorScreen from "../screens/AddVendorScreen";
 import GuestUploadScreen from "../screens/GuestUploadScreen";
 import QRCodeScreen from "../screens/QRCodeScreen";
 import InvoicesScreen from "../screens/InvoicesScreen";
@@ -37,8 +34,6 @@ export type RootStackParamList = {
   WeddingDetail: { weddingId: string };
   GuestList: { weddingId: string };
   Tasks: { weddingId: string };
-  Timeline: { weddingId: string };
-  Vendors: { weddingId: string };
   SeatingChart: { weddingId: string };
   PhotoGallery: { weddingId: string };
   QRCode: { weddingId: string };
@@ -46,8 +41,6 @@ export type RootStackParamList = {
   CreateWedding: undefined;
   AddGuest: { weddingId: string };
   AddTask: { weddingId: string };
-  AddVendor: { weddingId: string };
-  AddTimelineEvent: { weddingId: string };
   GuestUpload: { qrCode: string };
   Invoices: undefined;
   InvoiceDetail: { invoiceId: string };
@@ -115,8 +108,6 @@ export default function RootNavigator() {
       <Stack.Screen name="WeddingDetail" component={WeddingDetailScreen} />
       <Stack.Screen name="GuestList" component={GuestListScreen} />
       <Stack.Screen name="Tasks" component={TasksScreen} />
-      <Stack.Screen name="Timeline" component={TimelineScreen} />
-      <Stack.Screen name="Vendors" component={VendorsScreen} />
       <Stack.Screen name="SeatingChart" component={SeatingChartScreen} />
       <Stack.Screen name="PhotoGallery" component={PhotoGalleryScreen} />
       <Stack.Screen name="QRCode" component={QRCodeScreen} />
@@ -145,11 +136,6 @@ export default function RootNavigator() {
         name="AddTask"
         component={AddTaskScreen}
         options={{ presentation: "formSheet", sheetAllowedDetents: [0.75] }}
-      />
-      <Stack.Screen
-        name="AddVendor"
-        component={AddVendorScreen}
-        options={{ presentation: "formSheet", sheetAllowedDetents: [0.85] }}
       />
 
       {/* Guest Upload Portal */}

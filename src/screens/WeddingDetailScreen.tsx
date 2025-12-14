@@ -50,20 +50,6 @@ export default function WeddingDetailScreen() {
       total: wedding.totalTasks,
     },
     {
-      title: "Timeline",
-      icon: "time" as const,
-      screen: "Timeline" as const,
-      addScreen: "AddTimelineEvent" as const,
-      addIcon: "calendar" as const,
-    },
-    {
-      title: "Vendors",
-      icon: "briefcase" as const,
-      screen: "Vendors" as const,
-      addScreen: "AddVendor" as const,
-      addIcon: "add" as const,
-    },
-    {
       title: "Seating Chart",
       icon: "grid" as const,
       screen: "SeatingChart" as const,
