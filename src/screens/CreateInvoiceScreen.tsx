@@ -14,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigator";
 import { LinearGradient } from "expo-linear-gradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useBusinessStore from "../state/businessStore";
 import { Client, InvoiceItem, Service, PaymentMethodType } from "../types/business";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -33,6 +34,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function CreateInvoiceScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const insets = useSafeAreaInsets();
 
   const clients = useBusinessStore((s) => s.clients);
   const services = useBusinessStore((s) => s.services);
@@ -196,15 +198,12 @@ export default function CreateInvoiceScreen() {
         style={{ paddingTop: 60, paddingBottom: 20, paddingHorizontal: 20 }}
       >
         <View className="flex-row items-center justify-between">
-          <Pressable onPress={() => navigation.goBack()}>
-            <Text className="text-neutral-400 text-base">Cancel</Text>
+          <Pressable onPress={() => navigation.goBack()} className="flex-row items-center">
+            <Ionicons name="chevron-back" size={24} color="#9CA3AF" />
+            <Text className="text-neutral-400 text-base ml-1">Cancel</Text>
           </Pressable>
           <Text className="text-neutral-100 text-lg font-bold">New Invoice</Text>
-          <Pressable onPress={handleCreateInvoice} disabled={!canCreate}>
-            <Text className={`text-base font-semibold ${canCreate ? "text-[#F5B800]" : "text-neutral-600"}`}>
-              Create
-            </Text>
-          </Pressable>
+          <View style={{ width: 70 }} />
         </View>
       </LinearGradient>
 
@@ -418,7 +417,34 @@ export default function CreateInvoiceScreen() {
           </View>
         )}
 
-        <View className="h-12" />
+        {/* Create Invoice Button */}
+        <View className="mt-8 mb-8">
+          <Pressable
+            onPress={handleCreateInvoice}
+            disabled={!canCreate}
+            className={`rounded-2xl p-5 items-center flex-row justify-center ${
+              canCreate ? "bg-[#F5B800]" : "bg-neutral-800"
+            }`}
+          >
+            <Ionicons
+              name="checkmark-circle"
+              size={24}
+              color={canCreate ? "#000" : "#666"}
+            />
+            <Text
+              className={`text-lg font-bold ml-2 ${
+                canCreate ? "text-black" : "text-neutral-600"
+              }`}
+            >
+              Create Invoice
+            </Text>
+          </Pressable>
+          {!canCreate && (
+            <Text className="text-neutral-600 text-center text-sm mt-3">
+              {!selectedClient ? "Select a client to continue" : "Add at least one item"}
+            </Text>
+          )}
+        </View>
       </ScrollView>
 
       {/* Client Selection Modal */}
