@@ -28,6 +28,7 @@ import InvoiceDetailScreen from "../screens/InvoiceDetailScreen";
 import PhotographerUploadScreen from "../screens/PhotographerUploadScreen";
 import CoupleCalendarScreen from "../screens/CoupleCalendarScreen";
 import CoupleNotesScreen from "../screens/CoupleNotesScreen";
+import QRCodeDesignScreen from "../screens/QRCodeDesignScreen";
 
 export type RootStackParamList = {
   Auth: undefined;
@@ -41,6 +42,7 @@ export type RootStackParamList = {
   SeatingChart: { weddingId: string };
   PhotoGallery: { weddingId: string };
   QRCode: { weddingId: string };
+  QRCodeDesign: { weddingId: string };
   PhotographerUpload: { weddingId: string };
   CreateWedding: undefined;
   AddGuest: { weddingId: string };
@@ -181,6 +183,7 @@ export default function RootNavigator() {
           {/* Couple Screens */}
           <Stack.Screen name="CoupleCalendar" component={CoupleCalendarScreen} />
           <Stack.Screen name="CoupleNotes" component={CoupleNotesScreen} />
+          <Stack.Screen name="QRCodeDesign" component={QRCodeDesignScreen} />
 
           {/* Modals */}
           <Stack.Screen
