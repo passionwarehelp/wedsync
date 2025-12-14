@@ -168,15 +168,6 @@ export default function WeddingDetailScreen() {
             </View>
           </View>
 
-          {/* Upload Photos Button */}
-          <Pressable
-            onPress={() => navigation.navigate("PhotographerUpload", { weddingId })}
-            className="bg-[#F5B800] rounded-2xl p-5 flex-row items-center justify-center mb-3 active:opacity-70"
-          >
-            <Ionicons name="camera" size={24} color="#000000" />
-            <Text className="text-black text-lg font-semibold ml-3">Upload Photos</Text>
-          </Pressable>
-
           {/* View Gallery Button */}
           <Pressable
             onPress={() => navigation.navigate("PhotoGallery", { weddingId })}
