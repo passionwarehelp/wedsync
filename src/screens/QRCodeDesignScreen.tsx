@@ -124,8 +124,11 @@ function QRCodeDesignContent({ weddingId }: { weddingId: string }) {
   const [selectedTemplate, setSelectedTemplate] = useState<DesignTemplate>(DESIGN_TEMPLATES[0]);
   const [isSaving, setIsSaving] = useState(false);
 
-  const qrValue = wedding?.qrCode || `WEDDING-${weddingId}`;
   const coupleName = wedding?.coupleName || "Our Wedding";
+  // Use full upload URL so guests can scan and upload photos
+  const qrValue = wedding?.qrCode
+    ? `https://upload.mywedsync.com/${wedding.qrCode}?couple=${encodeURIComponent(coupleName)}`
+    : `https://upload.mywedsync.com/WEDDING-${weddingId}`;
   const weddingDate = wedding?.weddingDate
     ? format(new Date(wedding.weddingDate), "MMMM d, yyyy")
     : "";
