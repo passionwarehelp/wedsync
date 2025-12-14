@@ -43,6 +43,8 @@ export default function CreateWeddingScreen() {
       createdBy: userId,
       qrCode: `WS-${Date.now()}`,
       qrCodeEnabled,
+      photoAlbumLive: false,
+      photoFrameEnabled: false,
       guestCount: 0,
       rsvpCount: 0,
       tasksCompleted: 0,

@@ -102,6 +102,8 @@ export default function ClientDashboardScreen() {
       createdBy: user.id,
       qrCode: `WS-${Date.now()}`,
       qrCodeEnabled: true,
+      photoAlbumLive: true,
+      photoFrameEnabled: false,
       guestCount: 0,
       rsvpCount: 0,
       tasksCompleted: 0,
