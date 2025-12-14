@@ -1,82 +1,82 @@
-import React, { useState } from "react";
-import { View, Text, Pressable, ScrollView, TextInput } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import React, { useState, useMemo } from "react";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigator";
-import useAdminStore from "../state/adminStore";
-import { Invoice } from "../types/wedding";
-import { format } from "date-fns";
+import useBusinessStore from "../state/businessStore";
+import { InvoiceStatus } from "../types/business";
 import { LinearGradient } from "expo-linear-gradient";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
+const getStatusColor = (status: InvoiceStatus) => {
+  switch (status) {
+    case "paid":
+      return { bg: "bg-emerald-900/30", text: "text-emerald-400", border: "border-emerald-900" };
+    case "sent":
+      return { bg: "bg-blue-900/30", text: "text-blue-400", border: "border-blue-900" };
+    case "viewed":
+      return { bg: "bg-purple-900/30", text: "text-purple-400", border: "border-purple-900" };
+    case "overdue":
+      return { bg: "bg-red-900/30", text: "text-red-400", border: "border-red-900" };
+    case "draft":
+      return { bg: "bg-neutral-800", text: "text-neutral-400", border: "border-neutral-700" };
+    case "cancelled":
+      return { bg: "bg-neutral-800", text: "text-neutral-500", border: "border-neutral-700" };
+  }
+};
+
 export default function InvoicesScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const invoices = useAdminStore((s) => s.invoices);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState<"all" | Invoice["status"]>("all");
 
-  const filteredInvoices = invoices.filter((invoice) => {
-    const matchesSearch =
-      invoice.clientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      invoice.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = filterStatus === "all" || invoice.status === filterStatus;
-    return matchesSearch && matchesFilter;
-  });
+  const allInvoices = useBusinessStore((s) => s.invoices);
+  const getTotalOwed = useBusinessStore((s) => s.getTotalOwed);
+  const getTotalPaid = useBusinessStore((s) => s.getTotalPaid);
 
-  const getStatusColor = (status: Invoice["status"]) => {
-    switch (status) {
-      case "paid":
-        return "text-emerald-400";
-      case "sent":
-        return "text-blue-400";
-      case "overdue":
-        return "text-red-400";
-      case "draft":
-        return "text-neutral-500";
-      case "cancelled":
-        return "text-neutral-600";
-      default:
-        return "text-neutral-400";
-    }
-  };
+  const [selectedFilter, setSelectedFilter] = useState<"all" | InvoiceStatus>("all");
 
-  const getStatusBg = (status: Invoice["status"]) => {
-    switch (status) {
-      case "paid":
-        return "bg-emerald-900/30";
-      case "sent":
-        return "bg-blue-900/30";
-      case "overdue":
-        return "bg-red-900/30";
-      case "draft":
-        return "bg-neutral-800/30";
-      case "cancelled":
-        return "bg-neutral-700/30";
-      default:
-        return "bg-neutral-800/30";
-    }
-  };
+  // Calculate overdue status
+  const invoicesWithOverdue = useMemo(() => {
+    const now = new Date();
+    return allInvoices.map((invoice) => {
+      const isOverdue =
+        invoice.status !== "paid" &&
+        invoice.status !== "cancelled" &&
+        invoice.dueDate &&
+        new Date(invoice.dueDate) < now;
+      return {
+        ...invoice,
+        status: isOverdue ? ("overdue" as InvoiceStatus) : invoice.status,
+      };
+    });
+  }, [allInvoices]);
 
-  const createNewInvoice = () => {
-    // Create a new draft invoice
-    const newInvoice: Invoice = {
-      id: Date.now().toString(),
-      invoiceNumber: `INV-${Date.now().toString().slice(-6)}`,
-      invoiceDate: new Date().toISOString(),
-      dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-      clientName: "",
-      items: [],
-      subtotal: 0,
-      tax: 0,
-      total: 0,
-      status: "draft",
+  const filteredInvoices = useMemo(() => {
+    if (selectedFilter === "all") return invoicesWithOverdue;
+    return invoicesWithOverdue.filter((i) => i.status === selectedFilter);
+  }, [invoicesWithOverdue, selectedFilter]);
+
+  const stats = useMemo(() => {
+    return {
+      total: invoicesWithOverdue.length,
+      draft: invoicesWithOverdue.filter((i) => i.status === "draft").length,
+      sent: invoicesWithOverdue.filter((i) => i.status === "sent" || i.status === "viewed").length,
+      paid: invoicesWithOverdue.filter((i) => i.status === "paid").length,
+      overdue: invoicesWithOverdue.filter((i) => i.status === "overdue").length,
     };
-    useAdminStore.getState().addInvoice(newInvoice);
-    navigation.navigate("InvoiceDetail" as any, { invoiceId: newInvoice.id });
-  };
+  }, [invoicesWithOverdue]);
+
+  const totalOwed = getTotalOwed();
+  const totalPaid = getTotalPaid();
+
+  const filters: Array<{ key: "all" | InvoiceStatus; label: string; count: number }> = [
+    { key: "all", label: "All", count: stats.total },
+    { key: "draft", label: "Draft", count: stats.draft },
+    { key: "sent", label: "Sent", count: stats.sent },
+    { key: "paid", label: "Paid", count: stats.paid },
+    { key: "overdue", label: "Overdue", count: stats.overdue },
+  ];
 
   return (
     <View className="flex-1 bg-black">
@@ -84,104 +84,163 @@ export default function InvoicesScreen() {
         colors={["#1F1F1F", "#000000"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={{ paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20 }}
+        style={{ paddingTop: 60, paddingBottom: 20, paddingHorizontal: 20 }}
       >
-        <Pressable onPress={() => navigation.goBack()} className="mb-6">
+        <Pressable onPress={() => navigation.goBack()} className="mb-4">
           <Ionicons name="arrow-back" size={24} color="#F5B800" />
         </Pressable>
 
         <View className="flex-row items-center justify-between mb-6">
           <View>
             <Text className="text-[#F5B800] text-3xl font-bold">Invoices</Text>
-            <Text className="text-neutral-400 text-base mt-1">{filteredInvoices.length} total</Text>
+            <Text className="text-neutral-500 text-sm mt-1">
+              {stats.total} {stats.total === 1 ? "invoice" : "invoices"}
+            </Text>
           </View>
           <Pressable
-            onPress={createNewInvoice}
-            className="w-12 h-12 bg-[#F5B800] rounded-full items-center justify-center active:opacity-70"
+            onPress={() => navigation.navigate("CreateInvoice" as any)}
+            className="bg-[#F5B800] rounded-full w-12 h-12 items-center justify-center"
           >
             <Ionicons name="add" size={28} color="#000000" />
           </Pressable>
         </View>
 
-        {/* Search */}
-        <View className="bg-neutral-900 rounded-2xl p-4 flex-row items-center border border-neutral-800">
-          <Ionicons name="search" size={20} color="#666666" />
-          <TextInput
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Search invoices..."
-            placeholderTextColor="#666666"
-            className="flex-1 text-neutral-100 ml-3 text-base"
-          />
+        {/* Stats Cards */}
+        <View className="flex-row gap-3 mb-4">
+          <View className="flex-1 bg-neutral-900 rounded-2xl p-4 border border-neutral-800">
+            <Text className="text-neutral-400 text-xs mb-1">Outstanding</Text>
+            <Text className="text-[#F5B800] text-2xl font-bold">${totalOwed.toFixed(0)}</Text>
+            {stats.overdue > 0 && (
+              <Text className="text-red-400 text-xs mt-1">{stats.overdue} overdue</Text>
+            )}
+          </View>
+          <View className="flex-1 bg-neutral-900 rounded-2xl p-4 border border-neutral-800">
+            <Text className="text-neutral-400 text-xs mb-1">Collected</Text>
+            <Text className="text-emerald-400 text-2xl font-bold">${totalPaid.toFixed(0)}</Text>
+            <Text className="text-neutral-500 text-xs mt-1">{stats.paid} paid</Text>
+          </View>
         </View>
-      </LinearGradient>
 
-      {/* Status Filter */}
-      <View className="px-5 py-4">
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View className="flex-row">
-            {(["all", "draft", "sent", "paid", "overdue", "cancelled"] as const).map((status, index, array) => (
-              <Pressable
-                key={status}
-                onPress={() => setFilterStatus(status)}
-                className={`px-3 py-1 rounded-full${index < array.length - 1 ? " mr-2" : ""} ${
-                  filterStatus === status ? "bg-[#F5B800]" : "bg-neutral-800 border border-neutral-700"
+        {/* Filter Tabs */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="flex-row"
+          contentContainerStyle={{ gap: 8 }}
+        >
+          {filters.map((filter) => (
+            <Pressable
+              key={filter.key}
+              onPress={() => setSelectedFilter(filter.key)}
+              className={`px-4 py-2 rounded-full flex-row items-center ${
+                selectedFilter === filter.key
+                  ? "bg-[#F5B800]"
+                  : "bg-neutral-800 border border-neutral-700"
+              }`}
+            >
+              <Text
+                className={`font-medium ${
+                  selectedFilter === filter.key ? "text-black" : "text-neutral-300"
                 }`}
               >
-                <Text
-                  className={`text-xs font-semibold capitalize ${
-                    filterStatus === status ? "text-black" : "text-neutral-300"
+                {filter.label}
+              </Text>
+              {filter.count > 0 && (
+                <View
+                  className={`ml-2 px-2 py-0.5 rounded-full ${
+                    selectedFilter === filter.key ? "bg-black/20" : "bg-neutral-700"
                   }`}
                 >
-                  {status}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
+                  <Text
+                    className={`text-xs font-semibold ${
+                      selectedFilter === filter.key ? "text-black" : "text-neutral-400"
+                    }`}
+                  >
+                    {filter.count}
+                  </Text>
+                </View>
+              )}
+            </Pressable>
+          ))}
         </ScrollView>
-      </View>
+      </LinearGradient>
 
-      <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
-        <View className="pb-8">
-          {filteredInvoices.length === 0 ? (
-            <View className="items-center justify-center py-20">
-              <Ionicons name="receipt-outline" size={64} color="#404040" />
-              <Text className="text-neutral-500 text-lg mt-4">No invoices found</Text>
-              <Text className="text-neutral-600 text-sm mt-2 text-center px-8">
-                {searchQuery ? "Try adjusting your search" : "Create your first invoice to get started"}
-              </Text>
+      <ScrollView className="flex-1 px-5 pt-4" showsVerticalScrollIndicator={false}>
+        {filteredInvoices.length === 0 ? (
+          <View className="items-center justify-center py-16">
+            <View className="w-20 h-20 rounded-full bg-neutral-900 items-center justify-center mb-4">
+              <Ionicons name="document-text-outline" size={36} color="#666" />
             </View>
-          ) : (
-            filteredInvoices.map((invoice, index) => (
+            <Text className="text-neutral-400 text-lg font-medium">No invoices yet</Text>
+            <Text className="text-neutral-600 text-sm mt-2 text-center px-8">
+              {selectedFilter === "all"
+                ? "Create your first invoice to get started"
+                : `No ${selectedFilter} invoices`}
+            </Text>
+            {selectedFilter === "all" && (
+              <Pressable
+                onPress={() => navigation.navigate("CreateInvoice" as any)}
+                className="mt-6 bg-[#F5B800] px-6 py-3 rounded-xl"
+              >
+                <Text className="text-black font-semibold">Create Invoice</Text>
+              </Pressable>
+            )}
+          </View>
+        ) : (
+          filteredInvoices.map((invoice) => {
+            const colors = getStatusColor(invoice.status);
+            return (
               <Pressable
                 key={invoice.id}
-                onPress={() => navigation.navigate("InvoiceDetail" as any, { invoiceId: invoice.id })}
-                className={`bg-neutral-900 rounded-xl p-4 border border-neutral-800 active:opacity-70${index < filteredInvoices.length - 1 ? " mb-2" : ""}`}
+                onPress={() => navigation.navigate("InvoiceDetail", { invoiceId: invoice.id })}
+                className="bg-neutral-900 rounded-2xl p-4 mb-3 border border-neutral-800"
               >
-                <View className="flex-row items-center justify-between">
-                  <View className="flex-1 mr-3">
-                    <Text className="text-neutral-100 text-base font-semibold">
-                      {invoice.clientName || "Unnamed Client"}
+                <View className="flex-row items-start justify-between mb-3">
+                  <View className="flex-1">
+                    <Text className="text-neutral-100 text-lg font-bold">
+                      {invoice.invoiceNumber}
                     </Text>
-                    <View className="flex-row items-center mt-1">
-                      <Text className="text-neutral-500 text-xs mr-2">{invoice.invoiceNumber}</Text>
-                      <Text className="text-neutral-700 mr-2">•</Text>
-                      <Text className="text-neutral-500 text-xs">Due {format(new Date(invoice.dueDate), "MMM d")}</Text>
-                    </View>
+                    <Text className="text-neutral-400 text-sm mt-0.5">{invoice.clientName}</Text>
                   </View>
-                  <View className="items-end">
-                    <Text className="text-[#F5B800] text-lg font-bold">${invoice.total.toLocaleString()}</Text>
-                    <View className={`px-2 py-0.5 rounded-full mt-1 ${getStatusBg(invoice.status)}`}>
-                      <Text className={`text-[10px] font-semibold uppercase ${getStatusColor(invoice.status)}`}>
-                        {invoice.status}
-                      </Text>
-                    </View>
+                  <View
+                    className={`px-3 py-1.5 rounded-full border ${colors.bg} ${colors.border}`}
+                  >
+                    <Text className={`text-xs font-semibold uppercase ${colors.text}`}>
+                      {invoice.status}
+                    </Text>
                   </View>
                 </View>
+
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center">
+                    <Ionicons name="calendar-outline" size={14} color="#666" />
+                    <Text className="text-neutral-500 text-xs ml-1.5">
+                      {invoice.dueDate
+                        ? `Due ${new Date(invoice.dueDate).toLocaleDateString()}`
+                        : "No due date"}
+                    </Text>
+                  </View>
+                  <Text className="text-[#F5B800] text-xl font-bold">
+                    ${invoice.total.toFixed(2)}
+                  </Text>
+                </View>
+
+                {invoice.items.length > 0 && (
+                  <View className="mt-3 pt-3 border-t border-neutral-800">
+                    <Text className="text-neutral-500 text-xs">
+                      {invoice.items.length} {invoice.items.length === 1 ? "item" : "items"}
+                      {" · "}
+                      {invoice.items[0].serviceName}
+                      {invoice.items.length > 1 && ` +${invoice.items.length - 1} more`}
+                    </Text>
+                  </View>
+                )}
               </Pressable>
-            ))
-          )}
-        </View>
+            );
+          })
+        )}
+
+        <View className="h-8" />
       </ScrollView>
     </View>
   );
