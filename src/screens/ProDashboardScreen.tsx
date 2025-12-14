@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { View, Text, Pressable, ScrollView, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigator";
 import useWeddingStore from "../state/weddingStore";
+import useAuthStore from "../state/authStore";
 import { format } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 import { Swipeable } from "react-native-gesture-handler";
@@ -14,11 +15,18 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function ProDashboardScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const weddings = useWeddingStore((s) => s.weddings);
+  const allWeddings = useWeddingStore((s) => s.weddings);
   const deleteWedding = useWeddingStore((s) => s.deleteWedding);
+  const userId = useAuthStore((s) => s.user?.id);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const activeWeddings = weddings.filter((w) => w.status !== "completed");
+  // Only show weddings created by this user
+  const myWeddings = useMemo(() => {
+    if (!userId) return [];
+    return allWeddings.filter((w) => w.createdBy === userId);
+  }, [allWeddings, userId]);
+
+  const activeWeddings = myWeddings.filter((w) => w.status !== "completed");
   const filteredWeddings = activeWeddings.filter(
     (w) =>
       w.coupleName.toLowerCase().includes(searchQuery.toLowerCase()) ||

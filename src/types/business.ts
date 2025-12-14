@@ -29,6 +29,9 @@ export interface InvoiceItem {
 // Invoice Status
 export type InvoiceStatus = "draft" | "sent" | "viewed" | "paid" | "overdue" | "cancelled";
 
+// Payment Method Type
+export type PaymentMethodType = "venmo" | "cashapp" | "paypal" | "zelle" | "stripe" | "square" | "other";
+
 // Invoice
 export interface Invoice {
   id: string;
@@ -44,6 +47,7 @@ export interface Invoice {
   sentDate?: string;
   paidDate?: string;
   notes?: string;
+  acceptedPaymentMethods?: PaymentMethodType[]; // Payment methods accepted for this invoice
   createdAt: string;
   updatedAt: string;
 }

@@ -15,8 +15,19 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigator";
 import { LinearGradient } from "expo-linear-gradient";
 import useBusinessStore from "../state/businessStore";
-import { Client, InvoiceItem, Service } from "../types/business";
+import { Client, InvoiceItem, Service, PaymentMethodType } from "../types/business";
 import DateTimePicker from "@react-native-community/datetimepicker";
+
+// Payment method display info
+const PAYMENT_METHOD_INFO: Record<PaymentMethodType, { label: string; icon: string; color: string }> = {
+  venmo: { label: "Venmo", icon: "V", color: "#008CFF" },
+  cashapp: { label: "Cash App", icon: "$", color: "#00D632" },
+  paypal: { label: "PayPal", icon: "P", color: "#003087" },
+  zelle: { label: "Zelle", icon: "Z", color: "#6D1ED4" },
+  stripe: { label: "Stripe", icon: "S", color: "#635BFF" },
+  square: { label: "Square", icon: "□", color: "#006AFF" },
+  other: { label: "Other", icon: "•", color: "#F5B800" },
+};
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -37,6 +48,24 @@ export default function CreateInvoiceScreen() {
     new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
   );
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<PaymentMethodType[]>([]);
+
+  // Get available payment methods from business settings
+  const availablePaymentMethods = useMemo(() => {
+    const methods: PaymentMethodType[] = [];
+    const pm = settings.paymentMethods;
+    if (!pm) return methods;
+
+    if (pm.venmo || pm.venmoLink) methods.push("venmo");
+    if (pm.cashapp || pm.cashappLink) methods.push("cashapp");
+    if (pm.paypal || pm.paypalLink) methods.push("paypal");
+    if (pm.zelle) methods.push("zelle");
+    if (pm.stripe) methods.push("stripe");
+    if (pm.square) methods.push("square");
+    if (pm.other) methods.push("other");
+
+    return methods;
+  }, [settings.paymentMethods]);
 
   // Modals
   const [showClientModal, setShowClientModal] = useState(false);
@@ -129,6 +158,14 @@ export default function CreateInvoiceScreen() {
     setItems(items.filter((_, i) => i !== index));
   };
 
+  const togglePaymentMethod = (method: PaymentMethodType) => {
+    setSelectedPaymentMethods((prev) =>
+      prev.includes(method)
+        ? prev.filter((m) => m !== method)
+        : [...prev, method]
+    );
+  };
+
   const handleCreateInvoice = () => {
     if (!selectedClient || items.length === 0) return;
 
@@ -142,6 +179,7 @@ export default function CreateInvoiceScreen() {
       status: "draft",
       dueDate: dueDate.toISOString(),
       notes: notes.trim() || undefined,
+      acceptedPaymentMethods: selectedPaymentMethods.length > 0 ? selectedPaymentMethods : undefined,
     });
 
     navigation.goBack();
@@ -297,6 +335,67 @@ export default function CreateInvoiceScreen() {
             className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800 text-neutral-100 min-h-[100px]"
             textAlignVertical="top"
           />
+        </View>
+
+        {/* Payment Methods */}
+        <View className="mt-6">
+          <Text className="text-neutral-400 text-xs font-semibold uppercase mb-3">Accepted Payment Methods</Text>
+          {availablePaymentMethods.length === 0 ? (
+            <Pressable
+              onPress={() => navigation.navigate("BusinessSettings")}
+              className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800"
+            >
+              <View className="flex-row items-center">
+                <View className="w-10 h-10 rounded-full bg-[#F5B800]/20 items-center justify-center mr-3">
+                  <Ionicons name="card-outline" size={20} color="#F5B800" />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-neutral-100 font-medium">No payment methods set up</Text>
+                  <Text className="text-neutral-500 text-sm">Tap to add payment methods in settings</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#666" />
+              </View>
+            </Pressable>
+          ) : (
+            <View className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800">
+              <Text className="text-neutral-500 text-sm mb-3">Select which payment methods to accept for this invoice</Text>
+              <View className="flex-row flex-wrap">
+                {availablePaymentMethods.map((method) => {
+                  const info = PAYMENT_METHOD_INFO[method];
+                  const isSelected = selectedPaymentMethods.includes(method);
+                  return (
+                    <Pressable
+                      key={method}
+                      onPress={() => togglePaymentMethod(method)}
+                      className={`flex-row items-center mr-2 mb-2 px-3 py-2 rounded-xl border ${
+                        isSelected
+                          ? "border-[#F5B800] bg-[#F5B800]/20"
+                          : "border-neutral-700 bg-neutral-800"
+                      }`}
+                    >
+                      <View
+                        className="w-6 h-6 rounded-full items-center justify-center mr-2"
+                        style={{ backgroundColor: info.color }}
+                      >
+                        <Text className="text-white font-bold text-xs">{info.icon}</Text>
+                      </View>
+                      <Text className={isSelected ? "text-[#F5B800] font-medium" : "text-neutral-300"}>
+                        {info.label}
+                      </Text>
+                      {isSelected && (
+                        <Ionicons name="checkmark" size={16} color="#F5B800" style={{ marginLeft: 6 }} />
+                      )}
+                    </Pressable>
+                  );
+                })}
+              </View>
+              {selectedPaymentMethods.length === 0 && availablePaymentMethods.length > 0 && (
+                <Text className="text-neutral-600 text-xs mt-2">
+                  No methods selected - all configured methods will be shown on the invoice
+                </Text>
+              )}
+            </View>
+          )}
         </View>
 
         {/* Summary */}

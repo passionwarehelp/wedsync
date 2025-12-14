@@ -86,7 +86,7 @@ export default function ClientDashboardScreen() {
   };
 
   const handleCreateWedding = () => {
-    if (!partnerOneName.trim() || !partnerTwoName.trim()) {
+    if (!partnerOneName.trim() || !partnerTwoName.trim() || !user?.id) {
       return;
     }
 
@@ -99,12 +99,12 @@ export default function ClientDashboardScreen() {
       venue: venue.trim(),
       status: "planning" as const,
       createdAt: new Date().toISOString(),
+      createdBy: user.id,
       qrCode: `WS-${Date.now()}`,
       guestCount: 0,
       rsvpCount: 0,
       tasksCompleted: 0,
       totalTasks: 0,
-      isSelfManaged: true, // Flag for $50 charge features
     };
 
     addWedding(newWedding);

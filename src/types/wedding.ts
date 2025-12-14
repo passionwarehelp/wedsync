@@ -17,6 +17,9 @@ export interface Wedding {
   status: "planning" | "upcoming" | "completed";
   createdAt: string;
 
+  // Creator - who created this wedding
+  createdBy: string; // User ID of the creator
+
   // QR Code for guest uploads
   qrCode: string;
 

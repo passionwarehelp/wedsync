@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigator";
 import useWeddingStore from "../state/weddingStore";
+import useAuthStore from "../state/authStore";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { format } from "date-fns";
 
@@ -14,6 +15,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 export default function CreateWeddingScreen() {
   const navigation = useNavigation<NavigationProp>();
   const addWedding = useWeddingStore((s) => s.addWedding);
+  const userId = useAuthStore((s) => s.user?.id);
 
   const [partnerOneName, setPartnerOneName] = useState("");
   const [partnerTwoName, setPartnerTwoName] = useState("");
@@ -24,7 +26,7 @@ export default function CreateWeddingScreen() {
   const isValid = partnerOneName.trim() && partnerTwoName.trim();
 
   const handleCreate = () => {
-    if (!isValid) {
+    if (!isValid || !userId) {
       return;
     }
 
@@ -37,6 +39,7 @@ export default function CreateWeddingScreen() {
       venue: venue.trim(),
       status: "planning" as const,
       createdAt: new Date().toISOString(),
+      createdBy: userId,
       qrCode: `WS-${Date.now()}`,
       guestCount: 0,
       rsvpCount: 0,
