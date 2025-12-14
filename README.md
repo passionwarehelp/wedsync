@@ -147,6 +147,9 @@ The app is running in the Vibecode environment. Simply:
 ## 📱 What's New
 
 ### Latest Updates
+- ✅ **Create Wedding Payment Flow** - $50 one-time purchase to create a wedding (payment shown before form)
+- ✅ **Direct QR Access for Paid Users** - QR code button goes directly to design screen without paywall
+- ✅ **Updated Sales Page** - New paywall shows all features included (guests, seating, tasks, calendar, notes, QR)
 - ✅ **Seating Chart with Drag & Drop** - Add tables (round, square, rectangle), drag to position, assign guests
 - ✅ **Add Guest Screen Redesign** - Clean black theme with category/RSVP chips
 - ✅ **Full QR Code System** - Unique codes per wedding with production URL
