@@ -41,6 +41,11 @@ export default function WeddingDetailScreen() {
       total: wedding.guestCount,
     },
     {
+      title: "RSVP Link",
+      icon: "mail-open" as const,
+      screen: "RSVPLink" as const,
+    },
+    {
       title: "Tasks",
       icon: "checkmark-circle" as const,
       screen: "Tasks" as const,

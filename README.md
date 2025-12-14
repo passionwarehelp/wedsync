@@ -33,6 +33,18 @@ WedSync is designed for **wedding professionals** (planners, videographers, phot
 - **Contact Information** - Store emails and phone numbers
 - **Add Guests** - Beautiful modal form with all necessary fields
 
+### RSVP Link System ✅ (NEW)
+- **Shareable RSVP Links** - Send a link to guests for web-based RSVP
+- **No App Required** - Guests can RSVP directly from their browser
+- **Complete RSVP Form** - Name, email, phone, attendance, +1, meal preferences
+- **Meal Selection** - Standard, vegetarian, vegan, gluten-free options
+- **Dietary Restrictions** - Text field for allergies and special requirements
+- **QR Code Generation** - Printable QR code linking to RSVP form
+- **RSVP Statistics** - Live tracking of attending, declined, pending counts
+- **Message to Couple** - Optional well-wishes field
+- **Automatic Guest Creation** - RSVPs automatically added to guest list
+- **Beautiful Confirmation** - Elegant thank you screen after submission
+
 ### Task Management ✅
 - **Complete Task System** - Create and track wedding tasks
 - **Interactive Status** - Tap to toggle between pending → in-progress → completed
@@ -102,6 +114,8 @@ src/
 │   ├── PhotographerUploadScreen.tsx ✅ Black Theme + Videos
 │   ├── QRCodeScreen.tsx            ✅ Black Theme + Production URL
 │   ├── GuestUploadScreen.tsx       ✅ Black Theme + R2 Upload + Videos
+│   ├── GuestRSVPScreen.tsx         ✅ Black Theme + Web RSVP Form
+│   ├── RSVPLinkScreen.tsx          ✅ Black Theme + Share RSVP Link
 │   ├── TimelineScreen.tsx          🚧 To be styled
 │   ├── VendorsScreen.tsx           🚧 To be styled
 │   ├── SeatingChartScreen.tsx      ✅ Black Theme + Drag & Drop
@@ -147,6 +161,10 @@ The app is running in the Vibecode environment. Simply:
 ## 📱 What's New
 
 ### Latest Updates
+- ✅ **RSVP Link System** - Guests can RSVP via shareable web link without downloading the app
+- ✅ **Web-Based RSVP Form** - Complete form with attendance, +1s, meal preferences, dietary restrictions
+- ✅ **RSVP QR Code** - Printable QR code for RSVP (separate from photo upload QR)
+- ✅ **RSVP Statistics Dashboard** - Live tracking of attending, declined, pending, and +1 counts
 - ✅ **Create Wedding Payment Flow** - $50 one-time purchase to create a wedding (payment shown before form)
 - ✅ **Direct QR Access for Paid Users** - QR code button goes directly to design screen without paywall
 - ✅ **Updated Sales Page** - New paywall shows all features included (guests, seating, tasks, calendar, notes, QR)

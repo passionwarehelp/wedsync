@@ -206,6 +206,21 @@ export default function ClientDashboardScreen() {
             <Ionicons name="chevron-forward" size={20} color="#6B7280" />
           </Pressable>
 
+          {/* RSVP Link - Share with guests */}
+          <Pressable
+            onPress={() => navigation.navigate("RSVPLink", { weddingId: coupleWedding.id })}
+            className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
+          >
+            <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
+              <Ionicons name="mail-open" size={24} color="#F5B800" />
+            </View>
+            <View className="flex-1 ml-4">
+              <Text className="text-neutral-100 text-lg font-medium">RSVP Link</Text>
+              <Text className="text-neutral-500 text-sm">Share RSVP form with guests</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#6B7280" />
+          </Pressable>
+
           {/* Tasks */}
           <Pressable
             onPress={() => navigation.navigate("Tasks", { weddingId: coupleWedding.id })}
