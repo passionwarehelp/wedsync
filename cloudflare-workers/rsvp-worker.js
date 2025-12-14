@@ -82,11 +82,12 @@ export default {
     }
 
     // Extract RSVP code and couple name from URL
-    const rsvpCode = path.slice(1); // Remove leading slash
+    const rsvpCode = path.slice(1).split('?')[0]; // Remove leading slash and query params
     const coupleName = url.searchParams.get("couple") || "the Happy Couple";
 
-    if (!rsvpCode) {
-      return new Response(getErrorPage(), {
+    // If visiting root or no code, show test page
+    if (!rsvpCode || rsvpCode === '') {
+      return new Response(getTestPage(), {
         headers: { "Content-Type": "text/html" },
       });
     }
@@ -97,6 +98,68 @@ export default {
     });
   },
 };
+
+function getTestPage() {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WedSync RSVP - Worker Active</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1F1F1F 0%, #000000 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      padding: 20px;
+    }
+    .container {
+      text-align: center;
+      max-width: 500px;
+    }
+    .icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+      background: rgba(245, 184, 0, 0.1);
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+    h1 { color: #F5B800; margin-bottom: 16px; font-size: 32px; }
+    p { color: #9CA3AF; margin-bottom: 12px; line-height: 1.6; }
+    .code {
+      background: #171717;
+      padding: 12px;
+      border-radius: 8px;
+      color: #10B981;
+      font-family: monospace;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">✓</div>
+    <h1>WedSync RSVP Worker Active</h1>
+    <p>Your RSVP worker is successfully deployed!</p>
+    <p>RSVP links should be in the format:</p>
+    <div class="code">https://rsvp.mywedsync.com/YOUR_RSVP_CODE?couple=Couple+Name</div>
+    <p style="margin-top: 24px; font-size: 14px; color: #666;">
+      Powered by WedSync
+    </p>
+  </div>
+</body>
+</html>`;
+}
 
 function getErrorPage() {
   return `<!DOCTYPE html>
