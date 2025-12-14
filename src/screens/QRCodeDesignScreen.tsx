@@ -24,6 +24,7 @@ import * as Sharing from "expo-sharing";
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const CARD_WIDTH = SCREEN_WIDTH - 60;
 
 interface DesignTemplate {
   id: string;
@@ -31,7 +32,8 @@ interface DesignTemplate {
   bgColors: string[];
   textColor: string;
   accentColor: string;
-  borderStyle: "none" | "simple" | "ornate" | "floral";
+  secondaryAccent: string;
+  style: "classic" | "romantic" | "modern" | "rustic" | "elegant" | "whimsical";
   headerText: string;
   subText: string;
   footerText: string;
@@ -39,70 +41,76 @@ interface DesignTemplate {
 
 const DESIGN_TEMPLATES: DesignTemplate[] = [
   {
-    id: "elegant-gold",
-    name: "Elegant Gold",
-    bgColors: ["#1a1a1a", "#0d0d0d"],
+    id: "timeless-gold",
+    name: "Timeless Gold",
+    bgColors: ["#0F0F0F", "#1A1A1A"],
     textColor: "#FFFFFF",
     accentColor: "#F5B800",
-    borderStyle: "ornate",
-    headerText: "Share Your Photos",
-    subText: "Scan to upload your memories",
-    footerText: "We would love to see your photos!",
+    secondaryAccent: "#D4A574",
+    style: "elegant",
+    headerText: "Share the Love",
+    subText: "Scan to capture your favorite moments",
+    footerText: "Thank you for celebrating with us",
   },
   {
-    id: "romantic-blush",
-    name: "Romantic Blush",
-    bgColors: ["#FDF2F4", "#FCE7EB"],
-    textColor: "#4A3728",
-    accentColor: "#D4A5A5",
-    borderStyle: "floral",
-    headerText: "Capture the Love",
-    subText: "Scan & share your favorite moments",
-    footerText: "Thank you for celebrating with us!",
+    id: "romantic-rose",
+    name: "Romantic Rose",
+    bgColors: ["#FFF5F5", "#FFE4E8"],
+    textColor: "#5C3D3D",
+    accentColor: "#C77D7D",
+    secondaryAccent: "#E8B4B8",
+    style: "romantic",
+    headerText: "Capture the Magic",
+    subText: "Share your photos with the happy couple",
+    footerText: "Forever & Always",
   },
   {
-    id: "classic-white",
-    name: "Classic White",
-    bgColors: ["#FFFFFF", "#F8F8F8"],
-    textColor: "#2C2C2C",
-    accentColor: "#8B7355",
-    borderStyle: "simple",
-    headerText: "Photo Album",
-    subText: "Scan the QR code to share photos",
-    footerText: "Your photos mean the world to us",
-  },
-  {
-    id: "garden-green",
-    name: "Garden Green",
-    bgColors: ["#F0F5F0", "#E8F0E8"],
-    textColor: "#2D4A3E",
-    accentColor: "#6B8E6B",
-    borderStyle: "floral",
-    headerText: "Share the Joy",
-    subText: "Scan to add your photos",
-    footerText: "Help us remember this day forever",
-  },
-  {
-    id: "midnight-navy",
-    name: "Midnight Navy",
-    bgColors: ["#1A2744", "#0F1A2E"],
-    textColor: "#FFFFFF",
-    accentColor: "#F5B800",
-    borderStyle: "ornate",
+    id: "ivory-elegance",
+    name: "Ivory Elegance",
+    bgColors: ["#FFFEF7", "#FBF8F1"],
+    textColor: "#3D3D3D",
+    accentColor: "#B8997A",
+    secondaryAccent: "#D4C5B0",
+    style: "classic",
     headerText: "Photo Memories",
-    subText: "Scan & upload your snapshots",
-    footerText: "Thank you for being part of our story",
+    subText: "Scan to share your snapshots",
+    footerText: "With Love & Gratitude",
   },
   {
-    id: "minimalist",
-    name: "Minimalist",
-    bgColors: ["#FAFAFA", "#F5F5F5"],
-    textColor: "#333333",
-    accentColor: "#666666",
-    borderStyle: "none",
-    headerText: "Share Photos",
-    subText: "Scan to upload",
-    footerText: "",
+    id: "sage-garden",
+    name: "Sage Garden",
+    bgColors: ["#F5F7F4", "#E8EDE5"],
+    textColor: "#3D4A3D",
+    accentColor: "#6B7F6B",
+    secondaryAccent: "#A8B8A8",
+    style: "rustic",
+    headerText: "Share Your Joy",
+    subText: "Help us remember this beautiful day",
+    footerText: "Growing Together in Love",
+  },
+  {
+    id: "midnight-glamour",
+    name: "Midnight Glamour",
+    bgColors: ["#1A1F3D", "#0D1129"],
+    textColor: "#FFFFFF",
+    accentColor: "#F5B800",
+    secondaryAccent: "#A8936A",
+    style: "modern",
+    headerText: "Capture Every Moment",
+    subText: "Your photos mean the world to us",
+    footerText: "A Night to Remember",
+  },
+  {
+    id: "blush-whimsy",
+    name: "Blush Whimsy",
+    bgColors: ["#FDF2F8", "#FCE7F3"],
+    textColor: "#6B4E5C",
+    accentColor: "#DB7093",
+    secondaryAccent: "#F0B6C8",
+    style: "whimsical",
+    headerText: "Happily Ever After",
+    subText: "Scan & share your favorite shots",
+    footerText: "Love, Laughter & Memories",
   },
 ];
 
@@ -160,40 +168,180 @@ function QRCodeDesignContent({ weddingId }: { weddingId: string }) {
     }
   };
 
+  const renderDecoration = (template: DesignTemplate, position: "top" | "bottom") => {
+    const isTop = position === "top";
+
+    switch (template.style) {
+      case "elegant":
+        return (
+          <View style={{ alignItems: "center", marginBottom: isTop ? 16 : 0, marginTop: isTop ? 0 : 16 }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={{ width: 40, height: 1, backgroundColor: template.accentColor }} />
+              <Text style={{ color: template.accentColor, fontSize: 18, marginHorizontal: 12 }}>✦</Text>
+              <View style={{ width: 20, height: 1, backgroundColor: template.accentColor }} />
+              <Text style={{ color: template.accentColor, fontSize: 14, marginHorizontal: 8 }}>♥</Text>
+              <View style={{ width: 20, height: 1, backgroundColor: template.accentColor }} />
+              <Text style={{ color: template.accentColor, fontSize: 18, marginHorizontal: 12 }}>✦</Text>
+              <View style={{ width: 40, height: 1, backgroundColor: template.accentColor }} />
+            </View>
+          </View>
+        );
+
+      case "romantic":
+        return (
+          <View style={{ alignItems: "center", marginBottom: isTop ? 12 : 0, marginTop: isTop ? 0 : 12 }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={{ color: template.secondaryAccent, fontSize: 16 }}>❀</Text>
+              <View style={{ width: 30, height: 1, backgroundColor: template.secondaryAccent, marginHorizontal: 6 }} />
+              <Text style={{ color: template.accentColor, fontSize: 20 }}>♥</Text>
+              <View style={{ width: 30, height: 1, backgroundColor: template.secondaryAccent, marginHorizontal: 6 }} />
+              <Text style={{ color: template.secondaryAccent, fontSize: 16 }}>❀</Text>
+            </View>
+          </View>
+        );
+
+      case "classic":
+        return (
+          <View style={{ alignItems: "center", marginBottom: isTop ? 16 : 0, marginTop: isTop ? 0 : 16 }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={{ width: 50, height: 1, backgroundColor: template.accentColor }} />
+              <View style={{
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: template.accentColor,
+                marginHorizontal: 10
+              }} />
+              <View style={{ width: 50, height: 1, backgroundColor: template.accentColor }} />
+            </View>
+          </View>
+        );
+
+      case "rustic":
+        return (
+          <View style={{ alignItems: "center", marginBottom: isTop ? 12 : 0, marginTop: isTop ? 0 : 12 }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={{ color: template.accentColor, fontSize: 14 }}>✿</Text>
+              <View style={{ width: 25, height: 1, backgroundColor: template.secondaryAccent, marginHorizontal: 8 }} />
+              <Text style={{ color: template.accentColor, fontSize: 18 }}>❧</Text>
+              <View style={{ width: 25, height: 1, backgroundColor: template.secondaryAccent, marginHorizontal: 8 }} />
+              <Text style={{ color: template.accentColor, fontSize: 14 }}>✿</Text>
+            </View>
+          </View>
+        );
+
+      case "modern":
+        return (
+          <View style={{ alignItems: "center", marginBottom: isTop ? 16 : 0, marginTop: isTop ? 0 : 16 }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={{ width: 60, height: 2, backgroundColor: template.accentColor }} />
+              <View style={{
+                width: 10,
+                height: 10,
+                transform: [{ rotate: "45deg" }],
+                backgroundColor: template.accentColor,
+                marginHorizontal: 12
+              }} />
+              <View style={{ width: 60, height: 2, backgroundColor: template.accentColor }} />
+            </View>
+          </View>
+        );
+
+      case "whimsical":
+        return (
+          <View style={{ alignItems: "center", marginBottom: isTop ? 12 : 0, marginTop: isTop ? 0 : 12 }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={{ color: template.secondaryAccent, fontSize: 14 }}>♡</Text>
+              <Text style={{ color: template.accentColor, fontSize: 12, marginHorizontal: 6 }}>✦</Text>
+              <Text style={{ color: template.secondaryAccent, fontSize: 18 }}>♡</Text>
+              <Text style={{ color: template.accentColor, fontSize: 12, marginHorizontal: 6 }}>✦</Text>
+              <Text style={{ color: template.secondaryAccent, fontSize: 14 }}>♡</Text>
+            </View>
+          </View>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   const renderBorder = (template: DesignTemplate) => {
-    switch (template.borderStyle) {
-      case "ornate":
+    switch (template.style) {
+      case "elegant":
+      case "modern":
         return (
-          <View style={{ position: "absolute", top: 16, left: 16, right: 16, bottom: 16, borderWidth: 2, borderRadius: 8, borderColor: template.accentColor }}>
-            <View style={{ position: "absolute", top: -4, left: -4, width: 16, height: 16, borderTopWidth: 3, borderLeftWidth: 3, borderColor: template.accentColor }} />
-            <View style={{ position: "absolute", top: -4, right: -4, width: 16, height: 16, borderTopWidth: 3, borderRightWidth: 3, borderColor: template.accentColor }} />
-            <View style={{ position: "absolute", bottom: -4, left: -4, width: 16, height: 16, borderBottomWidth: 3, borderLeftWidth: 3, borderColor: template.accentColor }} />
-            <View style={{ position: "absolute", bottom: -4, right: -4, width: 16, height: 16, borderBottomWidth: 3, borderRightWidth: 3, borderColor: template.accentColor }} />
+          <View style={{
+            position: "absolute",
+            top: 20,
+            left: 20,
+            right: 20,
+            bottom: 20,
+            borderWidth: 2,
+            borderColor: template.accentColor,
+            borderRadius: 4
+          }}>
+            {/* Corner accents */}
+            <View style={{ position: "absolute", top: -6, left: -6, width: 12, height: 12, borderTopWidth: 3, borderLeftWidth: 3, borderColor: template.accentColor }} />
+            <View style={{ position: "absolute", top: -6, right: -6, width: 12, height: 12, borderTopWidth: 3, borderRightWidth: 3, borderColor: template.accentColor }} />
+            <View style={{ position: "absolute", bottom: -6, left: -6, width: 12, height: 12, borderBottomWidth: 3, borderLeftWidth: 3, borderColor: template.accentColor }} />
+            <View style={{ position: "absolute", bottom: -6, right: -6, width: 12, height: 12, borderBottomWidth: 3, borderRightWidth: 3, borderColor: template.accentColor }} />
           </View>
         );
-      case "floral":
+
+      case "romantic":
+      case "whimsical":
         return (
-          <View style={{ position: "absolute", top: 12, left: 12, right: 12, bottom: 12 }}>
-            <View style={{ position: "absolute", top: 0, left: "50%", transform: [{ translateX: -60 }], flexDirection: "row", alignItems: "center" }}>
-              <Text style={{ color: template.accentColor, fontSize: 16 }}>✿</Text>
-              <View style={{ width: 48, height: 2, marginHorizontal: 4, backgroundColor: template.accentColor }} />
-              <Text style={{ color: template.accentColor, fontSize: 20 }}>❀</Text>
-              <View style={{ width: 48, height: 2, marginHorizontal: 4, backgroundColor: template.accentColor }} />
-              <Text style={{ color: template.accentColor, fontSize: 16 }}>✿</Text>
-            </View>
-            <View style={{ position: "absolute", bottom: 0, left: "50%", transform: [{ translateX: -60 }], flexDirection: "row", alignItems: "center" }}>
-              <Text style={{ color: template.accentColor, fontSize: 16 }}>✿</Text>
-              <View style={{ width: 48, height: 2, marginHorizontal: 4, backgroundColor: template.accentColor }} />
-              <Text style={{ color: template.accentColor, fontSize: 20 }}>❀</Text>
-              <View style={{ width: 48, height: 2, marginHorizontal: 4, backgroundColor: template.accentColor }} />
-              <Text style={{ color: template.accentColor, fontSize: 16 }}>✿</Text>
-            </View>
+          <View style={{
+            position: "absolute",
+            top: 16,
+            left: 16,
+            right: 16,
+            bottom: 16,
+            borderWidth: 1,
+            borderColor: template.secondaryAccent,
+            borderRadius: 16,
+            borderStyle: "dashed"
+          }} />
+        );
+
+      case "classic":
+        return (
+          <View style={{
+            position: "absolute",
+            top: 24,
+            left: 24,
+            right: 24,
+            bottom: 24,
+            borderWidth: 1,
+            borderColor: template.accentColor,
+          }}>
+            {/* Inner border */}
+            <View style={{
+              position: "absolute",
+              top: 4,
+              left: 4,
+              right: 4,
+              bottom: 4,
+              borderWidth: 1,
+              borderColor: template.secondaryAccent,
+            }} />
           </View>
         );
-      case "simple":
+
+      case "rustic":
         return (
-          <View style={{ position: "absolute", top: 24, left: 24, right: 24, bottom: 24, borderWidth: 1, borderRadius: 8, borderColor: template.accentColor }} />
+          <View style={{
+            position: "absolute",
+            top: 20,
+            left: 20,
+            right: 20,
+            bottom: 20,
+            borderWidth: 2,
+            borderColor: template.secondaryAccent,
+            borderRadius: 8
+          }} />
         );
+
       default:
         return null;
     }
@@ -223,27 +371,42 @@ function QRCodeDesignContent({ weddingId }: { weddingId: string }) {
           <Text style={{ color: "#9CA3AF", fontSize: 14, marginBottom: 12, textAlign: "center" }}>Preview</Text>
 
           <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1 }}>
-            <View
-              style={{ width: SCREEN_WIDTH - 60, aspectRatio: 0.7, borderRadius: 16, overflow: "hidden", alignSelf: "center" }}
-            >
+            <View style={{ width: CARD_WIDTH, aspectRatio: 0.7, borderRadius: 0, overflow: "hidden", alignSelf: "center" }}>
               <LinearGradient
                 colors={selectedTemplate.bgColors as [string, string]}
-                style={{ flex: 1, padding: 24, position: "relative" }}
+                style={{ flex: 1, padding: 32, position: "relative" }}
               >
                 {renderBorder(selectedTemplate)}
 
-                {/* Content */}
+                {/* Content - Centered */}
                 <View style={{ flex: 1, alignItems: "center", justifyContent: "center", zIndex: 10 }}>
+
+                  {/* Top Decoration */}
+                  {renderDecoration(selectedTemplate, "top")}
+
                   {/* Couple Names */}
                   <Text
-                    style={{ fontSize: 24, fontWeight: "bold", textAlign: "center", marginBottom: 4, color: selectedTemplate.accentColor }}
+                    style={{
+                      fontSize: 26,
+                      fontWeight: "700",
+                      textAlign: "center",
+                      marginBottom: 4,
+                      color: selectedTemplate.accentColor,
+                      letterSpacing: 1
+                    }}
                   >
                     {coupleName}
                   </Text>
 
                   {weddingDate ? (
                     <Text
-                      style={{ fontSize: 14, marginBottom: 24, color: selectedTemplate.textColor, opacity: 0.7 }}
+                      style={{
+                        fontSize: 13,
+                        marginBottom: 20,
+                        color: selectedTemplate.textColor,
+                        opacity: 0.7,
+                        letterSpacing: 0.5
+                      }}
                     >
                       {weddingDate}
                     </Text>
@@ -251,37 +414,78 @@ function QRCodeDesignContent({ weddingId }: { weddingId: string }) {
 
                   {/* Header Text */}
                   <Text
-                    style={{ fontSize: 20, fontWeight: "600", textAlign: "center", marginBottom: 8, color: selectedTemplate.textColor }}
+                    style={{
+                      fontSize: 18,
+                      fontWeight: "600",
+                      textAlign: "center",
+                      marginBottom: 6,
+                      color: selectedTemplate.textColor,
+                      letterSpacing: 0.5
+                    }}
                   >
                     {selectedTemplate.headerText}
                   </Text>
 
                   <Text
-                    style={{ fontSize: 14, textAlign: "center", marginBottom: 24, color: selectedTemplate.textColor, opacity: 0.8 }}
+                    style={{
+                      fontSize: 13,
+                      textAlign: "center",
+                      marginBottom: 20,
+                      color: selectedTemplate.textColor,
+                      opacity: 0.75,
+                      paddingHorizontal: 16
+                    }}
                   >
                     {selectedTemplate.subText}
                   </Text>
 
-                  {/* QR Code */}
+                  {/* QR Code with elegant frame */}
                   <View
-                    style={{ padding: 16, borderRadius: 12, marginBottom: 24, backgroundColor: "#FFFFFF" }}
+                    style={{
+                      padding: 12,
+                      backgroundColor: "#FFFFFF",
+                      borderRadius: 8,
+                      shadowColor: "#000",
+                      shadowOffset: { width: 0, height: 4 },
+                      shadowOpacity: 0.15,
+                      shadowRadius: 8,
+                      elevation: 8,
+                      marginBottom: 20
+                    }}
                   >
-                    <QRCode
-                      value={qrValue}
-                      size={140}
-                      color="#000000"
-                      backgroundColor="#FFFFFF"
-                    />
+                    <View style={{
+                      padding: 4,
+                      borderWidth: 1,
+                      borderColor: selectedTemplate.secondaryAccent,
+                      borderRadius: 4
+                    }}>
+                      <QRCode
+                        value={qrValue}
+                        size={130}
+                        color="#1A1A1A"
+                        backgroundColor="#FFFFFF"
+                      />
+                    </View>
                   </View>
 
                   {/* Footer Text */}
                   {selectedTemplate.footerText ? (
                     <Text
-                      style={{ fontSize: 14, textAlign: "center", fontStyle: "italic", color: selectedTemplate.textColor, opacity: 0.7 }}
+                      style={{
+                        fontSize: 12,
+                        textAlign: "center",
+                        fontStyle: "italic",
+                        color: selectedTemplate.textColor,
+                        opacity: 0.6,
+                        letterSpacing: 0.5
+                      }}
                     >
                       {selectedTemplate.footerText}
                     </Text>
                   ) : null}
+
+                  {/* Bottom Decoration */}
+                  {renderDecoration(selectedTemplate, "bottom")}
                 </View>
               </LinearGradient>
             </View>
@@ -316,12 +520,22 @@ function QRCodeDesignContent({ weddingId }: { weddingId: string }) {
                   style={{ flex: 1, padding: 8, alignItems: "center", justifyContent: "center" }}
                 >
                   <View
-                    style={{ width: 40, height: 40, borderRadius: 4, alignItems: "center", justifyContent: "center", marginBottom: 8, backgroundColor: "#FFFFFF" }}
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 4,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginBottom: 8,
+                      backgroundColor: "#FFFFFF",
+                      borderWidth: 1,
+                      borderColor: template.secondaryAccent
+                    }}
                   >
-                    <Ionicons name="qr-code" size={24} color="#000" />
+                    <Ionicons name="qr-code" size={20} color="#1A1A1A" />
                   </View>
                   <Text
-                    style={{ fontSize: 12, textAlign: "center", fontWeight: "500", color: template.textColor }}
+                    style={{ fontSize: 11, textAlign: "center", fontWeight: "600", color: template.textColor }}
                     numberOfLines={2}
                   >
                     {template.name}
@@ -340,16 +554,19 @@ function QRCodeDesignContent({ weddingId }: { weddingId: string }) {
               <Text style={{ color: "#F5F5F5", fontWeight: "600", marginLeft: 8 }}>Printing Tips</Text>
             </View>
             <Text style={{ color: "#9CA3AF", fontSize: 14, lineHeight: 20, marginBottom: 8 }}>
-              • Print on high-quality cardstock for best results
+              • Print on premium cardstock (110lb or higher) for best results
+            </Text>
+            <Text style={{ color: "#9CA3AF", fontSize: 14, lineHeight: 20, marginBottom: 8 }}>
+              • Use a professional print service for crisp, vibrant colors
             </Text>
             <Text style={{ color: "#9CA3AF", fontSize: 14, lineHeight: 20, marginBottom: 8 }}>
               • Place at the entrance, on each table, or near the guest book
             </Text>
             <Text style={{ color: "#9CA3AF", fontSize: 14, lineHeight: 20, marginBottom: 8 }}>
-              • Consider framing for an elegant display
+              • Consider elegant frames or acrylic stands for display
             </Text>
             <Text style={{ color: "#9CA3AF", fontSize: 14, lineHeight: 20 }}>
-              • Test scanning before the big day!
+              • Always test the QR code scanning before the big day!
             </Text>
           </View>
         </View>
