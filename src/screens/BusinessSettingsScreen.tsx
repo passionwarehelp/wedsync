@@ -38,6 +38,8 @@ export default function BusinessSettingsScreen() {
   const [taxRate, setTaxRate] = useState(settings.taxRate?.toString() || "0");
 
   // Payment Methods
+  const [stripe, setStripe] = useState(settings.paymentMethods?.stripe || "");
+  const [square, setSquare] = useState(settings.paymentMethods?.square || "");
   const [venmo, setVenmo] = useState(settings.paymentMethods?.venmo || "");
   const [venmoLink, setVenmoLink] = useState(settings.paymentMethods?.venmoLink || "");
   const [cashapp, setCashapp] = useState(settings.paymentMethods?.cashapp || "");
@@ -61,6 +63,8 @@ export default function BusinessSettingsScreen() {
       invoicePrefix: invoicePrefix.trim() || "INV",
       taxRate: parseFloat(taxRate) || 0,
       paymentMethods: {
+        stripe: stripe.trim() || undefined,
+        square: square.trim() || undefined,
         venmo: venmo.trim() || undefined,
         venmoLink: venmoLink.trim() || undefined,
         cashapp: cashapp.trim() || undefined,
@@ -231,6 +235,44 @@ export default function BusinessSettingsScreen() {
             <Text className="text-neutral-500 text-sm mb-4">
               Add your payment details to include them on invoices
             </Text>
+
+            {/* Stripe */}
+            <View className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800 mb-3">
+              <View className="flex-row items-center mb-3">
+                <View className="w-8 h-8 rounded-full items-center justify-center mr-3" style={{ backgroundColor: "#635BFF" }}>
+                  <Text className="text-white font-bold text-sm">S</Text>
+                </View>
+                <Text className="text-neutral-100 font-medium">Stripe</Text>
+              </View>
+              <TextInput
+                value={stripe}
+                onChangeText={setStripe}
+                placeholder="https://buy.stripe.com/your-link"
+                placeholderTextColor="#666"
+                autoCapitalize="none"
+                className="bg-neutral-800 rounded-xl p-3 text-neutral-100 border border-neutral-700"
+              />
+              <Text className="text-neutral-600 text-xs mt-2">Paste your Stripe payment link</Text>
+            </View>
+
+            {/* Square */}
+            <View className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800 mb-3">
+              <View className="flex-row items-center mb-3">
+                <View className="w-8 h-8 rounded-full items-center justify-center mr-3" style={{ backgroundColor: "#006AFF" }}>
+                  <Text className="text-white font-bold text-sm">□</Text>
+                </View>
+                <Text className="text-neutral-100 font-medium">Square</Text>
+              </View>
+              <TextInput
+                value={square}
+                onChangeText={setSquare}
+                placeholder="https://square.link/your-link"
+                placeholderTextColor="#666"
+                autoCapitalize="none"
+                className="bg-neutral-800 rounded-xl p-3 text-neutral-100 border border-neutral-700"
+              />
+              <Text className="text-neutral-600 text-xs mt-2">Paste your Square payment link</Text>
+            </View>
 
             {/* Venmo */}
             <View className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800 mb-3">

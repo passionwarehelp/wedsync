@@ -31,6 +31,13 @@ export default function AdminDashboardScreen() {
       color: "#F5B800",
     },
     {
+      title: "Payment Setup",
+      icon: "card" as const,
+      screen: "BusinessSettings" as const,
+      color: "#10b981",
+      description: "Configure payment methods",
+    },
+    {
       title: "Staff Management",
       icon: "people" as const,
       screen: "StaffManagement" as const,
@@ -96,6 +103,11 @@ export default function AdminDashboardScreen() {
                   {section.count !== undefined && (
                     <Text className="text-neutral-500 text-sm mt-1">
                       {section.count} {section.label}
+                    </Text>
+                  )}
+                  {section.description && (
+                    <Text className="text-neutral-500 text-sm mt-1">
+                      {section.description}
                     </Text>
                   )}
                 </View>
