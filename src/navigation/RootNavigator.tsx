@@ -20,6 +20,7 @@ import AddTaskScreen from "../screens/AddTaskScreen";
 import GuestUploadScreen from "../screens/GuestUploadScreen";
 import QRCodeScreen from "../screens/QRCodeScreen";
 import GuestRSVPScreen from "../screens/GuestRSVPScreen";
+import GuestDetailScreen from "../screens/GuestDetailScreen";
 import RSVPLinkScreen from "../screens/RSVPLinkScreen";
 import InvoicesScreen from "../screens/InvoicesScreen";
 import StaffManagementScreen from "../screens/StaffManagementScreen";
@@ -40,6 +41,7 @@ export type RootStackParamList = {
   ClientDashboard: undefined;
   WeddingDetail: { weddingId: string };
   GuestList: { weddingId: string };
+  GuestDetail: { guestId: string };
   Tasks: { weddingId: string };
   SeatingChart: { weddingId: string };
   PhotoGallery: { weddingId: string };
@@ -210,6 +212,7 @@ export default function RootNavigator() {
           {/* Guest Upload Portal */}
           <Stack.Screen name="GuestUpload" component={GuestUploadScreen} />
           <Stack.Screen name="GuestRSVP" component={GuestRSVPScreen} />
+          <Stack.Screen name="GuestDetail" component={GuestDetailScreen} />
         </>
       )}
     </Stack.Navigator>

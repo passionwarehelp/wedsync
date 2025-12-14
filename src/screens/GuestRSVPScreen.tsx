@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -45,6 +45,7 @@ const MEAL_OPTIONS: { value: MealType; label: string }[] = [
 export default function GuestRSVPScreen() {
   const route = useRoute<GuestRSVPRouteProp>();
   const { rsvpCode } = route.params;
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const wedding = useWeddingStore((s) => s.weddings.find((w) => w.qrCode === rsvpCode));
   const addGuest = useWeddingStore((s) => s.addGuest);
@@ -101,6 +102,7 @@ export default function GuestRSVPScreen() {
       plusOneName: formData.plusOneName.trim() || undefined,
       mealType: formData.attending ? formData.mealType : undefined,
       dietaryRestrictions: formData.dietaryRestrictions.trim() || undefined,
+      message: formData.message.trim() || undefined,
       category: "other",
       addedAt: new Date().toISOString(),
     });
@@ -197,7 +199,13 @@ export default function GuestRSVPScreen() {
         className="flex-1"
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+          <ScrollView
+            ref={scrollViewRef}
+            className="flex-1"
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ paddingBottom: 40 }}
+          >
             <LinearGradient
               colors={["#1F1F1F", "#000000"]}
               start={{ x: 0, y: 0 }}

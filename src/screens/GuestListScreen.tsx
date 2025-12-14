@@ -149,7 +149,11 @@ export default function GuestListScreen() {
         ) : (
           <View className="pb-6">
             {filteredGuests.map((guest, index) => (
-              <View key={guest.id} className={`bg-neutral-900 rounded-2xl p-4 border border-neutral-800${index < filteredGuests.length - 1 ? " mb-3" : ""}`}>
+              <Pressable
+                key={guest.id}
+                onPress={() => navigation.navigate("GuestDetail", { guestId: guest.id })}
+                className={`bg-neutral-900 rounded-2xl p-4 border border-neutral-800 active:opacity-70${index < filteredGuests.length - 1 ? " mb-3" : ""}`}
+              >
                 <View className="flex-row items-start justify-between">
                   <View className="flex-1">
                     <Text className="text-neutral-100 text-lg font-semibold">{guest.name}</Text>
@@ -206,7 +210,13 @@ export default function GuestListScreen() {
                     </View>
                   )}
                 </View>
-              </View>
+
+                {/* Tap hint */}
+                <View className="flex-row items-center justify-end mt-2">
+                  <Text className="text-neutral-600 text-xs mr-1">View details</Text>
+                  <Ionicons name="chevron-forward" size={14} color="#525252" />
+                </View>
+              </Pressable>
             ))}
           </View>
         )}

@@ -45,6 +45,9 @@ export interface Guest {
   mealType?: "standard" | "vegetarian" | "vegan" | "glutenFree" | "other";
   dietaryRestrictions?: string;
 
+  // Message from guest
+  message?: string;
+
   // Seating
   tableNumber?: number;
   seatPosition?: number;
