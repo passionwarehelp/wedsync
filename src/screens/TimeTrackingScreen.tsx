@@ -221,8 +221,7 @@ export default function TimeTrackingScreen() {
             <Text style={styles.emptyStateSubtitle}>Clock in to start tracking time</Text>
           </View>
         ) : (
-          <>
-            {recentEntries.map((entry, index) => (
+          recentEntries.map((entry, index) => (
               <View
                 key={entry.id}
                 style={[styles.entryCard, index < recentEntries.length - 1 && styles.entryCardMargin]}
@@ -264,8 +263,7 @@ export default function TimeTrackingScreen() {
                   </View>
                 )}
               </View>
-            ))}
-          </>
+            ))
         )}
       </ScrollView>
     </View>
