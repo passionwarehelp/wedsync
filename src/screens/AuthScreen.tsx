@@ -89,10 +89,10 @@ export default function AuthScreen() {
           <View style={{ paddingTop: insets.top + 60 }} className="flex-1 px-6">
             {/* Logo/Brand */}
             <View className="items-center mb-12">
-              <View className="w-24 h-24 rounded-full bg-[#C9A961]/20 items-center justify-center mb-6">
-                <Ionicons name="heart" size={48} color="#C9A961" />
+              <View className="w-24 h-24 rounded-full bg-[#F5B800]/20 items-center justify-center mb-6">
+                <Ionicons name="heart" size={48} color="#F5B800" />
               </View>
-              <Text className="text-[#C9A961] text-4xl font-bold">WedSync</Text>
+              <Text className="text-[#F5B800] text-4xl font-bold">WedSync</Text>
               <Text className="text-neutral-400 text-lg mt-2 text-center">
                 Your wedding, perfectly organized
               </Text>
@@ -107,8 +107,8 @@ export default function AuthScreen() {
                 { icon: "qr-code", text: "QR code photo sharing" },
               ].map((feature, index) => (
                 <View key={index} className="flex-row items-center mb-4">
-                  <View className="w-10 h-10 rounded-full bg-[#C9A961]/10 items-center justify-center mr-4">
-                    <Ionicons name={feature.icon as any} size={20} color="#C9A961" />
+                  <View className="w-10 h-10 rounded-full bg-[#F5B800]/10 items-center justify-center mr-4">
+                    <Ionicons name={feature.icon as any} size={20} color="#F5B800" />
                   </View>
                   <Text className="text-neutral-300 text-base">{feature.text}</Text>
                 </View>
@@ -119,16 +119,16 @@ export default function AuthScreen() {
             <View className="mt-auto" style={{ paddingBottom: insets.bottom + 40 }}>
               <Pressable
                 onPress={() => setMode("role-select")}
-                className="bg-[#C9A961] rounded-2xl py-4 items-center mb-4 active:opacity-80"
+                className="bg-[#F5B800] rounded-2xl py-4 items-center mb-4 active:opacity-80"
               >
                 <Text className="text-black text-lg font-semibold">Get Started</Text>
               </Pressable>
 
               <Pressable
                 onPress={() => setMode("login")}
-                className="border border-[#C9A961] rounded-2xl py-4 items-center active:opacity-80"
+                className="border border-[#F5B800] rounded-2xl py-4 items-center active:opacity-80"
               >
-                <Text className="text-[#C9A961] text-lg font-semibold">I already have an account</Text>
+                <Text className="text-[#F5B800] text-lg font-semibold">I already have an account</Text>
               </Pressable>
             </View>
           </View>
@@ -148,7 +148,7 @@ export default function AuthScreen() {
           <View style={{ paddingTop: insets.top + 20 }} className="flex-1 px-6">
             {/* Header */}
             <Pressable onPress={() => setMode("welcome")} className="mb-8">
-              <Ionicons name="arrow-back" size={28} color="#C9A961" />
+              <Ionicons name="arrow-back" size={28} color="#F5B800" />
             </Pressable>
 
             <Text className="text-neutral-100 text-3xl font-bold mb-2">
@@ -163,11 +163,11 @@ export default function AuthScreen() {
               {/* Photographer Option */}
               <Pressable
                 onPress={() => handleRoleSelect("photographer")}
-                className="bg-neutral-900 rounded-3xl p-6 mb-4 border-2 border-neutral-800 active:border-[#C9A961]"
+                className="bg-neutral-900 rounded-3xl p-6 mb-4 border-2 border-neutral-800 active:border-[#F5B800]"
               >
                 <View className="flex-row items-start">
-                  <View className="w-16 h-16 rounded-2xl bg-[#C9A961]/20 items-center justify-center mr-4">
-                    <Ionicons name="camera" size={32} color="#C9A961" />
+                  <View className="w-16 h-16 rounded-2xl bg-[#F5B800]/20 items-center justify-center mr-4">
+                    <Ionicons name="camera" size={32} color="#F5B800" />
                   </View>
                   <View className="flex-1">
                     <Text className="text-neutral-100 text-xl font-bold mb-1">Photographer</Text>
@@ -188,11 +188,11 @@ export default function AuthScreen() {
               {/* Bride/Groom Option */}
               <Pressable
                 onPress={() => handleRoleSelect("couple")}
-                className="bg-neutral-900 rounded-3xl p-6 border-2 border-neutral-800 active:border-[#C9A961]"
+                className="bg-neutral-900 rounded-3xl p-6 border-2 border-neutral-800 active:border-[#F5B800]"
               >
                 <View className="flex-row items-start">
-                  <View className="w-16 h-16 rounded-2xl bg-[#C9A961]/20 items-center justify-center mr-4">
-                    <Ionicons name="heart" size={32} color="#C9A961" />
+                  <View className="w-16 h-16 rounded-2xl bg-[#F5B800]/20 items-center justify-center mr-4">
+                    <Ionicons name="heart" size={32} color="#F5B800" />
                   </View>
                   <View className="flex-1">
                     <Text className="text-neutral-100 text-xl font-bold mb-1">Bride / Groom</Text>
@@ -231,7 +231,7 @@ export default function AuthScreen() {
                 onPress={() => setMode(mode === "login" ? "welcome" : "role-select")}
                 className="mb-8"
               >
-                <Ionicons name="arrow-back" size={28} color="#C9A961" />
+                <Ionicons name="arrow-back" size={28} color="#F5B800" />
               </Pressable>
 
               <Text className="text-neutral-100 text-3xl font-bold mb-2">
@@ -260,13 +260,13 @@ export default function AuthScreen() {
                 {/* Role Badge (signup only) */}
                 {mode === "signup" && selectedRole && (
                   <View className="flex-row items-center mb-6">
-                    <View className="flex-row items-center bg-[#C9A961]/10 px-4 py-2 rounded-full">
+                    <View className="flex-row items-center bg-[#F5B800]/10 px-4 py-2 rounded-full">
                       <Ionicons
                         name={selectedRole === "photographer" ? "camera" : "heart"}
                         size={16}
-                        color="#C9A961"
+                        color="#F5B800"
                       />
-                      <Text className="text-[#C9A961] font-medium ml-2 capitalize">
+                      <Text className="text-[#F5B800] font-medium ml-2 capitalize">
                         {selectedRole === "photographer" ? "Photographer" : "Bride / Groom"}
                       </Text>
                     </View>
@@ -363,7 +363,7 @@ export default function AuthScreen() {
                   onPress={mode === "login" ? handleSignIn : handleSignUp}
                   disabled={isLoading}
                   className={`rounded-2xl py-4 items-center mb-6 ${
-                    isLoading ? "bg-[#C9A961]/50" : "bg-[#C9A961] active:opacity-80"
+                    isLoading ? "bg-[#F5B800]/50" : "bg-[#F5B800] active:opacity-80"
                   }`}
                 >
                   {isLoading ? (
@@ -390,7 +390,7 @@ export default function AuthScreen() {
                       }
                     }}
                   >
-                    <Text className="text-[#C9A961] font-semibold">
+                    <Text className="text-[#F5B800] font-semibold">
                       {mode === "login" ? "Sign Up" : "Sign In"}
                     </Text>
                   </Pressable>

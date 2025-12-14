@@ -175,8 +175,8 @@ export default function GuestUploadScreen() {
         style={{ paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20 }}
       >
         <View className="items-center mb-6">
-          <Ionicons name="camera" size={48} color="#C9A961" />
-          <Text className="text-[#C9A961] text-3xl font-bold mt-4 text-center">{wedding.coupleName}</Text>
+          <Ionicons name="camera" size={48} color="#F5B800" />
+          <Text className="text-[#F5B800] text-3xl font-bold mt-4 text-center">{wedding.coupleName}</Text>
           <Text className="text-neutral-400 text-base mt-2 text-center">
             Share your photos from the celebration
           </Text>
@@ -186,7 +186,7 @@ export default function GuestUploadScreen() {
           <Pressable
             onPress={takePhoto}
             disabled={uploading}
-            className="flex-1 bg-[#C9A961] rounded-2xl py-4 items-center active:opacity-70 mr-3"
+            className="flex-1 bg-[#F5B800] rounded-2xl py-4 items-center active:opacity-70 mr-3"
           >
             <Ionicons name="camera-outline" size={28} color="#000000" />
             <Text className="text-black text-base font-semibold mt-2">Take Photo</Text>
@@ -197,7 +197,7 @@ export default function GuestUploadScreen() {
             disabled={uploading}
             className="flex-1 bg-neutral-800 rounded-2xl py-4 items-center border border-neutral-700 active:opacity-70"
           >
-            <Ionicons name="images-outline" size={28} color="#C9A961" />
+            <Ionicons name="images-outline" size={28} color="#F5B800" />
             <Text className="text-neutral-100 text-base font-semibold mt-2">Choose Media</Text>
           </Pressable>
         </View>
@@ -208,7 +208,7 @@ export default function GuestUploadScreen() {
           <View className="bg-neutral-900 rounded-2xl p-6 mb-4 border border-neutral-800">
             <View className="flex-row items-center justify-between mb-3">
               <View className="flex-row items-center flex-1">
-                <Ionicons name="cloud-upload-outline" size={24} color="#C9A961" />
+                <Ionicons name="cloud-upload-outline" size={24} color="#F5B800" />
                 <Text className="text-neutral-100 text-base ml-3 font-medium">
                   Uploading to cloud...
                 </Text>
@@ -226,7 +226,7 @@ export default function GuestUploadScreen() {
                 </View>
                 <View className="h-2 bg-neutral-800 rounded-full overflow-hidden">
                   <View
-                    className="h-full bg-[#C9A961]"
+                    className="h-full bg-[#F5B800]"
                     style={{
                       width: `${(uploadProgress.completed / uploadProgress.total) * 100}%`,
                     }}
@@ -285,7 +285,7 @@ export default function GuestUploadScreen() {
 
         <View className="bg-neutral-900 rounded-2xl p-5 mb-8 border border-neutral-800">
           <View className="flex-row items-start">
-            <Ionicons name="information-circle" size={20} color="#C9A961" />
+            <Ionicons name="information-circle" size={20} color="#F5B800" />
             <View className="flex-1 ml-3">
               <Text className="text-neutral-300 text-sm leading-5">
                 Your photos will be added to the wedding gallery for the couple and all guests to enjoy.

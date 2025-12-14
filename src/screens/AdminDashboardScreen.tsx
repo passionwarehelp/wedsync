@@ -28,7 +28,7 @@ export default function AdminDashboardScreen() {
       screen: "Invoices" as const,
       count: pendingInvoices,
       label: "pending",
-      color: "#C9A961",
+      color: "#F5B800",
     },
     {
       title: "Staff Management",
@@ -36,7 +36,7 @@ export default function AdminDashboardScreen() {
       screen: "StaffManagement" as const,
       count: activeStaff,
       label: "members",
-      color: "#C9A961",
+      color: "#F5B800",
     },
     {
       title: "Time Tracking",
@@ -50,13 +50,13 @@ export default function AdminDashboardScreen() {
       title: "Email Automation",
       icon: "mail" as const,
       screen: "EmailAutomation" as const,
-      color: "#C9A961",
+      color: "#F5B800",
     },
     {
       title: "Calendar",
       icon: "calendar" as const,
       screen: "AdminCalendar" as const,
-      color: "#C9A961",
+      color: "#F5B800",
     },
   ];
 
@@ -70,11 +70,11 @@ export default function AdminDashboardScreen() {
       >
         <View className="flex-row items-center justify-between mb-6">
           <View>
-            <Text className="text-[#C9A961] text-3xl font-bold">Admin</Text>
+            <Text className="text-[#F5B800] text-3xl font-bold">Admin</Text>
             <Text className="text-neutral-400 text-base mt-1">Business Management</Text>
           </View>
-          <View className="w-12 h-12 bg-[#C9A961]/10 rounded-full items-center justify-center">
-            <Ionicons name="briefcase" size={24} color="#C9A961" />
+          <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
+            <Ionicons name="briefcase" size={24} color="#F5B800" />
           </View>
         </View>
       </LinearGradient>
@@ -88,7 +88,7 @@ export default function AdminDashboardScreen() {
               className="bg-neutral-900 rounded-2xl p-5 border border-neutral-800 active:opacity-70 mb-3"
             >
               <View className="flex-row items-center">
-                <View className="w-12 h-12 bg-[#C9A961]/10 rounded-full items-center justify-center">
+                <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
                   <Ionicons name={section.icon} size={24} color={section.color} />
                 </View>
                 <View className="flex-1 ml-4">

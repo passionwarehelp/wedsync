@@ -48,12 +48,12 @@ export default function ProDashboardScreen() {
       >
         <View className="flex-row items-center justify-between mb-6">
           <View>
-            <Text className="text-[#C9A961] text-3xl font-bold">WedSync</Text>
+            <Text className="text-[#F5B800] text-3xl font-bold">WedSync</Text>
             <Text className="text-neutral-400 text-base mt-1">Professional Dashboard</Text>
           </View>
           <Pressable
             onPress={() => navigation.navigate("CreateWedding")}
-            className="bg-[#C9A961] rounded-full w-12 h-12 items-center justify-center shadow-lg"
+            className="bg-[#F5B800] rounded-full w-12 h-12 items-center justify-center shadow-lg"
           >
             <Ionicons name="add" size={28} color="#000000" />
           </Pressable>
@@ -118,14 +118,14 @@ export default function ProDashboardScreen() {
                     </View>
 
                     <View className="flex-row items-center mb-4">
-                      <Ionicons name="calendar-outline" size={16} color="#C9A961" />
+                      <Ionicons name="calendar-outline" size={16} color="#F5B800" />
                       <Text className="text-neutral-300 text-sm ml-2">
                         {format(new Date(wedding.weddingDate), "MMMM d, yyyy")}
                       </Text>
                       {wedding.venue && (
                         <>
                           <View className="w-1 h-1 rounded-full bg-neutral-600 mx-3" />
-                          <Ionicons name="location-outline" size={16} color="#C9A961" />
+                          <Ionicons name="location-outline" size={16} color="#F5B800" />
                           <Text className="text-neutral-300 text-sm ml-1 flex-1" numberOfLines={1}>
                             {wedding.venue}
                           </Text>
@@ -149,7 +149,7 @@ export default function ProDashboardScreen() {
                     </View>
                   </View>
 
-                  <View style={{ height: 1, backgroundColor: "#C9A961", opacity: 0.3 }} />
+                  <View style={{ height: 1, backgroundColor: "#F5B800", opacity: 0.3 }} />
                 </Pressable>
               </Swipeable>
             ))}

@@ -97,10 +97,10 @@ function DraggableTable({ table, onPositionChange, onTablePress, allGuests }: Dr
             width: size.width,
             height: size.height,
             borderRadius: size.borderRadius,
-            backgroundColor: "#C9A961",
+            backgroundColor: "#F5B800",
             justifyContent: "center",
             alignItems: "center",
-            shadowColor: "#C9A961",
+            shadowColor: "#F5B800",
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.3,
             shadowRadius: 8,
@@ -237,19 +237,19 @@ export default function SeatingChartScreen() {
         style={{ paddingTop: 60, paddingBottom: 20, paddingHorizontal: 20 }}
       >
         <Pressable onPress={() => navigation.goBack()} className="mb-4">
-          <Ionicons name="arrow-back" size={24} color="#C9A961" />
+          <Ionicons name="arrow-back" size={24} color="#F5B800" />
         </Pressable>
 
         <View className="flex-row items-center justify-between">
           <View>
-            <Text className="text-[#C9A961] text-2xl font-bold">Seating Chart</Text>
+            <Text className="text-[#F5B800] text-2xl font-bold">Seating Chart</Text>
             <Text className="text-neutral-500 text-sm mt-1">
               {tables.length} tables · {guests.filter((g) => g.rsvpStatus !== "declined").length - unseatedGuests.length} seated
             </Text>
           </View>
           <Pressable
             onPress={() => setShowAddModal(true)}
-            className="bg-[#C9A961] rounded-full w-11 h-11 items-center justify-center"
+            className="bg-[#F5B800] rounded-full w-11 h-11 items-center justify-center"
           >
             <Ionicons name="add" size={26} color="#000000" />
           </Pressable>
@@ -280,7 +280,7 @@ export default function SeatingChartScreen() {
                     top: i * 50,
                     width: "100%",
                     height: 1,
-                    backgroundColor: "#C9A961",
+                    backgroundColor: "#F5B800",
                   }}
                 />
               ))}
@@ -292,7 +292,7 @@ export default function SeatingChartScreen() {
                     left: i * 50,
                     width: 1,
                     height: "100%",
-                    backgroundColor: "#C9A961",
+                    backgroundColor: "#F5B800",
                   }}
                 />
               ))}
@@ -376,7 +376,7 @@ export default function SeatingChartScreen() {
                 onPress={() => handleSelectShape("round")}
                 className="flex-1 bg-neutral-800 rounded-xl p-4 items-center mr-3 border border-neutral-700 active:bg-neutral-700"
               >
-                <View className="w-16 h-16 rounded-full bg-[#C9A961] items-center justify-center mb-2">
+                <View className="w-16 h-16 rounded-full bg-[#F5B800] items-center justify-center mb-2">
                   <Ionicons name="ellipse-outline" size={32} color="#000" />
                 </View>
                 <Text className="text-neutral-300 font-medium">Round</Text>
@@ -386,7 +386,7 @@ export default function SeatingChartScreen() {
                 onPress={() => handleSelectShape("square")}
                 className="flex-1 bg-neutral-800 rounded-xl p-4 items-center mr-3 border border-neutral-700 active:bg-neutral-700"
               >
-                <View className="w-14 h-14 rounded-lg bg-[#C9A961] items-center justify-center mb-2">
+                <View className="w-14 h-14 rounded-lg bg-[#F5B800] items-center justify-center mb-2">
                   <Ionicons name="square-outline" size={28} color="#000" />
                 </View>
                 <Text className="text-neutral-300 font-medium">Square</Text>
@@ -397,7 +397,7 @@ export default function SeatingChartScreen() {
                 className="flex-1 bg-neutral-800 rounded-xl p-4 items-center border border-neutral-700 active:bg-neutral-700"
               >
                 <View
-                  className="bg-[#C9A961] items-center justify-center mb-2"
+                  className="bg-[#F5B800] items-center justify-center mb-2"
                   style={{ width: 70, height: 40, borderRadius: 6 }}
                 >
                   <Ionicons name="tablet-landscape-outline" size={24} color="#000" />
@@ -422,7 +422,7 @@ export default function SeatingChartScreen() {
                   setShowCapacityModal(false);
                   setShowAddModal(true);
                 }}>
-                  <Ionicons name="arrow-back" size={24} color="#C9A961" />
+                  <Ionicons name="arrow-back" size={24} color="#F5B800" />
                 </Pressable>
                 <Text className="text-neutral-100 text-xl font-bold">Table Capacity</Text>
                 <Pressable onPress={() => setShowCapacityModal(false)}>
@@ -435,17 +435,17 @@ export default function SeatingChartScreen() {
               {/* Shape Preview */}
               <View className="items-center mb-6">
                 {selectedShape === "round" && (
-                  <View className="w-20 h-20 rounded-full bg-[#C9A961] items-center justify-center">
+                  <View className="w-20 h-20 rounded-full bg-[#F5B800] items-center justify-center">
                     <Text className="text-black font-bold text-xl">{tableCapacity}</Text>
                   </View>
                 )}
                 {selectedShape === "square" && (
-                  <View className="w-16 h-16 rounded-lg bg-[#C9A961] items-center justify-center">
+                  <View className="w-16 h-16 rounded-lg bg-[#F5B800] items-center justify-center">
                     <Text className="text-black font-bold text-xl">{tableCapacity}</Text>
                   </View>
                 )}
                 {selectedShape === "rectangle" && (
-                  <View className="bg-[#C9A961] items-center justify-center" style={{ width: 90, height: 50, borderRadius: 8 }}>
+                  <View className="bg-[#F5B800] items-center justify-center" style={{ width: 90, height: 50, borderRadius: 8 }}>
                     <Text className="text-black font-bold text-xl">{tableCapacity}</Text>
                   </View>
                 )}
@@ -473,7 +473,7 @@ export default function SeatingChartScreen() {
                     onPress={() => setTableCapacity(num.toString())}
                     className={`w-12 h-12 rounded-full items-center justify-center mx-1 ${
                       tableCapacity === num.toString()
-                        ? "bg-[#C9A961]"
+                        ? "bg-[#F5B800]"
                         : "bg-neutral-800 border border-neutral-700"
                     }`}
                   >
@@ -492,7 +492,7 @@ export default function SeatingChartScreen() {
                 onPress={handleConfirmTable}
                 disabled={!tableCapacity || parseInt(tableCapacity) < 1}
                 className={`rounded-xl py-4 items-center ${
-                  tableCapacity && parseInt(tableCapacity) >= 1 ? "bg-[#C9A961]" : "bg-neutral-800"
+                  tableCapacity && parseInt(tableCapacity) >= 1 ? "bg-[#F5B800]" : "bg-neutral-800"
                 }`}
               >
                 <Text
@@ -551,8 +551,8 @@ export default function SeatingChartScreen() {
                           className="flex-row items-center justify-between bg-neutral-800 rounded-xl p-3 mb-2 border border-neutral-700"
                         >
                           <View className="flex-row items-center flex-1">
-                            <View className="w-8 h-8 rounded-full bg-[#C9A961]/20 items-center justify-center mr-3">
-                              <Text className="text-[#C9A961] font-bold">
+                            <View className="w-8 h-8 rounded-full bg-[#F5B800]/20 items-center justify-center mr-3">
+                              <Text className="text-[#F5B800] font-bold">
                                 {guest.name.charAt(0)}
                               </Text>
                             </View>
@@ -578,7 +578,7 @@ export default function SeatingChartScreen() {
                 {selectedTable.guestIds.length < selectedTable.capacity && (
                   <Pressable
                     onPress={() => setShowGuestModal(true)}
-                    className="bg-[#C9A961] rounded-xl py-3 items-center mb-3"
+                    className="bg-[#F5B800] rounded-xl py-3 items-center mb-3"
                   >
                     <Text className="text-black font-semibold">Add Guest to Table</Text>
                   </Pressable>
@@ -619,8 +619,8 @@ export default function SeatingChartScreen() {
                     onPress={() => handleAssignGuest(guest.id)}
                     className="flex-row items-center bg-neutral-800 rounded-xl p-4 mb-2 border border-neutral-700 active:bg-neutral-700"
                   >
-                    <View className="w-10 h-10 rounded-full bg-[#C9A961]/20 items-center justify-center mr-3">
-                      <Text className="text-[#C9A961] font-bold text-lg">
+                    <View className="w-10 h-10 rounded-full bg-[#F5B800]/20 items-center justify-center mr-3">
+                      <Text className="text-[#F5B800] font-bold text-lg">
                         {guest.name.charAt(0)}
                       </Text>
                     </View>
@@ -644,7 +644,7 @@ export default function SeatingChartScreen() {
                         )}
                       </View>
                     </View>
-                    <Ionicons name="add-circle" size={24} color="#C9A961" />
+                    <Ionicons name="add-circle" size={24} color="#F5B800" />
                   </Pressable>
                 ))
               )}

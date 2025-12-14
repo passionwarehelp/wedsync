@@ -56,14 +56,14 @@ export default function GuestListScreen() {
         style={{ paddingTop: 60, paddingBottom: 20, paddingHorizontal: 20 }}
       >
         <Pressable onPress={() => navigation.goBack()} className="mb-4">
-          <Ionicons name="arrow-back" size={24} color="#C9A961" />
+          <Ionicons name="arrow-back" size={24} color="#F5B800" />
         </Pressable>
 
         <View className="flex-row items-center justify-between mb-5">
-          <Text className="text-[#C9A961] text-2xl font-bold">Guest List</Text>
+          <Text className="text-[#F5B800] text-2xl font-bold">Guest List</Text>
           <Pressable
             onPress={() => navigation.navigate("AddGuest", { weddingId })}
-            className="bg-[#C9A961] rounded-full w-11 h-11 items-center justify-center shadow-md"
+            className="bg-[#F5B800] rounded-full w-11 h-11 items-center justify-center shadow-md"
           >
             <Ionicons name="add" size={26} color="#000000" />
           </Pressable>
@@ -84,7 +84,7 @@ export default function GuestListScreen() {
           <Pressable
             onPress={() => setFilterStatus("all")}
             className={`px-4 py-2 rounded-full mr-2 ${
-              filterStatus === "all" ? "bg-[#C9A961]" : "bg-neutral-800"
+              filterStatus === "all" ? "bg-[#F5B800]" : "bg-neutral-800"
             }`}
           >
             <Text className={`font-medium ${filterStatus === "all" ? "text-black" : "text-neutral-400"}`}>
@@ -94,7 +94,7 @@ export default function GuestListScreen() {
           <Pressable
             onPress={() => setFilterStatus("attending")}
             className={`px-4 py-2 rounded-full mr-2 ${
-              filterStatus === "attending" ? "bg-[#C9A961]" : "bg-neutral-800"
+              filterStatus === "attending" ? "bg-[#F5B800]" : "bg-neutral-800"
             }`}
           >
             <Text
@@ -106,7 +106,7 @@ export default function GuestListScreen() {
           <Pressable
             onPress={() => setFilterStatus("declined")}
             className={`px-4 py-2 rounded-full mr-2 ${
-              filterStatus === "declined" ? "bg-[#C9A961]" : "bg-neutral-800"
+              filterStatus === "declined" ? "bg-[#F5B800]" : "bg-neutral-800"
             }`}
           >
             <Text
@@ -117,7 +117,7 @@ export default function GuestListScreen() {
           </Pressable>
           <Pressable
             onPress={() => setFilterStatus("pending")}
-            className={`px-4 py-2 rounded-full ${filterStatus === "pending" ? "bg-[#C9A961]" : "bg-neutral-800"}`}
+            className={`px-4 py-2 rounded-full ${filterStatus === "pending" ? "bg-[#F5B800]" : "bg-neutral-800"}`}
           >
             <Text className={`font-medium ${filterStatus === "pending" ? "text-black" : "text-neutral-400"}`}>
               Pending ({stats.pending})
@@ -149,7 +149,7 @@ export default function GuestListScreen() {
                     )}
                     {guest.plusOne && guest.plusOneName && (
                       <View className="flex-row items-center mt-2">
-                        <Ionicons name="person-add-outline" size={14} color="#C9A961" />
+                        <Ionicons name="person-add-outline" size={14} color="#F5B800" />
                         <Text className="text-neutral-400 text-sm ml-1">+1: {guest.plusOneName}</Text>
                       </View>
                     )}

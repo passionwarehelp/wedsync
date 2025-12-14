@@ -84,14 +84,14 @@ export default function TasksScreen() {
         style={{ paddingTop: 60, paddingBottom: 20, paddingHorizontal: 20 }}
       >
         <Pressable onPress={() => navigation.goBack()} className="mb-4">
-          <Ionicons name="arrow-back" size={24} color="#C9A961" />
+          <Ionicons name="arrow-back" size={24} color="#F5B800" />
         </Pressable>
 
         <View className="flex-row items-center justify-between mb-5">
-          <Text className="text-[#C9A961] text-2xl font-bold">Tasks</Text>
+          <Text className="text-[#F5B800] text-2xl font-bold">Tasks</Text>
           <Pressable
             onPress={() => navigation.navigate("AddTask", { weddingId })}
-            className="bg-[#C9A961] rounded-full w-11 h-11 items-center justify-center shadow-md"
+            className="bg-[#F5B800] rounded-full w-11 h-11 items-center justify-center shadow-md"
           >
             <Ionicons name="add" size={26} color="#000000" />
           </Pressable>
@@ -100,7 +100,7 @@ export default function TasksScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <Pressable
             onPress={() => setFilterStatus("all")}
-            className={`px-4 py-2 rounded-full mr-2 ${filterStatus === "all" ? "bg-[#C9A961]" : "bg-neutral-800"}`}
+            className={`px-4 py-2 rounded-full mr-2 ${filterStatus === "all" ? "bg-[#F5B800]" : "bg-neutral-800"}`}
           >
             <Text className={`font-medium ${filterStatus === "all" ? "text-black" : "text-neutral-400"}`}>
               All ({stats.total})
@@ -109,7 +109,7 @@ export default function TasksScreen() {
           <Pressable
             onPress={() => setFilterStatus("pending")}
             className={`px-4 py-2 rounded-full mr-2 ${
-              filterStatus === "pending" ? "bg-[#C9A961]" : "bg-neutral-800"
+              filterStatus === "pending" ? "bg-[#F5B800]" : "bg-neutral-800"
             }`}
           >
             <Text className={`font-medium ${filterStatus === "pending" ? "text-black" : "text-neutral-400"}`}>
@@ -119,7 +119,7 @@ export default function TasksScreen() {
           <Pressable
             onPress={() => setFilterStatus("in-progress")}
             className={`px-4 py-2 rounded-full mr-2 ${
-              filterStatus === "in-progress" ? "bg-[#C9A961]" : "bg-neutral-800"
+              filterStatus === "in-progress" ? "bg-[#F5B800]" : "bg-neutral-800"
             }`}
           >
             <Text
@@ -130,7 +130,7 @@ export default function TasksScreen() {
           </Pressable>
           <Pressable
             onPress={() => setFilterStatus("completed")}
-            className={`px-4 py-2 rounded-full ${filterStatus === "completed" ? "bg-[#C9A961]" : "bg-neutral-800"}`}
+            className={`px-4 py-2 rounded-full ${filterStatus === "completed" ? "bg-[#F5B800]" : "bg-neutral-800"}`}
           >
             <Text
               className={`font-medium ${filterStatus === "completed" ? "text-black" : "text-neutral-400"}`}
@@ -183,7 +183,7 @@ export default function TasksScreen() {
                         {task.title}
                       </Text>
                       <View className="flex-row items-center ml-2">
-                        <Ionicons name={getCategoryIcon(task.category)} size={16} color="#C9A961" />
+                        <Ionicons name={getCategoryIcon(task.category)} size={16} color="#F5B800" />
                       </View>
                     </View>
 

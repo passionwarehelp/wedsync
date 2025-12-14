@@ -128,9 +128,9 @@ export default function InvoiceDetailScreen() {
       >
         <View className="flex-row items-center justify-between mb-6">
           <Pressable onPress={() => navigation.goBack()}>
-            <Ionicons name="close" size={28} color="#C9A961" />
+            <Ionicons name="close" size={28} color="#F5B800" />
           </Pressable>
-          <Text className="text-[#C9A961] text-xl font-bold">{invoice.invoiceNumber}</Text>
+          <Text className="text-[#F5B800] text-xl font-bold">{invoice.invoiceNumber}</Text>
           <Pressable onPress={handleDelete}>
             <Ionicons name="trash-outline" size={24} color="#ef4444" />
           </Pressable>
@@ -143,7 +143,7 @@ export default function InvoiceDetailScreen() {
                 key={status}
                 onPress={() => handleStatusChange(status)}
                 className={`px-3 py-1 rounded-full${index < array.length - 1 ? " mr-2" : ""} ${
-                  invoice.status === status ? "bg-[#C9A961]" : "bg-neutral-800 border border-neutral-700"
+                  invoice.status === status ? "bg-[#F5B800]" : "bg-neutral-800 border border-neutral-700"
                 }`}
               >
                 <Text
@@ -213,7 +213,7 @@ export default function InvoiceDetailScreen() {
           <View className="mb-4">
             <View className="flex-row items-center justify-between mb-3">
               <Text className="text-neutral-100 text-lg font-semibold">Items</Text>
-              <Pressable onPress={addLineItem} className="bg-[#C9A961] px-4 py-2 rounded-full">
+              <Pressable onPress={addLineItem} className="bg-[#F5B800] px-4 py-2 rounded-full">
                 <Text className="text-black font-semibold text-sm">Add Item</Text>
               </Pressable>
             </View>
@@ -270,7 +270,7 @@ export default function InvoiceDetailScreen() {
                       <View className="flex-1">
                         <Text className="text-neutral-500 text-xs mb-1">Amount</Text>
                         <View className="bg-neutral-800 rounded-lg p-3 border border-neutral-700 justify-center">
-                          <Text className="text-[#C9A961] font-semibold">${item.amount.toFixed(2)}</Text>
+                          <Text className="text-[#F5B800] font-semibold">${item.amount.toFixed(2)}</Text>
                         </View>
                       </View>
                     </View>
@@ -304,7 +304,7 @@ export default function InvoiceDetailScreen() {
             <View className="border-t border-neutral-800 pt-3 mt-1">
               <View className="flex-row justify-between">
                 <Text className="text-neutral-100 text-lg font-bold">Total</Text>
-                <Text className="text-[#C9A961] text-xl font-bold">${total.toFixed(2)}</Text>
+                <Text className="text-[#F5B800] text-xl font-bold">${total.toFixed(2)}</Text>
               </View>
             </View>
           </View>
@@ -326,7 +326,7 @@ export default function InvoiceDetailScreen() {
           </View>
 
           {/* Save Button */}
-          <Pressable onPress={saveInvoice} className="bg-[#C9A961] rounded-2xl p-5 items-center active:opacity-70">
+          <Pressable onPress={saveInvoice} className="bg-[#F5B800] rounded-2xl p-5 items-center active:opacity-70">
             <Text className="text-black text-lg font-bold">Save Invoice</Text>
           </Pressable>
         </View>

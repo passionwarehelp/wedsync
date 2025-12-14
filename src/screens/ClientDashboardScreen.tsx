@@ -140,12 +140,12 @@ export default function ClientDashboardScreen() {
               onPress={() => setShowSettingsModal(true)}
               className="w-10 h-10 rounded-full bg-neutral-800 items-center justify-center"
             >
-              <Ionicons name="settings-outline" size={20} color="#C9A961" />
+              <Ionicons name="settings-outline" size={20} color="#F5B800" />
             </Pressable>
           </View>
 
           <View className="bg-neutral-900 rounded-2xl p-5 border border-neutral-800">
-            <Text className="text-[#C9A961] text-2xl font-bold mb-1">
+            <Text className="text-[#F5B800] text-2xl font-bold mb-1">
               {coupleWedding.coupleName}
             </Text>
             <View className="flex-row items-center mt-2">
@@ -167,19 +167,19 @@ export default function ClientDashboardScreen() {
           {/* Quick Stats */}
           <View className="flex-row mb-6">
             <View className="flex-1 bg-neutral-900 rounded-xl p-4 mr-2 border border-neutral-800">
-              <Text className="text-[#C9A961] text-2xl font-bold">
+              <Text className="text-[#F5B800] text-2xl font-bold">
                 {coupleWedding.rsvpCount}
               </Text>
               <Text className="text-neutral-400 text-sm">RSVPs</Text>
             </View>
             <View className="flex-1 bg-neutral-900 rounded-xl p-4 mx-2 border border-neutral-800">
-              <Text className="text-[#C9A961] text-2xl font-bold">
+              <Text className="text-[#F5B800] text-2xl font-bold">
                 {coupleWedding.guestCount}
               </Text>
               <Text className="text-neutral-400 text-sm">Guests</Text>
             </View>
             <View className="flex-1 bg-neutral-900 rounded-xl p-4 ml-2 border border-neutral-800">
-              <Text className="text-[#C9A961] text-2xl font-bold">
+              <Text className="text-[#F5B800] text-2xl font-bold">
                 {coupleWedding.tasksCompleted}/{coupleWedding.totalTasks}
               </Text>
               <Text className="text-neutral-400 text-sm">Tasks</Text>
@@ -194,8 +194,8 @@ export default function ClientDashboardScreen() {
             onPress={() => navigation.navigate("GuestList", { weddingId: coupleWedding.id })}
             className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
           >
-            <View className="w-12 h-12 bg-[#C9A961]/10 rounded-full items-center justify-center">
-              <Ionicons name="people" size={24} color="#C9A961" />
+            <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
+              <Ionicons name="people" size={24} color="#F5B800" />
             </View>
             <View className="flex-1 ml-4">
               <Text className="text-neutral-100 text-lg font-medium">Guests & RSVP</Text>
@@ -211,8 +211,8 @@ export default function ClientDashboardScreen() {
             onPress={() => navigation.navigate("Tasks", { weddingId: coupleWedding.id })}
             className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
           >
-            <View className="w-12 h-12 bg-[#C9A961]/10 rounded-full items-center justify-center">
-              <Ionicons name="checkmark-circle" size={24} color="#C9A961" />
+            <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
+              <Ionicons name="checkmark-circle" size={24} color="#F5B800" />
             </View>
             <View className="flex-1 ml-4">
               <Text className="text-neutral-100 text-lg font-medium">Tasks</Text>
@@ -228,8 +228,8 @@ export default function ClientDashboardScreen() {
             onPress={() => navigation.navigate("SeatingChart", { weddingId: coupleWedding.id })}
             className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
           >
-            <View className="w-12 h-12 bg-[#C9A961]/10 rounded-full items-center justify-center">
-              <Ionicons name="grid" size={24} color="#C9A961" />
+            <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
+              <Ionicons name="grid" size={24} color="#F5B800" />
             </View>
             <View className="flex-1 ml-4">
               <Text className="text-neutral-100 text-lg font-medium">Seating Chart</Text>
@@ -243,8 +243,8 @@ export default function ClientDashboardScreen() {
             onPress={() => navigation.navigate("PhotoGallery", { weddingId: coupleWedding.id })}
             className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
           >
-            <View className="w-12 h-12 bg-[#C9A961]/10 rounded-full items-center justify-center">
-              <Ionicons name="images" size={24} color="#C9A961" />
+            <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
+              <Ionicons name="images" size={24} color="#F5B800" />
             </View>
             <View className="flex-1 ml-4">
               <Text className="text-neutral-100 text-lg font-medium">Photo Gallery</Text>
@@ -259,8 +259,8 @@ export default function ClientDashboardScreen() {
               onPress={() => navigation.navigate("CoupleCalendar", { weddingId: coupleWedding.id })}
               className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
             >
-              <View className="w-12 h-12 bg-[#C9A961]/10 rounded-full items-center justify-center">
-                <Ionicons name="calendar" size={24} color="#C9A961" />
+              <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
+                <Ionicons name="calendar" size={24} color="#F5B800" />
               </View>
               <View className="flex-1 ml-4">
                 <Text className="text-neutral-100 text-lg font-medium">Calendar</Text>
@@ -276,8 +276,8 @@ export default function ClientDashboardScreen() {
               onPress={() => navigation.navigate("CoupleNotes", { weddingId: coupleWedding.id })}
               className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
             >
-              <View className="w-12 h-12 bg-[#C9A961]/10 rounded-full items-center justify-center">
-                <Ionicons name="document-text" size={24} color="#C9A961" />
+              <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
+                <Ionicons name="document-text" size={24} color="#F5B800" />
               </View>
               <View className="flex-1 ml-4">
                 <Text className="text-neutral-100 text-lg font-medium">Notes</Text>
@@ -293,8 +293,8 @@ export default function ClientDashboardScreen() {
               onPress={() => setShowQRPaywallModal(true)}
               className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
             >
-              <View className="w-12 h-12 bg-[#C9A961]/10 rounded-full items-center justify-center">
-                <Ionicons name="qr-code" size={24} color="#C9A961" />
+              <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
+                <Ionicons name="qr-code" size={24} color="#F5B800" />
               </View>
               <View className="flex-1 ml-4">
                 <Text className="text-neutral-100 text-lg font-medium">Get Access to My Shared Photo Album</Text>
@@ -354,8 +354,8 @@ export default function ClientDashboardScreen() {
 
                   {/* Hero Section */}
                   <View className="items-center mb-8">
-                    <View className="w-24 h-24 rounded-full bg-[#C9A961]/20 items-center justify-center mb-5">
-                      <Ionicons name="camera" size={40} color="#C9A961" />
+                    <View className="w-24 h-24 rounded-full bg-[#F5B800]/20 items-center justify-center mb-5">
+                      <Ionicons name="camera" size={40} color="#F5B800" />
                     </View>
                     <Text className="text-neutral-100 text-2xl font-bold text-center mb-3">
                       Capture Every Magical Moment
@@ -366,8 +366,8 @@ export default function ClientDashboardScreen() {
                   </View>
 
                   {/* Main Value Prop */}
-                  <View className="bg-[#C9A961]/10 rounded-2xl p-5 mb-6 border border-[#C9A961]/20">
-                    <Text className="text-[#C9A961] text-lg font-semibold text-center mb-2">
+                  <View className="bg-[#F5B800]/10 rounded-2xl p-5 mb-6 border border-[#F5B800]/20">
+                    <Text className="text-[#F5B800] text-lg font-semibold text-center mb-2">
                       Shared Photo Album QR Code
                     </Text>
                     <Text className="text-neutral-300 text-center text-sm">
@@ -409,8 +409,8 @@ export default function ClientDashboardScreen() {
                       },
                     ].map((benefit, index) => (
                       <View key={index} className="flex-row mb-4">
-                        <View className="w-10 h-10 rounded-full bg-[#C9A961]/10 items-center justify-center mr-3 mt-1">
-                          <Ionicons name={benefit.icon as any} size={20} color="#C9A961" />
+                        <View className="w-10 h-10 rounded-full bg-[#F5B800]/10 items-center justify-center mr-3 mt-1">
+                          <Ionicons name={benefit.icon as any} size={20} color="#F5B800" />
                         </View>
                         <View className="flex-1">
                           <Text className="text-neutral-100 font-semibold mb-1">{benefit.title}</Text>
@@ -435,7 +435,7 @@ export default function ClientDashboardScreen() {
                         "Your grandmother dancing with your nephew",
                       ].map((example, index) => (
                         <View key={index} className="flex-row items-start mb-2">
-                          <Ionicons name="heart" size={14} color="#C9A961" style={{ marginTop: 3 }} />
+                          <Ionicons name="heart" size={14} color="#F5B800" style={{ marginTop: 3 }} />
                           <Text className="text-neutral-300 text-sm ml-2 flex-1">{example}</Text>
                         </View>
                       ))}
@@ -446,7 +446,7 @@ export default function ClientDashboardScreen() {
                   <View className="items-center mb-6">
                     <View className="flex-row mb-2">
                       {[1, 2, 3, 4, 5].map((star) => (
-                        <Ionicons key={star} name="star" size={20} color="#C9A961" />
+                        <Ionicons key={star} name="star" size={20} color="#F5B800" />
                       ))}
                     </View>
                     <Text className="text-neutral-400 text-sm text-center italic">
@@ -456,10 +456,10 @@ export default function ClientDashboardScreen() {
                   </View>
 
                   {/* Price Section */}
-                  <View className="bg-[#C9A961]/10 rounded-2xl p-6 mb-6 border border-[#C9A961]/30">
+                  <View className="bg-[#F5B800]/10 rounded-2xl p-6 mb-6 border border-[#F5B800]/30">
                     <View className="items-center">
                       <Text className="text-neutral-400 text-sm mb-1">One-time purchase</Text>
-                      <Text className="text-[#C9A961] text-4xl font-bold mb-1">$50</Text>
+                      <Text className="text-[#F5B800] text-4xl font-bold mb-1">$50</Text>
                       <Text className="text-neutral-500 text-xs">No subscriptions. Yours forever.</Text>
                     </View>
                   </View>
@@ -474,7 +474,7 @@ export default function ClientDashboardScreen() {
                         navigation.navigate("QRCodeDesign", { weddingId: coupleWeddingId });
                       }
                     }}
-                    className="bg-[#C9A961] rounded-2xl py-5 items-center mb-4 active:opacity-90"
+                    className="bg-[#F5B800] rounded-2xl py-5 items-center mb-4 active:opacity-90"
                   >
                     <Text className="text-black text-lg font-bold">Unlock My Photo Album</Text>
                     <Text className="text-black/70 text-sm mt-1">Start collecting memories today</Text>
@@ -520,15 +520,15 @@ export default function ClientDashboardScreen() {
               onPress={() => setShowSettingsModal(true)}
               className="w-10 h-10 rounded-full bg-neutral-800 items-center justify-center"
             >
-              <Ionicons name="settings-outline" size={20} color="#C9A961" />
+              <Ionicons name="settings-outline" size={20} color="#F5B800" />
             </Pressable>
           </View>
 
           {/* Main Content */}
           <View className="flex-1 justify-center">
             <View className="items-center mb-10">
-              <View className="w-20 h-20 rounded-full bg-[#C9A961]/20 items-center justify-center mb-4">
-                <Ionicons name="heart" size={40} color="#C9A961" />
+              <View className="w-20 h-20 rounded-full bg-[#F5B800]/20 items-center justify-center mb-4">
+                <Ionicons name="heart" size={40} color="#F5B800" />
               </View>
               <Text className="text-neutral-100 text-2xl font-bold text-center mb-2">
                 Get Started
@@ -541,11 +541,11 @@ export default function ClientDashboardScreen() {
             {/* Join Wedding Option */}
             <Pressable
               onPress={() => setShowJoinModal(true)}
-              className="bg-neutral-900 rounded-2xl p-6 mb-4 border border-neutral-800 active:border-[#C9A961]"
+              className="bg-neutral-900 rounded-2xl p-6 mb-4 border border-neutral-800 active:border-[#F5B800]"
             >
               <View className="flex-row items-start">
-                <View className="w-14 h-14 rounded-xl bg-[#C9A961]/20 items-center justify-center mr-4">
-                  <Ionicons name="link" size={28} color="#C9A961" />
+                <View className="w-14 h-14 rounded-xl bg-[#F5B800]/20 items-center justify-center mr-4">
+                  <Ionicons name="link" size={28} color="#F5B800" />
                 </View>
                 <View className="flex-1">
                   <Text className="text-neutral-100 text-xl font-bold mb-1">Join My Wedding</Text>
@@ -559,11 +559,11 @@ export default function ClientDashboardScreen() {
             {/* Create Wedding Option */}
             <Pressable
               onPress={() => setShowCreateModal(true)}
-              className="bg-neutral-900 rounded-2xl p-6 border border-neutral-800 active:border-[#C9A961]"
+              className="bg-neutral-900 rounded-2xl p-6 border border-neutral-800 active:border-[#F5B800]"
             >
               <View className="flex-row items-start">
-                <View className="w-14 h-14 rounded-xl bg-[#C9A961]/20 items-center justify-center mr-4">
-                  <Ionicons name="add-circle" size={28} color="#C9A961" />
+                <View className="w-14 h-14 rounded-xl bg-[#F5B800]/20 items-center justify-center mr-4">
+                  <Ionicons name="add-circle" size={28} color="#F5B800" />
                 </View>
                 <View className="flex-1">
                   <Text className="text-neutral-100 text-xl font-bold mb-1">Create My Wedding</Text>
@@ -633,7 +633,7 @@ export default function ClientDashboardScreen() {
                 onPress={handleJoinWedding}
                 disabled={isJoining || !inviteCode.trim()}
                 className={`rounded-xl py-4 items-center ${
-                  isJoining || !inviteCode.trim() ? "bg-neutral-800" : "bg-[#C9A961] active:opacity-80"
+                  isJoining || !inviteCode.trim() ? "bg-neutral-800" : "bg-[#F5B800] active:opacity-80"
                 }`}
               >
                 {isJoining ? (
@@ -709,7 +709,7 @@ export default function ClientDashboardScreen() {
                     onPress={() => setShowDatePicker(true)}
                     className="bg-neutral-800 rounded-xl px-4 py-4 border border-neutral-700 flex-row items-center"
                   >
-                    <Ionicons name="calendar-outline" size={20} color="#C9A961" />
+                    <Ionicons name="calendar-outline" size={20} color="#F5B800" />
                     <Text className="text-neutral-100 text-base ml-3">
                       {format(weddingDate, "MMMM d, yyyy")}
                     </Text>
@@ -746,7 +746,7 @@ export default function ClientDashboardScreen() {
                   onPress={handleCreateWedding}
                   disabled={!isCreateValid}
                   className={`rounded-xl py-4 items-center ${
-                    isCreateValid ? "bg-[#C9A961] active:opacity-80" : "bg-neutral-800"
+                    isCreateValid ? "bg-[#F5B800] active:opacity-80" : "bg-neutral-800"
                   }`}
                 >
                   <Text className={`text-lg font-semibold ${
@@ -776,8 +776,8 @@ export default function ClientDashboardScreen() {
               <Text className="text-neutral-100 font-medium">{user?.name}</Text>
               <Text className="text-neutral-400 text-sm">{user?.email}</Text>
               <View className="flex-row items-center mt-2">
-                <View className="bg-[#C9A961]/20 px-2 py-1 rounded">
-                  <Text className="text-[#C9A961] text-xs font-medium">Bride / Groom</Text>
+                <View className="bg-[#F5B800]/20 px-2 py-1 rounded">
+                  <Text className="text-[#F5B800] text-xs font-medium">Bride / Groom</Text>
                 </View>
               </View>
             </View>
@@ -813,9 +813,9 @@ export default function ClientDashboardScreen() {
 
                 {/* Hero Section */}
                 <View className="items-center mb-8">
-                  <View className="w-24 h-24 rounded-full bg-gradient-to-br from-[#C9A961] to-[#8B7355] items-center justify-center mb-5">
-                    <View className="w-20 h-20 rounded-full bg-[#C9A961]/30 items-center justify-center">
-                      <Ionicons name="camera" size={40} color="#C9A961" />
+                  <View className="w-24 h-24 rounded-full bg-gradient-to-br from-[#F5B800] to-[#8B7355] items-center justify-center mb-5">
+                    <View className="w-20 h-20 rounded-full bg-[#F5B800]/30 items-center justify-center">
+                      <Ionicons name="camera" size={40} color="#F5B800" />
                     </View>
                   </View>
                   <Text className="text-neutral-100 text-2xl font-bold text-center mb-3">
@@ -827,8 +827,8 @@ export default function ClientDashboardScreen() {
                 </View>
 
                 {/* Main Value Prop */}
-                <View className="bg-[#C9A961]/10 rounded-2xl p-5 mb-6 border border-[#C9A961]/20">
-                  <Text className="text-[#C9A961] text-lg font-semibold text-center mb-2">
+                <View className="bg-[#F5B800]/10 rounded-2xl p-5 mb-6 border border-[#F5B800]/20">
+                  <Text className="text-[#F5B800] text-lg font-semibold text-center mb-2">
                     Shared Photo Album QR Code
                   </Text>
                   <Text className="text-neutral-300 text-center text-sm">
@@ -870,8 +870,8 @@ export default function ClientDashboardScreen() {
                     },
                   ].map((benefit, index) => (
                     <View key={index} className="flex-row mb-4">
-                      <View className="w-10 h-10 rounded-full bg-[#C9A961]/10 items-center justify-center mr-3 mt-1">
-                        <Ionicons name={benefit.icon as any} size={20} color="#C9A961" />
+                      <View className="w-10 h-10 rounded-full bg-[#F5B800]/10 items-center justify-center mr-3 mt-1">
+                        <Ionicons name={benefit.icon as any} size={20} color="#F5B800" />
                       </View>
                       <View className="flex-1">
                         <Text className="text-neutral-100 font-semibold mb-1">{benefit.title}</Text>
@@ -896,7 +896,7 @@ export default function ClientDashboardScreen() {
                       "Your grandmother dancing with your nephew",
                     ].map((example, index) => (
                       <View key={index} className="flex-row items-start mb-2">
-                        <Ionicons name="heart" size={14} color="#C9A961" style={{ marginTop: 3 }} />
+                        <Ionicons name="heart" size={14} color="#F5B800" style={{ marginTop: 3 }} />
                         <Text className="text-neutral-300 text-sm ml-2 flex-1">{example}</Text>
                       </View>
                     ))}
@@ -907,7 +907,7 @@ export default function ClientDashboardScreen() {
                 <View className="items-center mb-6">
                   <View className="flex-row mb-2">
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <Ionicons key={star} name="star" size={20} color="#C9A961" />
+                      <Ionicons key={star} name="star" size={20} color="#F5B800" />
                     ))}
                   </View>
                   <Text className="text-neutral-400 text-sm text-center italic">
@@ -917,10 +917,10 @@ export default function ClientDashboardScreen() {
                 </View>
 
                 {/* Price Section */}
-                <View className="bg-gradient-to-r from-[#C9A961]/20 to-[#8B7355]/20 rounded-2xl p-6 mb-6 border border-[#C9A961]/30">
+                <View className="bg-gradient-to-r from-[#F5B800]/20 to-[#8B7355]/20 rounded-2xl p-6 mb-6 border border-[#F5B800]/30">
                   <View className="items-center">
                     <Text className="text-neutral-400 text-sm mb-1">One-time purchase</Text>
-                    <Text className="text-[#C9A961] text-4xl font-bold mb-1">$50</Text>
+                    <Text className="text-[#F5B800] text-4xl font-bold mb-1">$50</Text>
                     <Text className="text-neutral-500 text-xs">No subscriptions. Yours forever.</Text>
                   </View>
                 </View>
@@ -935,7 +935,7 @@ export default function ClientDashboardScreen() {
                       navigation.navigate("QRCode", { weddingId: coupleWeddingId });
                     }
                   }}
-                  className="bg-[#C9A961] rounded-2xl py-5 items-center mb-4 active:opacity-90"
+                  className="bg-[#F5B800] rounded-2xl py-5 items-center mb-4 active:opacity-90"
                 >
                   <Text className="text-black text-lg font-bold">Unlock My Photo Album</Text>
                   <Text className="text-black/70 text-sm mt-1">Start collecting memories today</Text>

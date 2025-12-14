@@ -91,17 +91,17 @@ export default function PhotoGalleryScreen() {
         style={{ paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20 }}
       >
         <Pressable onPress={() => navigation.goBack()} className="mb-6">
-          <Ionicons name="arrow-back" size={24} color="#C9A961" />
+          <Ionicons name="arrow-back" size={24} color="#F5B800" />
         </Pressable>
 
         <View className="flex-row items-center justify-between mb-4">
           <View className="flex-1">
-            <Text className="text-[#C9A961] text-3xl font-bold mb-2">Gallery</Text>
+            <Text className="text-[#F5B800] text-3xl font-bold mb-2">Gallery</Text>
             <Text className="text-neutral-400 text-base">{wedding.coupleName}</Text>
           </View>
           <Pressable
             onPress={() => navigation.navigate("PhotographerUpload", { weddingId })}
-            className="w-12 h-12 bg-[#C9A961] rounded-full items-center justify-center active:opacity-70"
+            className="w-12 h-12 bg-[#F5B800] rounded-full items-center justify-center active:opacity-70"
           >
             <Ionicons name="add" size={28} color="#000000" />
           </Pressable>
@@ -111,7 +111,7 @@ export default function PhotoGalleryScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-1">
           <Pressable
             onPress={() => setFilter("all")}
-            className={`px-4 py-2 rounded-full mx-1 ${filter === "all" ? "bg-[#C9A961]" : "bg-neutral-900 border border-neutral-800"}`}
+            className={`px-4 py-2 rounded-full mx-1 ${filter === "all" ? "bg-[#F5B800]" : "bg-neutral-900 border border-neutral-800"}`}
           >
             <Text className={`font-semibold ${filter === "all" ? "text-black" : "text-neutral-400"}`}>
               All ({media.length})
@@ -119,7 +119,7 @@ export default function PhotoGalleryScreen() {
           </Pressable>
           <Pressable
             onPress={() => setFilter("photos")}
-            className={`px-4 py-2 rounded-full mx-1 ${filter === "photos" ? "bg-[#C9A961]" : "bg-neutral-900 border border-neutral-800"}`}
+            className={`px-4 py-2 rounded-full mx-1 ${filter === "photos" ? "bg-[#F5B800]" : "bg-neutral-900 border border-neutral-800"}`}
           >
             <Text className={`font-semibold ${filter === "photos" ? "text-black" : "text-neutral-400"}`}>
               Photos ({photoCount})
@@ -127,7 +127,7 @@ export default function PhotoGalleryScreen() {
           </Pressable>
           <Pressable
             onPress={() => setFilter("videos")}
-            className={`px-4 py-2 rounded-full mx-1 ${filter === "videos" ? "bg-[#C9A961]" : "bg-neutral-900 border border-neutral-800"}`}
+            className={`px-4 py-2 rounded-full mx-1 ${filter === "videos" ? "bg-[#F5B800]" : "bg-neutral-900 border border-neutral-800"}`}
           >
             <Text className={`font-semibold ${filter === "videos" ? "text-black" : "text-neutral-400"}`}>
               Videos ({videoCount})
@@ -135,7 +135,7 @@ export default function PhotoGalleryScreen() {
           </Pressable>
           <Pressable
             onPress={() => setFilter("favorites")}
-            className={`px-4 py-2 rounded-full mx-1 ${filter === "favorites" ? "bg-[#C9A961]" : "bg-neutral-900 border border-neutral-800"}`}
+            className={`px-4 py-2 rounded-full mx-1 ${filter === "favorites" ? "bg-[#F5B800]" : "bg-neutral-900 border border-neutral-800"}`}
           >
             <Text className={`font-semibold ${filter === "favorites" ? "text-black" : "text-neutral-400"}`}>
               Favorites ({favoriteCount})
@@ -147,7 +147,7 @@ export default function PhotoGalleryScreen() {
       {sortedMedia.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8">
           <View className="w-24 h-24 bg-neutral-900 rounded-full items-center justify-center mb-6 border-2 border-neutral-800">
-            <Ionicons name="images-outline" size={48} color="#C9A961" />
+            <Ionicons name="images-outline" size={48} color="#F5B800" />
           </View>
           <Text className="text-neutral-300 text-xl font-semibold mb-2 text-center">
             {filter === "favorites"
@@ -166,7 +166,7 @@ export default function PhotoGalleryScreen() {
           {filter === "all" && (
             <Pressable
               onPress={() => navigation.navigate("PhotographerUpload", { weddingId })}
-              className="bg-[#C9A961] rounded-2xl px-8 py-4 flex-row items-center active:opacity-70"
+              className="bg-[#F5B800] rounded-2xl px-8 py-4 flex-row items-center active:opacity-70"
             >
               <Ionicons name="cloud-upload" size={24} color="#000000" />
               <Text className="text-black text-lg font-semibold ml-3">Upload Media</Text>
@@ -212,7 +212,7 @@ export default function PhotoGalleryScreen() {
                     <Ionicons
                       name={item.isFavorite ? "heart" : "heart-outline"}
                       size={16}
-                      color={item.isFavorite ? "#C9A961" : "#FFFFFF"}
+                      color={item.isFavorite ? "#F5B800" : "#FFFFFF"}
                     />
                   </Pressable>
                   {item.mediaType === "video" && (
@@ -233,13 +233,13 @@ export default function PhotoGalleryScreen() {
           <SafeAreaView className="flex-1">
             <View className="flex-row items-center justify-between px-5 py-4">
               <Pressable onPress={() => setSelectedMedia(null)}>
-                <Ionicons name="close" size={32} color="#C9A961" />
+                <Ionicons name="close" size={32} color="#F5B800" />
               </Pressable>
               <Pressable onPress={() => toggleFavorite(selectedItem.id)}>
                 <Ionicons
                   name={selectedItem.isFavorite ? "heart" : "heart-outline"}
                   size={32}
-                  color={selectedItem.isFavorite ? "#C9A961" : "#FFFFFF"}
+                  color={selectedItem.isFavorite ? "#F5B800" : "#FFFFFF"}
                 />
               </Pressable>
             </View>
@@ -265,8 +265,8 @@ export default function PhotoGalleryScreen() {
             <View className="px-5 pb-6">
               <View className="flex-row items-center mb-2">
                 {selectedItem.mediaType === "video" && (
-                  <View className="bg-[#C9A961]/20 px-2 py-1 rounded mr-2">
-                    <Text className="text-[#C9A961] text-xs font-semibold">VIDEO</Text>
+                  <View className="bg-[#F5B800]/20 px-2 py-1 rounded mr-2">
+                    <Text className="text-[#F5B800] text-xs font-semibold">VIDEO</Text>
                   </View>
                 )}
                 <Text className="text-neutral-100 text-lg font-semibold">

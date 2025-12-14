@@ -178,10 +178,10 @@ export default function PhotographerUploadScreen() {
         style={{ paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20 }}
       >
         <Pressable onPress={() => navigation.goBack()} className="mb-6">
-          <Ionicons name="arrow-back" size={24} color="#C9A961" />
+          <Ionicons name="arrow-back" size={24} color="#F5B800" />
         </Pressable>
 
-        <Text className="text-[#C9A961] text-3xl font-bold mb-2">Upload Media</Text>
+        <Text className="text-[#F5B800] text-3xl font-bold mb-2">Upload Media</Text>
         <Text className="text-neutral-400 text-base">{wedding.coupleName}</Text>
       </LinearGradient>
 
@@ -189,7 +189,7 @@ export default function PhotographerUploadScreen() {
         {selectedMedia.length === 0 ? (
           <View className="items-center py-12">
             <View className="w-24 h-24 bg-neutral-900 rounded-full items-center justify-center mb-6 border-2 border-neutral-800">
-              <Ionicons name="images-outline" size={48} color="#C9A961" />
+              <Ionicons name="images-outline" size={48} color="#F5B800" />
             </View>
             <Text className="text-neutral-300 text-xl font-semibold mb-2">No Media Selected</Text>
             <Text className="text-neutral-500 text-center px-8 mb-8">
@@ -235,12 +235,12 @@ export default function PhotographerUploadScreen() {
           <View className="bg-neutral-900 rounded-2xl p-6 mb-6 border border-neutral-800">
             <View className="flex-row items-center justify-between mb-3">
               <Text className="text-neutral-300 text-base font-medium">Uploading media...</Text>
-              <Text className="text-[#C9A961] text-base font-semibold">
+              <Text className="text-[#F5B800] text-base font-semibold">
                 {Math.round(uploadProgress)}%
               </Text>
             </View>
             <View className="h-2 bg-neutral-800 rounded-full overflow-hidden">
-              <View className="h-full bg-[#C9A961]" style={{ width: `${uploadProgress}%` }} />
+              <View className="h-full bg-[#F5B800]" style={{ width: `${uploadProgress}%` }} />
             </View>
           </View>
         )}
@@ -252,7 +252,7 @@ export default function PhotographerUploadScreen() {
             disabled={uploading}
             className="flex-1 bg-neutral-900 rounded-2xl p-4 flex-row items-center justify-center mr-2 border border-neutral-800 active:opacity-70"
           >
-            <Ionicons name="images-outline" size={22} color="#C9A961" />
+            <Ionicons name="images-outline" size={22} color="#F5B800" />
             <Text className="text-neutral-100 text-base font-semibold ml-2">Photos</Text>
           </Pressable>
           <Pressable
@@ -260,7 +260,7 @@ export default function PhotographerUploadScreen() {
             disabled={uploading}
             className="flex-1 bg-neutral-900 rounded-2xl p-4 flex-row items-center justify-center ml-2 border border-neutral-800 active:opacity-70"
           >
-            <Ionicons name="videocam-outline" size={22} color="#C9A961" />
+            <Ionicons name="videocam-outline" size={22} color="#F5B800" />
             <Text className="text-neutral-100 text-base font-semibold ml-2">Videos</Text>
           </Pressable>
         </View>
@@ -270,7 +270,7 @@ export default function PhotographerUploadScreen() {
           disabled={uploading}
           className="bg-neutral-900 rounded-2xl p-5 flex-row items-center justify-center mb-4 border border-neutral-800 active:opacity-70"
         >
-          <Ionicons name="add-circle-outline" size={24} color="#C9A961" />
+          <Ionicons name="add-circle-outline" size={24} color="#F5B800" />
           <Text className="text-neutral-100 text-lg font-semibold ml-3">Select All Media</Text>
         </Pressable>
 
@@ -278,7 +278,7 @@ export default function PhotographerUploadScreen() {
           <Pressable
             onPress={uploadMedia}
             disabled={uploading}
-            className="bg-[#C9A961] rounded-2xl p-6 flex-row items-center justify-center mb-8 active:opacity-70"
+            className="bg-[#F5B800] rounded-2xl p-6 flex-row items-center justify-center mb-8 active:opacity-70"
           >
             {uploading ? (
               <ActivityIndicator color="#000000" />

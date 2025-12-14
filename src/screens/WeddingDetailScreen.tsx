@@ -77,16 +77,16 @@ export default function WeddingDetailScreen() {
         style={{ paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20 }}
       >
         <Pressable onPress={() => navigation.goBack()} className="mb-6">
-          <Ionicons name="arrow-back" size={24} color="#C9A961" />
+          <Ionicons name="arrow-back" size={24} color="#F5B800" />
         </Pressable>
 
-        <Text className="text-[#C9A961] text-3xl font-bold mb-2">{wedding.coupleName}</Text>
+        <Text className="text-[#F5B800] text-3xl font-bold mb-2">{wedding.coupleName}</Text>
         <Text className="text-neutral-400 text-lg mb-4">
           {wedding.partnerOneName} & {wedding.partnerTwoName}
         </Text>
 
         <View className="flex-row items-center">
-          <Ionicons name="calendar" size={18} color="#C9A961" />
+          <Ionicons name="calendar" size={18} color="#F5B800" />
           <Text className="text-neutral-300 text-base ml-2">
             {format(new Date(wedding.weddingDate), "MMMM d, yyyy")}
           </Text>
@@ -94,7 +94,7 @@ export default function WeddingDetailScreen() {
 
         {wedding.venue && (
           <View className="flex-row items-center mt-2">
-            <Ionicons name="location" size={18} color="#C9A961" />
+            <Ionicons name="location" size={18} color="#F5B800" />
             <Text className="text-neutral-300 text-base ml-2">{wedding.venue}</Text>
           </View>
         )}
@@ -108,8 +108,8 @@ export default function WeddingDetailScreen() {
               onPress={() => navigation.navigate(item.screen, { weddingId })}
               className={`bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 active:opacity-70${index < menuItems.length - 1 ? " mb-3" : ""}`}
             >
-              <View className="w-12 h-12 bg-[#C9A961]/10 rounded-full items-center justify-center">
-                <Ionicons name={item.icon} size={24} color="#C9A961" />
+              <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
+                <Ionicons name={item.icon} size={24} color="#F5B800" />
               </View>
               <View className="flex-1 ml-4">
                 <Text className="text-neutral-100 text-lg font-medium">{item.title}</Text>
@@ -125,7 +125,7 @@ export default function WeddingDetailScreen() {
                     e.stopPropagation();
                     navigation.navigate(item.addScreen as any, { weddingId });
                   }}
-                  className="w-10 h-10 bg-[#C9A961] rounded-full items-center justify-center mr-3 active:opacity-70"
+                  className="w-10 h-10 bg-[#F5B800] rounded-full items-center justify-center mr-3 active:opacity-70"
                 >
                   <Ionicons name={item.addIcon} size={20} color="#000000" />
                 </Pressable>

@@ -130,10 +130,10 @@ export default function EmailAutomationScreen() {
         >
           <View className="flex-row items-center justify-between mb-6">
             <Pressable onPress={() => setShowCreateModal(false)}>
-              <Ionicons name="close" size={28} color="#C9A961" />
+              <Ionicons name="close" size={28} color="#F5B800" />
             </Pressable>
-            <Text className="text-[#C9A961] text-xl font-bold">Create Template</Text>
-            <Pressable onPress={createTemplate} className="bg-[#C9A961] px-4 py-2 rounded-full">
+            <Text className="text-[#F5B800] text-xl font-bold">Create Template</Text>
+            <Pressable onPress={createTemplate} className="bg-[#F5B800] px-4 py-2 rounded-full">
               <Text className="text-black font-semibold">Create</Text>
             </Pressable>
           </View>
@@ -162,7 +162,7 @@ export default function EmailAutomationScreen() {
                         key={trigger}
                         onPress={() => setNewTemplate({ ...newTemplate, trigger })}
                         className={`px-4 py-2 rounded-full${index < array.length - 1 ? " mr-2" : ""} ${
-                          newTemplate.trigger === trigger ? "bg-[#C9A961]" : "bg-neutral-800 border border-neutral-700"
+                          newTemplate.trigger === trigger ? "bg-[#F5B800]" : "bg-neutral-800 border border-neutral-700"
                         }`}
                       >
                         <Text
@@ -226,17 +226,17 @@ export default function EmailAutomationScreen() {
         style={{ paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20 }}
       >
         <Pressable onPress={() => navigation.goBack()} className="mb-6">
-          <Ionicons name="arrow-back" size={24} color="#C9A961" />
+          <Ionicons name="arrow-back" size={24} color="#F5B800" />
         </Pressable>
 
         <View className="flex-row items-center justify-between mb-6">
           <View>
-            <Text className="text-[#C9A961] text-3xl font-bold">Email Automation</Text>
+            <Text className="text-[#F5B800] text-3xl font-bold">Email Automation</Text>
             <Text className="text-neutral-400 text-base mt-1">{emailTemplates.length} templates</Text>
           </View>
           <Pressable
             onPress={() => setShowCreateModal(true)}
-            className="w-12 h-12 bg-[#C9A961] rounded-full items-center justify-center active:opacity-70"
+            className="w-12 h-12 bg-[#F5B800] rounded-full items-center justify-center active:opacity-70"
           >
             <Ionicons name="add" size={28} color="#000000" />
           </Pressable>
@@ -275,7 +275,7 @@ export default function EmailAutomationScreen() {
                   <Switch
                     value={template.isActive}
                     onValueChange={(value) => updateEmailTemplate(template.id, { isActive: value })}
-                    trackColor={{ false: "#3a3a3a", true: "#C9A961" }}
+                    trackColor={{ false: "#3a3a3a", true: "#F5B800" }}
                     thumbColor="#ffffff"
                   />
                 </View>

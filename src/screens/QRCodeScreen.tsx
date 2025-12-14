@@ -52,10 +52,10 @@ export default function QRCodeScreen() {
         style={{ paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20 }}
       >
         <Pressable onPress={() => navigation.goBack()} className="mb-6">
-          <Ionicons name="arrow-back" size={24} color="#C9A961" />
+          <Ionicons name="arrow-back" size={24} color="#F5B800" />
         </Pressable>
 
-        <Text className="text-[#C9A961] text-3xl font-bold mb-2">QR Code</Text>
+        <Text className="text-[#F5B800] text-3xl font-bold mb-2">QR Code</Text>
         <Text className="text-neutral-400 text-base">Guest Photo Upload</Text>
       </LinearGradient>
 
@@ -75,27 +75,27 @@ export default function QRCodeScreen() {
 
         <View className="bg-neutral-900 rounded-2xl p-6 mb-6 border border-neutral-800">
           <View className="flex-row items-center mb-4">
-            <View className="w-10 h-10 bg-[#C9A961]/10 rounded-full items-center justify-center mr-3">
-              <Ionicons name="camera" size={20} color="#C9A961" />
+            <View className="w-10 h-10 bg-[#F5B800]/10 rounded-full items-center justify-center mr-3">
+              <Ionicons name="camera" size={20} color="#F5B800" />
             </View>
             <Text className="text-neutral-100 text-lg font-semibold flex-1">How it works</Text>
           </View>
 
           <View>
             <View className="flex-row mb-4">
-              <Text className="text-[#C9A961] font-bold mr-3">1.</Text>
+              <Text className="text-[#F5B800] font-bold mr-3">1.</Text>
               <Text className="text-neutral-300 flex-1">
                 Print this QR code and display it at your event
               </Text>
             </View>
             <View className="flex-row mb-4">
-              <Text className="text-[#C9A961] font-bold mr-3">2.</Text>
+              <Text className="text-[#F5B800] font-bold mr-3">2.</Text>
               <Text className="text-neutral-300 flex-1">
                 Guests scan with their phone camera
               </Text>
             </View>
             <View className="flex-row">
-              <Text className="text-[#C9A961] font-bold mr-3">3.</Text>
+              <Text className="text-[#F5B800] font-bold mr-3">3.</Text>
               <Text className="text-neutral-300 flex-1">
                 Photos upload directly to your wedding gallery
               </Text>
@@ -105,7 +105,7 @@ export default function QRCodeScreen() {
 
         <Pressable
           onPress={handleShare}
-          className="bg-[#C9A961] rounded-2xl p-5 flex-row items-center justify-center mb-4"
+          className="bg-[#F5B800] rounded-2xl p-5 flex-row items-center justify-center mb-4"
         >
           <Ionicons name="share-outline" size={24} color="#000000" />
           <Text className="text-black text-lg font-semibold ml-3">Share QR Code</Text>
@@ -115,7 +115,7 @@ export default function QRCodeScreen() {
           onPress={() => navigation.navigate("GuestUpload", { qrCode: wedding.qrCode })}
           className="bg-neutral-800 rounded-2xl p-5 flex-row items-center justify-center mb-8 border border-neutral-700"
         >
-          <Ionicons name="eye-outline" size={24} color="#C9A961" />
+          <Ionicons name="eye-outline" size={24} color="#F5B800" />
           <Text className="text-neutral-100 text-lg font-semibold ml-3">Test Guest View</Text>
         </Pressable>
 

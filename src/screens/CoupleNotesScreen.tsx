@@ -32,7 +32,7 @@ interface Note {
 }
 
 const NOTE_COLORS = [
-  "#C9A961", // Gold
+  "#F5B800", // Gold
   "#3B82F6", // Blue
   "#10B981", // Green
   "#F59E0B", // Amber
@@ -136,12 +136,12 @@ export default function CoupleNotesScreen() {
       >
         <View className="flex-row items-center justify-between">
           <Pressable onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="#C9A961" />
+            <Ionicons name="arrow-back" size={24} color="#F5B800" />
           </Pressable>
           <Text className="text-neutral-100 text-xl font-semibold">Notes</Text>
           <Pressable
             onPress={() => setShowAddModal(true)}
-            className="w-10 h-10 rounded-full bg-[#C9A961] items-center justify-center"
+            className="w-10 h-10 rounded-full bg-[#F5B800] items-center justify-center"
           >
             <Ionicons name="add" size={24} color="#000" />
           </Pressable>
@@ -158,7 +158,7 @@ export default function CoupleNotesScreen() {
             </Text>
             <Pressable
               onPress={() => setShowAddModal(true)}
-              className="bg-[#C9A961] rounded-xl px-6 py-3 mt-6"
+              className="bg-[#F5B800] rounded-xl px-6 py-3 mt-6"
             >
               <Text className="text-black font-semibold">Create your first note</Text>
             </Pressable>
@@ -209,7 +209,7 @@ export default function CoupleNotesScreen() {
                 </Pressable>
                 <Text className="text-neutral-100 text-xl font-bold">New Note</Text>
                 <Pressable onPress={handleAddNote} disabled={!newTitle.trim()}>
-                  <Text className={`font-semibold ${newTitle.trim() ? "text-[#C9A961]" : "text-neutral-600"}`}>
+                  <Text className={`font-semibold ${newTitle.trim() ? "text-[#F5B800]" : "text-neutral-600"}`}>
                     Save
                   </Text>
                 </Pressable>
@@ -284,14 +284,14 @@ export default function CoupleNotesScreen() {
                 </Text>
                 {isEditing ? (
                   <Pressable onPress={handleUpdateNote} disabled={!newTitle.trim()}>
-                    <Text className={`font-semibold ${newTitle.trim() ? "text-[#C9A961]" : "text-neutral-600"}`}>
+                    <Text className={`font-semibold ${newTitle.trim() ? "text-[#F5B800]" : "text-neutral-600"}`}>
                       Save
                     </Text>
                   </Pressable>
                 ) : (
                   <View className="flex-row">
                     <Pressable onPress={() => setIsEditing(true)} className="mr-4">
-                      <Ionicons name="pencil" size={20} color="#C9A961" />
+                      <Ionicons name="pencil" size={20} color="#F5B800" />
                     </Pressable>
                     <Pressable onPress={() => selectedNote && handleDeleteNote(selectedNote.id)}>
                       <Ionicons name="trash-outline" size={20} color="#EF4444" />

@@ -65,7 +65,7 @@ export default function StaffManagementScreen() {
   const getRoleColor = (role: StaffMember["role"]) => {
     switch (role) {
       case "planner":
-        return "#C9A961";
+        return "#F5B800";
       case "coordinator":
         return "#60a5fa";
       case "photographer":
@@ -142,9 +142,9 @@ export default function StaffManagementScreen() {
         >
           <View className="flex-row items-center justify-between mb-6">
             <Pressable onPress={() => setSelectedStaff(null)}>
-              <Ionicons name="arrow-back" size={24} color="#C9A961" />
+              <Ionicons name="arrow-back" size={24} color="#F5B800" />
             </Pressable>
-            <Text className="text-[#C9A961] text-xl font-bold">Assign to Wedding</Text>
+            <Text className="text-[#F5B800] text-xl font-bold">Assign to Wedding</Text>
             <View className="w-6" />
           </View>
 
@@ -170,20 +170,20 @@ export default function StaffManagementScreen() {
                     onPress={() => (assigned ? handleUnassign(wedding.id) : handleAssignToWedding(wedding.id))}
                     className={`rounded-xl p-4 border${index < activeWeddings.length - 1 ? " mb-2" : ""} ${
                       assigned
-                        ? "bg-[#C9A961]/10 border-[#C9A961]"
+                        ? "bg-[#F5B800]/10 border-[#F5B800]"
                         : "bg-neutral-900 border-neutral-800"
                     }`}
                   >
                     <View className="flex-row items-center justify-between">
                       <View className="flex-1">
-                        <Text className={`text-base font-semibold ${assigned ? "text-[#C9A961]" : "text-neutral-100"}`}>
+                        <Text className={`text-base font-semibold ${assigned ? "text-[#F5B800]" : "text-neutral-100"}`}>
                           {wedding.coupleName}
                         </Text>
                         <Text className="text-neutral-500 text-xs mt-1">
                           {format(new Date(wedding.weddingDate), "MMM d, yyyy")}
                         </Text>
                       </View>
-                      {assigned && <Ionicons name="checkmark-circle" size={24} color="#C9A961" />}
+                      {assigned && <Ionicons name="checkmark-circle" size={24} color="#F5B800" />}
                     </View>
                   </Pressable>
                 );
@@ -206,10 +206,10 @@ export default function StaffManagementScreen() {
         >
           <View className="flex-row items-center justify-between mb-6">
             <Pressable onPress={() => setShowAddModal(false)}>
-              <Ionicons name="close" size={28} color="#C9A961" />
+              <Ionicons name="close" size={28} color="#F5B800" />
             </Pressable>
-            <Text className="text-[#C9A961] text-xl font-bold">Add Staff Member</Text>
-            <Pressable onPress={addStaffMember} className="bg-[#C9A961] px-4 py-2 rounded-full">
+            <Text className="text-[#F5B800] text-xl font-bold">Add Staff Member</Text>
+            <Pressable onPress={addStaffMember} className="bg-[#F5B800] px-4 py-2 rounded-full">
               <Text className="text-black font-semibold">Save</Text>
             </Pressable>
           </View>
@@ -262,7 +262,7 @@ export default function StaffManagementScreen() {
                       key={role}
                       onPress={() => setNewStaff({ ...newStaff, role })}
                       className={`px-4 py-2 rounded-full ${
-                        newStaff.role === role ? "bg-[#C9A961]" : "bg-neutral-800 border border-neutral-700"
+                        newStaff.role === role ? "bg-[#F5B800]" : "bg-neutral-800 border border-neutral-700"
                       }`}
                     >
                       <Text
@@ -304,17 +304,17 @@ export default function StaffManagementScreen() {
         style={{ paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20 }}
       >
         <Pressable onPress={() => navigation.goBack()} className="mb-6">
-          <Ionicons name="arrow-back" size={24} color="#C9A961" />
+          <Ionicons name="arrow-back" size={24} color="#F5B800" />
         </Pressable>
 
         <View className="flex-row items-center justify-between mb-6">
           <View>
-            <Text className="text-[#C9A961] text-3xl font-bold">Staff</Text>
+            <Text className="text-[#F5B800] text-3xl font-bold">Staff</Text>
             <Text className="text-neutral-400 text-base mt-1">{filteredStaff.length} members</Text>
           </View>
           <Pressable
             onPress={() => setShowAddModal(true)}
-            className="w-12 h-12 bg-[#C9A961] rounded-full items-center justify-center active:opacity-70"
+            className="w-12 h-12 bg-[#F5B800] rounded-full items-center justify-center active:opacity-70"
           >
             <Ionicons name="person-add" size={24} color="#000000" />
           </Pressable>
@@ -370,7 +370,7 @@ export default function StaffManagementScreen() {
                       </View>
                       <View className="items-end">
                         {staff.hourlyRate && (
-                          <Text className="text-[#C9A961] text-base font-semibold">${staff.hourlyRate}/hr</Text>
+                          <Text className="text-[#F5B800] text-base font-semibold">${staff.hourlyRate}/hr</Text>
                         )}
                         <Ionicons name="chevron-forward" size={20} color="#666" className="mt-1" />
                       </View>

@@ -43,7 +43,7 @@ const DESIGN_TEMPLATES: DesignTemplate[] = [
     name: "Elegant Gold",
     bgColors: ["#1a1a1a", "#0d0d0d"],
     textColor: "#FFFFFF",
-    accentColor: "#C9A961",
+    accentColor: "#F5B800",
     borderStyle: "ornate",
     headerText: "Share Your Photos",
     subText: "Scan to upload your memories",
@@ -87,7 +87,7 @@ const DESIGN_TEMPLATES: DesignTemplate[] = [
     name: "Midnight Navy",
     bgColors: ["#1A2744", "#0F1A2E"],
     textColor: "#FFFFFF",
-    accentColor: "#B8860B",
+    accentColor: "#F5B800",
     borderStyle: "ornate",
     headerText: "Photo Memories",
     subText: "Scan & upload your snapshots",
@@ -315,7 +315,7 @@ export default function QRCodeDesignScreen() {
                 key={template.id}
                 onPress={() => setSelectedTemplate(template)}
                 className={`mr-3 rounded-xl overflow-hidden ${
-                  selectedTemplate.id === template.id ? "border-2 border-[#C9A961]" : "border border-neutral-700"
+                  selectedTemplate.id === template.id ? "border-2 border-[#F5B800]" : "border border-neutral-700"
                 }`}
                 style={{ width: 100, height: 140 }}
               >
@@ -346,7 +346,7 @@ export default function QRCodeDesignScreen() {
         <View className="px-5 mb-6">
           <View className="bg-neutral-900 rounded-2xl p-5 border border-neutral-800">
             <View className="flex-row items-center mb-3">
-              <Ionicons name="bulb" size={20} color="#C9A961" />
+              <Ionicons name="bulb" size={20} color="#F5B800" />
               <Text className="text-neutral-100 font-semibold ml-2">Printing Tips</Text>
             </View>
             <Text className="text-neutral-400 text-sm leading-5 mb-2">
@@ -384,7 +384,7 @@ export default function QRCodeDesignScreen() {
           <Pressable
             onPress={handleSaveToPhotos}
             disabled={isSaving}
-            className="flex-1 bg-[#C9A961] rounded-xl py-4 ml-2 flex-row items-center justify-center active:opacity-80"
+            className="flex-1 bg-[#F5B800] rounded-xl py-4 ml-2 flex-row items-center justify-center active:opacity-80"
           >
             {isSaving ? (
               <Text className="text-black font-semibold">Saving...</Text>

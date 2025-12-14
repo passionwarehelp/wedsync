@@ -113,7 +113,7 @@ export default function AddTaskScreen() {
                 disabled={!title.trim()}
                 className="px-4 py-2"
               >
-                <Text className={`text-base font-semibold ${title.trim() ? "text-[#C9A961]" : "text-neutral-600"}`}>
+                <Text className={`text-base font-semibold ${title.trim() ? "text-[#F5B800]" : "text-neutral-600"}`}>
                   Done
                 </Text>
               </Pressable>
@@ -169,7 +169,7 @@ export default function AddTaskScreen() {
                       key={cat.value}
                       onPress={() => setCategory(cat.value)}
                       className={`flex-row items-center px-3 py-2 rounded-full mr-2 mb-2 ${
-                        category === cat.value ? "bg-[#C9A961]" : "bg-neutral-900 border border-neutral-800"
+                        category === cat.value ? "bg-[#F5B800]" : "bg-neutral-900 border border-neutral-800"
                       }`}
                     >
                       <Ionicons
@@ -226,7 +226,7 @@ export default function AddTaskScreen() {
                   className="bg-neutral-900 rounded-xl px-4 py-4 border border-neutral-800 flex-row items-center justify-between"
                 >
                   <View className="flex-row items-center">
-                    <Ionicons name="calendar-outline" size={20} color="#C9A961" />
+                    <Ionicons name="calendar-outline" size={20} color="#F5B800" />
                     <Text className={`ml-3 text-base ${dueDate ? "text-neutral-100" : "text-neutral-500"}`}>
                       {dueDate ? format(dueDate, "MMMM d, yyyy") : "Select a due date"}
                     </Text>
@@ -256,7 +256,7 @@ export default function AddTaskScreen() {
                 onPress={handleAdd}
                 disabled={!title.trim()}
                 className={`rounded-xl py-4 items-center mt-4 ${
-                  title.trim() ? "bg-[#C9A961] active:opacity-80" : "bg-neutral-800"
+                  title.trim() ? "bg-[#F5B800] active:opacity-80" : "bg-neutral-800"
                 }`}
               >
                 <Text className={`text-lg font-semibold ${title.trim() ? "text-black" : "text-neutral-600"}`}>

@@ -74,7 +74,7 @@ function PhotographerTabs() {
           paddingBottom: 8,
           height: 70,
         },
-        tabBarActiveTintColor: "#C9A961",
+        tabBarActiveTintColor: "#F5B800",
         tabBarInactiveTintColor: "#666666",
         tabBarLabelStyle: {
           fontSize: 12,
@@ -113,7 +113,7 @@ function CoupleTabs() {
           paddingBottom: 8,
           height: 70,
         },
-        tabBarActiveTintColor: "#C9A961",
+        tabBarActiveTintColor: "#F5B800",
         tabBarInactiveTintColor: "#666666",
         tabBarLabelStyle: {
           fontSize: 12,

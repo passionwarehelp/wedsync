@@ -55,12 +55,12 @@ export default function AdminCalendarScreen() {
         style={{ paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20 }}
       >
         <Pressable onPress={() => navigation.goBack()} className="mb-6">
-          <Ionicons name="arrow-back" size={24} color="#C9A961" />
+          <Ionicons name="arrow-back" size={24} color="#F5B800" />
         </Pressable>
 
         <View className="flex-row items-center justify-between mb-6">
           <View>
-            <Text className="text-[#C9A961] text-3xl font-bold">Calendar</Text>
+            <Text className="text-[#F5B800] text-3xl font-bold">Calendar</Text>
             <Text className="text-neutral-400 text-base mt-1">{format(currentDate, "MMMM yyyy")}</Text>
           </View>
           <View className="flex-row">
@@ -68,13 +68,13 @@ export default function AdminCalendarScreen() {
               onPress={previousMonth}
               className="w-10 h-10 bg-neutral-800 rounded-full items-center justify-center border border-neutral-700 mr-2"
             >
-              <Ionicons name="chevron-back" size={20} color="#C9A961" />
+              <Ionicons name="chevron-back" size={20} color="#F5B800" />
             </Pressable>
             <Pressable
               onPress={nextMonth}
               className="w-10 h-10 bg-neutral-800 rounded-full items-center justify-center border border-neutral-700"
             >
-              <Ionicons name="chevron-forward" size={20} color="#C9A961" />
+              <Ionicons name="chevron-forward" size={20} color="#F5B800" />
             </Pressable>
           </View>
         </View>
@@ -101,7 +101,7 @@ export default function AdminCalendarScreen() {
                 key={i}
                 onPress={() => setSelectedDay(day)}
                 className={`w-[14.28%] aspect-square p-1 items-center justify-center ${
-                  isSelected ? "bg-[#C9A961] rounded-2xl" : ""
+                  isSelected ? "bg-[#F5B800] rounded-2xl" : ""
                 }`}
               >
                 <Text
@@ -109,7 +109,7 @@ export default function AdminCalendarScreen() {
                     isSelected
                       ? "text-black"
                       : isToday
-                      ? "text-[#C9A961]"
+                      ? "text-[#F5B800]"
                       : isSameMonth(day, currentDate)
                       ? "text-neutral-300"
                       : "text-neutral-700"
@@ -117,7 +117,7 @@ export default function AdminCalendarScreen() {
                 >
                   {format(day, "d")}
                 </Text>
-                {hasEvents && !isSelected && <View className="w-1 h-1 bg-[#C9A961] rounded-full mt-1" />}
+                {hasEvents && !isSelected && <View className="w-1 h-1 bg-[#F5B800] rounded-full mt-1" />}
               </Pressable>
             );
           })}

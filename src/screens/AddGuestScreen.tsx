@@ -108,7 +108,7 @@ export default function AddGuestScreen() {
                 disabled={!name.trim()}
                 className="px-4 py-2"
               >
-                <Text className={`text-base font-semibold ${name.trim() ? "text-[#C9A961]" : "text-neutral-600"}`}>
+                <Text className={`text-base font-semibold ${name.trim() ? "text-[#F5B800]" : "text-neutral-600"}`}>
                   Done
                 </Text>
               </Pressable>
@@ -177,7 +177,7 @@ export default function AddGuestScreen() {
                       key={cat.value}
                       onPress={() => setCategory(cat.value)}
                       className={`flex-row items-center px-4 py-2.5 rounded-full mr-2 mb-2 ${
-                        category === cat.value ? "bg-[#C9A961]" : "bg-neutral-900 border border-neutral-800"
+                        category === cat.value ? "bg-[#F5B800]" : "bg-neutral-900 border border-neutral-800"
                       }`}
                     >
                       <Ionicons
@@ -236,7 +236,7 @@ export default function AddGuestScreen() {
                   <Switch
                     value={plusOne}
                     onValueChange={setPlusOne}
-                    trackColor={{ false: "#404040", true: "#C9A961" }}
+                    trackColor={{ false: "#404040", true: "#F5B800" }}
                     thumbColor="#FFFFFF"
                   />
                 </View>
@@ -262,7 +262,7 @@ export default function AddGuestScreen() {
                 onPress={handleAdd}
                 disabled={!name.trim()}
                 className={`rounded-xl py-4 items-center mt-4 ${
-                  name.trim() ? "bg-[#C9A961] active:opacity-80" : "bg-neutral-800"
+                  name.trim() ? "bg-[#F5B800] active:opacity-80" : "bg-neutral-800"
                 }`}
               >
                 <Text className={`text-lg font-semibold ${name.trim() ? "text-black" : "text-neutral-600"}`}>

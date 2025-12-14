@@ -62,7 +62,7 @@ export default function CreateWeddingScreen() {
               </Pressable>
               <Text className="text-neutral-100 text-xl font-semibold">Create Wedding</Text>
               <Pressable onPress={handleCreate} disabled={!isValid}>
-                <Text className={`text-base font-semibold ${isValid ? "text-[#C9A961]" : "text-neutral-600"}`}>
+                <Text className={`text-base font-semibold ${isValid ? "text-[#F5B800]" : "text-neutral-600"}`}>
                   Done
                 </Text>
               </Pressable>
@@ -110,7 +110,7 @@ export default function CreateWeddingScreen() {
                   onPress={() => setShowDatePicker(true)}
                   className="bg-neutral-800 rounded-xl px-4 py-4 border border-neutral-700 flex-row items-center"
                 >
-                  <Ionicons name="calendar-outline" size={20} color="#C9A961" />
+                  <Ionicons name="calendar-outline" size={20} color="#F5B800" />
                   <Text className="text-neutral-100 text-base ml-3">{format(weddingDate, "MMMM d, yyyy")}</Text>
                 </Pressable>
                 {showDatePicker && (
@@ -145,7 +145,7 @@ export default function CreateWeddingScreen() {
               <Pressable
                 onPress={handleCreate}
                 disabled={!isValid}
-                className={`rounded-xl py-4 items-center ${isValid ? "bg-[#C9A961]" : "bg-neutral-700"}`}
+                className={`rounded-xl py-4 items-center ${isValid ? "bg-[#F5B800]" : "bg-neutral-700"}`}
               >
                 <Text className={`text-lg font-semibold ${isValid ? "text-black" : "text-neutral-500"}`}>
                   Create Wedding

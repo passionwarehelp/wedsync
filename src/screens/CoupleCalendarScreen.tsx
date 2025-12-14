@@ -114,7 +114,7 @@ export default function CoupleCalendarScreen() {
       >
         <View className="flex-row items-center justify-between mb-4">
           <Pressable onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="#C9A961" />
+            <Ionicons name="arrow-back" size={24} color="#F5B800" />
           </Pressable>
           <Text className="text-neutral-100 text-xl font-semibold">Calendar</Text>
           <Pressable
@@ -122,7 +122,7 @@ export default function CoupleCalendarScreen() {
               setNewDate(selectedDate);
               setShowAddModal(true);
             }}
-            className="w-10 h-10 rounded-full bg-[#C9A961] items-center justify-center"
+            className="w-10 h-10 rounded-full bg-[#F5B800] items-center justify-center"
           >
             <Ionicons name="add" size={24} color="#000" />
           </Pressable>
@@ -131,13 +131,13 @@ export default function CoupleCalendarScreen() {
         {/* Month Navigation */}
         <View className="flex-row items-center justify-between mb-4">
           <Pressable onPress={() => setCurrentMonth(subMonths(currentMonth, 1))}>
-            <Ionicons name="chevron-back" size={24} color="#C9A961" />
+            <Ionicons name="chevron-back" size={24} color="#F5B800" />
           </Pressable>
           <Text className="text-neutral-100 text-lg font-semibold">
             {format(currentMonth, "MMMM yyyy")}
           </Text>
           <Pressable onPress={() => setCurrentMonth(addMonths(currentMonth, 1))}>
-            <Ionicons name="chevron-forward" size={24} color="#C9A961" />
+            <Ionicons name="chevron-forward" size={24} color="#F5B800" />
           </Pressable>
         </View>
 
@@ -171,19 +171,19 @@ export default function CoupleCalendarScreen() {
               >
                 <View
                   className={`w-9 h-9 rounded-full items-center justify-center ${
-                    isSelected ? "bg-[#C9A961]" : isToday ? "border border-[#C9A961]" : ""
+                    isSelected ? "bg-[#F5B800]" : isToday ? "border border-[#F5B800]" : ""
                   }`}
                 >
                   <Text
                     className={`text-sm font-medium ${
-                      isSelected ? "text-black" : isToday ? "text-[#C9A961]" : "text-neutral-100"
+                      isSelected ? "text-black" : isToday ? "text-[#F5B800]" : "text-neutral-100"
                     }`}
                   >
                     {format(day, "d")}
                   </Text>
                 </View>
                 {hasApt && !isSelected && (
-                  <View className="w-1.5 h-1.5 rounded-full bg-[#C9A961] mt-0.5" />
+                  <View className="w-1.5 h-1.5 rounded-full bg-[#F5B800] mt-0.5" />
                 )}
               </Pressable>
             );
@@ -208,7 +208,7 @@ export default function CoupleCalendarScreen() {
               }}
               className="mt-4"
             >
-              <Text className="text-[#C9A961] font-medium">Add appointment</Text>
+              <Text className="text-[#F5B800] font-medium">Add appointment</Text>
             </Pressable>
           </View>
         ) : (
@@ -266,7 +266,7 @@ export default function CoupleCalendarScreen() {
                   </Pressable>
                   <Text className="text-neutral-100 text-xl font-bold">Add Appointment</Text>
                   <Pressable onPress={handleAddAppointment} disabled={!newTitle.trim()}>
-                    <Text className={`font-semibold ${newTitle.trim() ? "text-[#C9A961]" : "text-neutral-600"}`}>
+                    <Text className={`font-semibold ${newTitle.trim() ? "text-[#F5B800]" : "text-neutral-600"}`}>
                       Save
                     </Text>
                   </Pressable>
@@ -289,7 +289,7 @@ export default function CoupleCalendarScreen() {
                     onPress={() => setShowDatePicker(true)}
                     className="bg-neutral-800 rounded-xl px-4 py-4 border border-neutral-700 flex-row items-center"
                   >
-                    <Ionicons name="calendar-outline" size={20} color="#C9A961" />
+                    <Ionicons name="calendar-outline" size={20} color="#F5B800" />
                     <Text className="text-neutral-100 text-base ml-3">
                       {format(newDate, "MMMM d, yyyy")}
                     </Text>
@@ -342,7 +342,7 @@ export default function CoupleCalendarScreen() {
                   onPress={handleAddAppointment}
                   disabled={!newTitle.trim()}
                   className={`rounded-xl py-4 items-center ${
-                    newTitle.trim() ? "bg-[#C9A961]" : "bg-neutral-800"
+                    newTitle.trim() ? "bg-[#F5B800]" : "bg-neutral-800"
                   }`}
                 >
                   <Text className={`text-lg font-semibold ${newTitle.trim() ? "text-black" : "text-neutral-600"}`}>
@@ -365,7 +365,7 @@ export default function CoupleCalendarScreen() {
               </Pressable>
               <Text className="text-neutral-100 text-lg font-semibold">Select Date</Text>
               <Pressable onPress={() => setShowDatePicker(false)}>
-                <Text className="text-[#C9A961] font-semibold">Done</Text>
+                <Text className="text-[#F5B800] font-semibold">Done</Text>
               </Pressable>
             </View>
             <DateTimePicker
@@ -389,7 +389,7 @@ export default function CoupleCalendarScreen() {
               </Pressable>
               <Text className="text-neutral-100 text-lg font-semibold">Select Time</Text>
               <Pressable onPress={() => setShowTimeModal(false)}>
-                <Text className="text-[#C9A961] font-semibold">Done</Text>
+                <Text className="text-[#F5B800] font-semibold">Done</Text>
               </Pressable>
             </View>
             <DateTimePicker

@@ -87,17 +87,17 @@ export default function InvoicesScreen() {
         style={{ paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20 }}
       >
         <Pressable onPress={() => navigation.goBack()} className="mb-6">
-          <Ionicons name="arrow-back" size={24} color="#C9A961" />
+          <Ionicons name="arrow-back" size={24} color="#F5B800" />
         </Pressable>
 
         <View className="flex-row items-center justify-between mb-6">
           <View>
-            <Text className="text-[#C9A961] text-3xl font-bold">Invoices</Text>
+            <Text className="text-[#F5B800] text-3xl font-bold">Invoices</Text>
             <Text className="text-neutral-400 text-base mt-1">{filteredInvoices.length} total</Text>
           </View>
           <Pressable
             onPress={createNewInvoice}
-            className="w-12 h-12 bg-[#C9A961] rounded-full items-center justify-center active:opacity-70"
+            className="w-12 h-12 bg-[#F5B800] rounded-full items-center justify-center active:opacity-70"
           >
             <Ionicons name="add" size={28} color="#000000" />
           </Pressable>
@@ -125,7 +125,7 @@ export default function InvoicesScreen() {
                 key={status}
                 onPress={() => setFilterStatus(status)}
                 className={`px-3 py-1 rounded-full${index < array.length - 1 ? " mr-2" : ""} ${
-                  filterStatus === status ? "bg-[#C9A961]" : "bg-neutral-800 border border-neutral-700"
+                  filterStatus === status ? "bg-[#F5B800]" : "bg-neutral-800 border border-neutral-700"
                 }`}
               >
                 <Text
@@ -170,7 +170,7 @@ export default function InvoicesScreen() {
                     </View>
                   </View>
                   <View className="items-end">
-                    <Text className="text-[#C9A961] text-lg font-bold">${invoice.total.toLocaleString()}</Text>
+                    <Text className="text-[#F5B800] text-lg font-bold">${invoice.total.toLocaleString()}</Text>
                     <View className={`px-2 py-0.5 rounded-full mt-1 ${getStatusBg(invoice.status)}`}>
                       <Text className={`text-[10px] font-semibold uppercase ${getStatusColor(invoice.status)}`}>
                         {invoice.status}

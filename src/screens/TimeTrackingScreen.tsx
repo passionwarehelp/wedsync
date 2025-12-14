@@ -109,7 +109,7 @@ export default function TimeTrackingScreen() {
         style={styles.header}
       >
         <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#C9A961" />
+          <Ionicons name="arrow-back" size={24} color="#F5B800" />
         </Pressable>
 
         <Text style={styles.title}>Time Tracking</Text>
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    color: "#C9A961",
+    color: "#F5B800",
     fontSize: 32,
     fontWeight: "bold",
     marginBottom: 8,
@@ -321,8 +321,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   staffButtonSelected: {
-    backgroundColor: "#C9A961",
-    borderColor: "#C9A961",
+    backgroundColor: "#F5B800",
+    borderColor: "#F5B800",
   },
   staffButtonActive: {
     backgroundColor: "#064e3b",
@@ -484,7 +484,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   hoursText: {
-    color: "#C9A961",
+    color: "#F5B800",
     fontSize: 12,
     fontWeight: "600",
   },
