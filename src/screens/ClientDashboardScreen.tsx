@@ -297,13 +297,8 @@ export default function ClientDashboardScreen() {
                 <Ionicons name="qr-code" size={24} color="#C9A961" />
               </View>
               <View className="flex-1 ml-4">
-                <View className="flex-row items-center">
-                  <Text className="text-neutral-100 text-lg font-medium">QR Code</Text>
-                  <View className="bg-amber-900/50 px-2 py-0.5 rounded ml-2">
-                    <Text className="text-amber-400 text-xs font-medium">$50</Text>
-                  </View>
-                </View>
-                <Text className="text-neutral-500 text-sm">Guest photo uploads</Text>
+                <Text className="text-neutral-100 text-lg font-medium">Get Access to My Shared Photo Album</Text>
+                <Text className="text-neutral-500 text-sm">Let guests share their photos with you</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#6B7280" />
             </Pressable>
@@ -637,71 +632,167 @@ export default function ClientDashboardScreen() {
         </View>
       </Modal>
 
-      {/* QR Code Paywall Modal */}
+      {/* QR Code Paywall Modal - Sales Page */}
       <Modal visible={showQRPaywallModal} transparent animationType="slide">
-        <View className="flex-1 justify-end bg-black/70">
-          <View className="bg-neutral-900 rounded-t-3xl p-6">
-            <View className="flex-row items-center justify-between mb-6">
-              <Text className="text-neutral-100 text-xl font-bold">QR Code Photo Album</Text>
-              <Pressable onPress={() => setShowQRPaywallModal(false)}>
-                <Ionicons name="close" size={24} color="#9CA3AF" />
-              </Pressable>
-            </View>
-
-            <View className="items-center mb-6">
-              <View className="w-20 h-20 rounded-full bg-[#C9A961]/20 items-center justify-center mb-4">
-                <Ionicons name="qr-code" size={40} color="#C9A961" />
-              </View>
-              <Text className="text-neutral-100 text-lg font-semibold text-center mb-2">
-                Shared Photo Album Access
-              </Text>
-              <Text className="text-neutral-400 text-center text-sm">
-                Allow your wedding guests to upload photos directly to your gallery using a QR code
-              </Text>
-            </View>
-
-            <View className="bg-neutral-800 rounded-xl p-4 mb-6">
-              <Text className="text-neutral-300 font-medium mb-3">What you get:</Text>
-              {[
-                "Custom QR code for your wedding",
-                "Guests can upload photos & videos",
-                "All uploads go directly to your gallery",
-                "Share QR code on invitations or at venue",
-              ].map((feature, index) => (
-                <View key={index} className="flex-row items-center mb-2">
-                  <Ionicons name="checkmark-circle" size={18} color="#C9A961" />
-                  <Text className="text-neutral-400 text-sm ml-2">{feature}</Text>
+        <View className="flex-1 justify-end bg-black/80">
+          <View className="bg-neutral-900 rounded-t-3xl max-h-[90%]">
+            <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+              <View className="p-6">
+                {/* Close Button */}
+                <View className="flex-row justify-end mb-2">
+                  <Pressable
+                    onPress={() => setShowQRPaywallModal(false)}
+                    className="w-8 h-8 rounded-full bg-neutral-800 items-center justify-center"
+                  >
+                    <Ionicons name="close" size={18} color="#9CA3AF" />
+                  </Pressable>
                 </View>
-              ))}
-            </View>
 
-            <View className="bg-[#C9A961]/10 rounded-xl p-4 mb-6 border border-[#C9A961]/30">
-              <View className="flex-row items-center justify-between">
-                <Text className="text-neutral-100 font-semibold">One-time payment</Text>
-                <Text className="text-[#C9A961] text-2xl font-bold">$50</Text>
+                {/* Hero Section */}
+                <View className="items-center mb-8">
+                  <View className="w-24 h-24 rounded-full bg-gradient-to-br from-[#C9A961] to-[#8B7355] items-center justify-center mb-5">
+                    <View className="w-20 h-20 rounded-full bg-[#C9A961]/30 items-center justify-center">
+                      <Ionicons name="camera" size={40} color="#C9A961" />
+                    </View>
+                  </View>
+                  <Text className="text-neutral-100 text-2xl font-bold text-center mb-3">
+                    Capture Every Magical Moment
+                  </Text>
+                  <Text className="text-neutral-400 text-center text-base leading-6 px-4">
+                    Your guests are snapping amazing photos all day long. Now you can have them all in one beautiful place.
+                  </Text>
+                </View>
+
+                {/* Main Value Prop */}
+                <View className="bg-[#C9A961]/10 rounded-2xl p-5 mb-6 border border-[#C9A961]/20">
+                  <Text className="text-[#C9A961] text-lg font-semibold text-center mb-2">
+                    Shared Photo Album QR Code
+                  </Text>
+                  <Text className="text-neutral-300 text-center text-sm">
+                    One simple scan. Hundreds of precious memories.
+                  </Text>
+                </View>
+
+                {/* Benefits List */}
+                <View className="mb-6">
+                  <Text className="text-neutral-100 text-lg font-semibold mb-4">
+                    Why couples love this:
+                  </Text>
+
+                  {[
+                    {
+                      icon: "sparkles",
+                      title: "Never miss a moment",
+                      desc: "Grandma's candid shot during the vows? Your college roommate's hilarious dance floor photo? Get them all!"
+                    },
+                    {
+                      icon: "people",
+                      title: "Get everyone involved",
+                      desc: "Your guests become your photographers! Every angle, every smile, every happy tear - all in one place."
+                    },
+                    {
+                      icon: "phone-portrait",
+                      title: "Super easy for guests",
+                      desc: "No app downloads needed. They just scan, snap, and share. It takes 5 seconds!"
+                    },
+                    {
+                      icon: "images",
+                      title: "Instant photo collection",
+                      desc: "Photos appear in your gallery in real-time. Watch the memories roll in during your reception!"
+                    },
+                    {
+                      icon: "print",
+                      title: "Perfect for displays",
+                      desc: "Print your QR code on table cards, invitations, or a beautiful sign at your venue entrance."
+                    },
+                  ].map((benefit, index) => (
+                    <View key={index} className="flex-row mb-4">
+                      <View className="w-10 h-10 rounded-full bg-[#C9A961]/10 items-center justify-center mr-3 mt-1">
+                        <Ionicons name={benefit.icon as any} size={20} color="#C9A961" />
+                      </View>
+                      <View className="flex-1">
+                        <Text className="text-neutral-100 font-semibold mb-1">{benefit.title}</Text>
+                        <Text className="text-neutral-400 text-sm leading-5">{benefit.desc}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+
+                {/* Fun Examples */}
+                <View className="bg-neutral-800 rounded-2xl p-5 mb-6">
+                  <Text className="text-neutral-100 font-semibold mb-3">
+                    Imagine getting photos like these:
+                  </Text>
+                  <View className="space-y-2">
+                    {[
+                      "The look on your partner's face when they first saw you",
+                      "Your flower girl twirling on the dance floor",
+                      "Your dad trying not to cry during his speech",
+                      "The epic group selfie with all your college friends",
+                      "That hilarious moment at the photo booth",
+                      "Your grandmother dancing with your nephew",
+                    ].map((example, index) => (
+                      <View key={index} className="flex-row items-start mb-2">
+                        <Ionicons name="heart" size={14} color="#C9A961" style={{ marginTop: 3 }} />
+                        <Text className="text-neutral-300 text-sm ml-2 flex-1">{example}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+
+                {/* Social Proof */}
+                <View className="items-center mb-6">
+                  <View className="flex-row mb-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Ionicons key={star} name="star" size={20} color="#C9A961" />
+                    ))}
+                  </View>
+                  <Text className="text-neutral-400 text-sm text-center italic">
+                    {`"We got over 500 photos from our guests! So many moments we would have missed."`}
+                  </Text>
+                  <Text className="text-neutral-500 text-xs mt-1">- Sarah & Mike, married 2024</Text>
+                </View>
+
+                {/* Price Section */}
+                <View className="bg-gradient-to-r from-[#C9A961]/20 to-[#8B7355]/20 rounded-2xl p-6 mb-6 border border-[#C9A961]/30">
+                  <View className="items-center">
+                    <Text className="text-neutral-400 text-sm mb-1">One-time purchase</Text>
+                    <Text className="text-[#C9A961] text-4xl font-bold mb-1">$50</Text>
+                    <Text className="text-neutral-500 text-xs">No subscriptions. Yours forever.</Text>
+                  </View>
+                </View>
+
+                {/* CTA Button */}
+                <Pressable
+                  onPress={() => {
+                    // TODO: Integrate with payment system
+                    setShowQRPaywallModal(false);
+                    // For now, just navigate to QR code screen
+                    if (coupleWeddingId) {
+                      navigation.navigate("QRCode", { weddingId: coupleWeddingId });
+                    }
+                  }}
+                  className="bg-[#C9A961] rounded-2xl py-5 items-center mb-4 active:opacity-90"
+                >
+                  <Text className="text-black text-lg font-bold">Unlock My Photo Album</Text>
+                  <Text className="text-black/70 text-sm mt-1">Start collecting memories today</Text>
+                </Pressable>
+
+                {/* Secondary CTA */}
+                <Pressable
+                  onPress={() => setShowQRPaywallModal(false)}
+                  className="py-4 items-center mb-4"
+                >
+                  <Text className="text-neutral-500">Maybe later</Text>
+                </Pressable>
+
+                {/* Trust Badge */}
+                <View className="flex-row items-center justify-center mb-2">
+                  <Ionicons name="shield-checkmark" size={16} color="#6B7280" />
+                  <Text className="text-neutral-600 text-xs ml-2">Secure payment powered by Stripe</Text>
+                </View>
               </View>
-            </View>
-
-            <Pressable
-              onPress={() => {
-                // TODO: Integrate with payment system
-                setShowQRPaywallModal(false);
-                // For now, just navigate to QR code screen
-                if (coupleWeddingId) {
-                  navigation.navigate("QRCode", { weddingId: coupleWeddingId });
-                }
-              }}
-              className="bg-[#C9A961] rounded-xl py-4 items-center mb-3"
-            >
-              <Text className="text-black text-lg font-semibold">Get Access - $50</Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() => setShowQRPaywallModal(false)}
-              className="py-3 items-center"
-            >
-              <Text className="text-neutral-500">Maybe later</Text>
-            </Pressable>
+            </ScrollView>
           </View>
         </View>
       </Modal>
