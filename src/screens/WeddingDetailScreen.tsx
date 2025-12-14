@@ -32,18 +32,13 @@ export default function WeddingDetailScreen() {
 
   const menuItems = [
     {
-      title: "Guest List",
+      title: "Guest List & RSVPs",
       icon: "people" as const,
       screen: "GuestList" as const,
       addScreen: "AddGuest" as const,
       addIcon: "person-add" as const,
       count: wedding.rsvpCount,
       total: wedding.guestCount,
-    },
-    {
-      title: "RSVP Link",
-      icon: "mail-open" as const,
-      screen: "RSVPLink" as const,
     },
     {
       title: "Tasks",

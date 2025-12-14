@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, Pressable, ScrollView, TextInput } from "react-native";
+import { View, Text, Pressable, ScrollView, TextInput, Share, Modal } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
@@ -8,6 +8,8 @@ import { RootStackParamList } from "../navigation/RootNavigator";
 import useWeddingStore from "../state/weddingStore";
 import { LinearGradient } from "expo-linear-gradient";
 import { fetchRSVPsFromCloud } from "../api/rsvp-sync";
+import QRCode from "react-native-qrcode-svg";
+import { format } from "date-fns";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type GuestListRouteProp = RouteProp<RootStackParamList, "GuestList">;
@@ -29,6 +31,7 @@ export default function GuestListScreen() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "attending" | "declined" | "pending">("all");
+  const [showInviteModal, setShowInviteModal] = useState(false);
 
   // Auto-sync RSVPs from cloud on mount
   useEffect(() => {
@@ -107,6 +110,7 @@ export default function GuestListScreen() {
     attending: guests.filter((g) => g.rsvpStatus === "attending").length,
     declined: guests.filter((g) => g.rsvpStatus === "declined").length,
     pending: guests.filter((g) => g.rsvpStatus === "pending").length,
+    plusOnes: guests.filter((g) => g.rsvpStatus === "attending" && g.plusOne).length,
   };
 
   if (!wedding) {
@@ -118,6 +122,27 @@ export default function GuestListScreen() {
       </SafeAreaView>
     );
   }
+
+  const rsvpUrl = `https://rsvp.mywedsync.com/${wedding.qrCode}?couple=${encodeURIComponent(wedding.coupleName)}`;
+
+  const handleShare = async () => {
+    try {
+      const weddingDate = format(new Date(wedding.weddingDate), "MMMM d, yyyy");
+      await Share.share({
+        message: `You're invited to ${wedding.coupleName}'s wedding on ${weddingDate}!\n\nPlease RSVP here: ${rsvpUrl}`,
+        title: "Wedding RSVP",
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    await Share.share({
+      message: rsvpUrl,
+      title: "RSVP Link",
+    });
+  };
 
   return (
     <View className="flex-1 bg-black">
@@ -131,11 +156,11 @@ export default function GuestListScreen() {
           <Ionicons name="arrow-back" size={24} color="#F5B800" />
         </Pressable>
 
-        <View className="flex-row items-center justify-between mb-5">
+        <View className="flex-row items-center justify-between mb-4">
           <Text className="text-[#F5B800] text-2xl font-bold">Guest List</Text>
           <View className="flex-row items-center">
             <Pressable
-              onPress={() => navigation.navigate("RSVPLink", { weddingId })}
+              onPress={() => setShowInviteModal(true)}
               className="bg-neutral-800 rounded-full px-4 h-11 flex-row items-center justify-center mr-3 border border-neutral-700"
             >
               <Ionicons name="mail-outline" size={18} color="#F5B800" />
@@ -147,6 +172,26 @@ export default function GuestListScreen() {
             >
               <Ionicons name="add" size={26} color="#000000" />
             </Pressable>
+          </View>
+        </View>
+
+        {/* RSVP Summary Stats */}
+        <View className="flex-row justify-between mb-4 bg-neutral-900/50 rounded-xl p-3 border border-neutral-800">
+          <View className="items-center flex-1">
+            <Text className="text-emerald-400 text-lg font-bold">{stats.attending}</Text>
+            <Text className="text-neutral-500 text-xs">Attending</Text>
+          </View>
+          <View className="items-center flex-1">
+            <Text className="text-red-400 text-lg font-bold">{stats.declined}</Text>
+            <Text className="text-neutral-500 text-xs">Declined</Text>
+          </View>
+          <View className="items-center flex-1">
+            <Text className="text-amber-400 text-lg font-bold">{stats.pending}</Text>
+            <Text className="text-neutral-500 text-xs">Pending</Text>
+          </View>
+          <View className="items-center flex-1">
+            <Text className="text-[#F5B800] text-lg font-bold">{stats.attending + stats.plusOnes}</Text>
+            <Text className="text-neutral-500 text-xs">Total</Text>
           </View>
         </View>
 
@@ -214,8 +259,8 @@ export default function GuestListScreen() {
             <Text className="text-neutral-500 text-lg mt-4">
               {searchQuery ? "No guests found" : "No guests yet"}
             </Text>
-            <Text className="text-neutral-600 text-sm mt-2">
-              {searchQuery ? "Try a different search" : "Tap + to add your first guest"}
+            <Text className="text-neutral-600 text-sm mt-2 text-center px-8">
+              {searchQuery ? "Try a different search" : "Tap Invite to send RSVP links or + to add guests manually"}
             </Text>
           </View>
         ) : (
@@ -293,6 +338,58 @@ export default function GuestListScreen() {
           </View>
         )}
       </ScrollView>
+
+      {/* Invite Modal */}
+      <Modal visible={showInviteModal} transparent animationType="slide">
+        <View className="flex-1 justify-end bg-black/70">
+          <View className="bg-neutral-900 rounded-t-3xl p-6">
+            <View className="flex-row items-center justify-between mb-6">
+              <Text className="text-neutral-100 text-xl font-bold">Invite Guests</Text>
+              <Pressable onPress={() => setShowInviteModal(false)}>
+                <Ionicons name="close" size={24} color="#9CA3AF" />
+              </Pressable>
+            </View>
+
+            {/* QR Code */}
+            <View className="items-center mb-6">
+              <View className="bg-white p-4 rounded-2xl">
+                <QRCode value={rsvpUrl} size={160} backgroundColor="white" color="#000000" />
+              </View>
+              <Text className="text-neutral-400 text-sm mt-3 text-center">
+                Guests can scan this QR code to RSVP
+              </Text>
+            </View>
+
+            {/* Share Button */}
+            <Pressable
+              onPress={() => {
+                setShowInviteModal(false);
+                handleShare();
+              }}
+              className="bg-[#F5B800] rounded-xl py-4 flex-row items-center justify-center mb-3"
+            >
+              <Ionicons name="share-outline" size={22} color="#000000" />
+              <Text className="text-black text-lg font-semibold ml-2">Share RSVP Link</Text>
+            </Pressable>
+
+            {/* Copy Link Button */}
+            <Pressable
+              onPress={() => {
+                setShowInviteModal(false);
+                handleCopyLink();
+              }}
+              className="bg-neutral-800 rounded-xl py-4 flex-row items-center justify-center border border-neutral-700"
+            >
+              <Ionicons name="copy-outline" size={22} color="#F5B800" />
+              <Text className="text-neutral-100 text-lg font-semibold ml-2">Copy Link</Text>
+            </Pressable>
+
+            <Text className="text-neutral-600 text-xs text-center mt-4">
+              Guests can RSVP without downloading the app
+            </Text>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }

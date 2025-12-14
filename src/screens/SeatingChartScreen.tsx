@@ -43,11 +43,14 @@ function DraggableTable({ table, onPositionChange, onTablePress, allGuests }: Dr
   const translateX = useSharedValue(table.x || 50);
   const translateY = useSharedValue(table.y || 50);
   const scale = useSharedValue(1);
+  const isDragging = useSharedValue(false);
 
   const assignedGuests = allGuests.filter((g) => table.guestIds.includes(g.id));
 
   const panGesture = Gesture.Pan()
+    .minDistance(10)
     .onStart(() => {
+      isDragging.value = true;
       scale.value = withSpring(1.1);
     })
     .onUpdate((event) => {
@@ -56,14 +59,19 @@ function DraggableTable({ table, onPositionChange, onTablePress, allGuests }: Dr
     })
     .onEnd(() => {
       scale.value = withSpring(1);
+      isDragging.value = false;
       runOnJS(onPositionChange)(table.id, translateX.value, translateY.value);
     });
 
-  const tapGesture = Gesture.Tap().onEnd(() => {
-    runOnJS(onTablePress)(table);
-  });
+  const tapGesture = Gesture.Tap()
+    .maxDuration(250)
+    .onEnd(() => {
+      if (!isDragging.value) {
+        runOnJS(onTablePress)(table);
+      }
+    });
 
-  const composedGesture = Gesture.Simultaneous(panGesture, tapGesture);
+  const composedGesture = Gesture.Exclusive(tapGesture, panGesture);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
