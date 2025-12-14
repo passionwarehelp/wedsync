@@ -109,17 +109,26 @@ export default function QRCodeDesignScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   const viewShotRef = useRef<ViewShot>(null);
 
-  const { weddingId } = route.params;
+  const weddingId = route?.params?.weddingId ?? "";
   const wedding = useWeddingStore((s) => s.weddings.find((w) => w.id === weddingId));
 
   const [selectedTemplate, setSelectedTemplate] = useState<DesignTemplate>(DESIGN_TEMPLATES[0]);
   const [isSaving, setIsSaving] = useState(false);
 
-  const qrValue = wedding?.qrCode || `WEDDING-${weddingId}`;
+  const qrValue = wedding?.qrCode || `WEDDING-${weddingId || "preview"}`;
   const coupleName = wedding?.coupleName || "Our Wedding";
   const weddingDate = wedding?.weddingDate
     ? format(new Date(wedding.weddingDate), "MMMM d, yyyy")
     : "";
+
+  // Early return if no valid navigation context
+  if (!route?.params?.weddingId) {
+    return (
+      <View className="flex-1 bg-black items-center justify-center">
+        <Text className="text-neutral-400">Loading...</Text>
+      </View>
+    );
+  }
 
   const handleSaveToPhotos = async () => {
     try {
@@ -210,7 +219,7 @@ export default function QRCodeDesignScreen({ navigation, route }: Props) {
       >
         <View className="flex-row items-center justify-between">
           <Pressable
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation?.goBack?.()}
             className="w-10 h-10 rounded-full bg-neutral-800 items-center justify-center"
           >
             <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
