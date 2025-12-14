@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Pressable, ScrollView, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback } from "react-native";
+import { View, Text, TextInput, Pressable, ScrollView, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback, Switch } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -22,6 +22,7 @@ export default function CreateWeddingScreen() {
   const [weddingDate, setWeddingDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [venue, setVenue] = useState("");
+  const [qrCodeEnabled, setQrCodeEnabled] = useState(true);
 
   const isValid = partnerOneName.trim() && partnerTwoName.trim();
 
@@ -41,6 +42,7 @@ export default function CreateWeddingScreen() {
       createdAt: new Date().toISOString(),
       createdBy: userId,
       qrCode: `WS-${Date.now()}`,
+      qrCodeEnabled,
       guestCount: 0,
       rsvpCount: 0,
       tasksCompleted: 0,
@@ -142,6 +144,24 @@ export default function CreateWeddingScreen() {
                   className="bg-neutral-800 rounded-xl px-4 py-4 text-base text-neutral-100 border border-neutral-700"
                   returnKeyType="done"
                 />
+              </View>
+
+              {/* QR Code Album Toggle */}
+              <View className="mb-8 bg-neutral-800 rounded-xl p-4 border border-neutral-700">
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-1 mr-4">
+                    <Text className="text-neutral-100 text-base font-medium">QR Code Album</Text>
+                    <Text className="text-neutral-500 text-sm mt-1">
+                      Allow guests to upload photos via QR code scanner
+                    </Text>
+                  </View>
+                  <Switch
+                    value={qrCodeEnabled}
+                    onValueChange={setQrCodeEnabled}
+                    trackColor={{ false: "#404040", true: "#F5B800" }}
+                    thumbColor="#FFFFFF"
+                  />
+                </View>
               </View>
 
               {/* Create Button */}

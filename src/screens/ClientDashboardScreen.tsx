@@ -101,6 +101,7 @@ export default function ClientDashboardScreen() {
       createdAt: new Date().toISOString(),
       createdBy: user.id,
       qrCode: `WS-${Date.now()}`,
+      qrCodeEnabled: true,
       guestCount: 0,
       rsvpCount: 0,
       tasksCompleted: 0,
@@ -303,7 +304,7 @@ export default function ClientDashboardScreen() {
           )}
 
           {/* QR Code - Direct access for self-managed weddings (paid when created) */}
-          {(coupleWedding as any).isSelfManaged && (
+          {(coupleWedding as any).isSelfManaged && coupleWedding.qrCodeEnabled && (
             <Pressable
               onPress={() => navigation.navigate("QRCodeDesign", { weddingId: coupleWedding.id })}
               className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"

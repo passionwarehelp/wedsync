@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Pressable, ScrollView } from "react-native";
+import { View, Text, Pressable, ScrollView, Switch } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
@@ -19,6 +19,13 @@ export default function WeddingDetailScreen() {
 
   // Use individual selector to avoid infinite loops
   const wedding = useWeddingStore((s) => s.weddings.find((w) => w.id === weddingId));
+  const updateWedding = useWeddingStore((s) => s.updateWedding);
+
+  const handleToggleQRCode = () => {
+    if (wedding) {
+      updateWedding(weddingId, { qrCodeEnabled: !wedding.qrCodeEnabled });
+    }
+  };
 
   if (!wedding) {
     return (
@@ -60,11 +67,6 @@ export default function WeddingDetailScreen() {
       screen: "PhotoGallery" as const,
       addScreen: "PhotographerUpload" as const,
       addIcon: "camera" as const,
-    },
-    {
-      title: "QR Code",
-      icon: "qr-code" as const,
-      screen: "QRCode" as const,
     },
   ];
 
@@ -133,6 +135,49 @@ export default function WeddingDetailScreen() {
               <Ionicons name="chevron-forward" size={20} color="#6B7280" />
             </Pressable>
           ))}
+
+          {/* QR Code Album Section with Toggle */}
+          <View className="mt-6">
+            <Text className="text-neutral-400 text-xs font-semibold uppercase mb-3">Guest Photo Uploads</Text>
+
+            {/* QR Code Toggle */}
+            <View className="bg-neutral-900 rounded-2xl p-5 border border-neutral-800 mb-3">
+              <View className="flex-row items-center">
+                <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
+                  <Ionicons name="qr-code" size={24} color="#F5B800" />
+                </View>
+                <View className="flex-1 ml-4">
+                  <Text className="text-neutral-100 text-lg font-medium">QR Code Album</Text>
+                  <Text className="text-neutral-500 text-sm mt-1">
+                    {wedding.qrCodeEnabled ? "Guests can upload photos" : "Disabled for guests"}
+                  </Text>
+                </View>
+                <Switch
+                  value={wedding.qrCodeEnabled}
+                  onValueChange={handleToggleQRCode}
+                  trackColor={{ false: "#404040", true: "#F5B800" }}
+                  thumbColor="#FFFFFF"
+                />
+              </View>
+            </View>
+
+            {/* QR Code View Button - Only show when enabled */}
+            {wedding.qrCodeEnabled && (
+              <Pressable
+                onPress={() => navigation.navigate("QRCode", { weddingId })}
+                className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 active:opacity-70"
+              >
+                <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
+                  <Ionicons name="share-outline" size={24} color="#F5B800" />
+                </View>
+                <View className="flex-1 ml-4">
+                  <Text className="text-neutral-100 text-lg font-medium">View & Share QR Code</Text>
+                  <Text className="text-neutral-500 text-sm mt-1">Share with guests to collect photos</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#6B7280" />
+              </Pressable>
+            )}
+          </View>
         </View>
       </ScrollView>
     </View>

@@ -22,6 +22,7 @@ export interface Wedding {
 
   // QR Code for guest uploads
   qrCode: string;
+  qrCodeEnabled: boolean; // Toggle for QR code scanner album feature
 
   // Stats
   guestCount: number;
