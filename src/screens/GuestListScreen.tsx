@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, Pressable, ScrollView, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,6 +7,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigator";
 import useWeddingStore from "../state/weddingStore";
 import { LinearGradient } from "expo-linear-gradient";
+import { fetchRSVPsFromCloud } from "../api/rsvp-sync";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type GuestListRouteProp = RouteProp<RootStackParamList, "GuestList">;
@@ -15,14 +16,85 @@ export default function GuestListScreen() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<GuestListRouteProp>();
   const { weddingId } = route.params;
+  const hasSynced = useRef(false);
 
   // Use individual selectors to avoid infinite loops
-  const wedding = useWeddingStore((s) => s.weddings.find((w) => w.id === weddingId));
+  const weddings = useWeddingStore((s) => s.weddings);
   const allGuests = useWeddingStore((s) => s.guests);
+  const addGuest = useWeddingStore((s) => s.addGuest);
+  const updateWedding = useWeddingStore((s) => s.updateWedding);
+
+  const wedding = weddings.find((w) => w.id === weddingId);
   const guests = allGuests.filter((g) => g.weddingId === weddingId);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "attending" | "declined" | "pending">("all");
+
+  // Auto-sync RSVPs from cloud on mount
+  useEffect(() => {
+    if (!wedding || hasSynced.current) return;
+
+    const syncRSVPs = async () => {
+      try {
+        hasSynced.current = true;
+        const cloudRSVPs = await fetchRSVPsFromCloud(wedding.qrCode);
+
+        // Get existing guest names/emails to avoid duplicates
+        const currentGuests = allGuests.filter((g) => g.weddingId === weddingId);
+        const existingGuests = new Set(
+          currentGuests.map((g) => `${g.name.toLowerCase()}-${g.email?.toLowerCase() || ""}`)
+        );
+
+        let newGuestsAdded = 0;
+        let totalAttending = 0;
+
+        for (const rsvp of cloudRSVPs) {
+          const guestKey = `${rsvp.name.toLowerCase()}-${rsvp.email?.toLowerCase() || ""}`;
+
+          if (existingGuests.has(guestKey)) {
+            continue;
+          }
+
+          const guestId = `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+          addGuest({
+            id: guestId,
+            weddingId: wedding.id,
+            name: rsvp.name,
+            email: rsvp.email || undefined,
+            phone: rsvp.phone || undefined,
+            rsvpStatus: rsvp.attending ? "attending" : "declined",
+            plusOne: rsvp.plusOne,
+            plusOneName: rsvp.plusOneName || undefined,
+            mealType: rsvp.attending ? rsvp.mealType : undefined,
+            dietaryRestrictions: rsvp.dietaryRestrictions || undefined,
+            message: rsvp.message || undefined,
+            category: "other",
+            addedAt: rsvp.submittedAt || new Date().toISOString(),
+          });
+
+          newGuestsAdded++;
+          if (rsvp.attending) {
+            totalAttending += rsvp.plusOne ? 2 : 1;
+          }
+
+          existingGuests.add(guestKey);
+        }
+
+        if (newGuestsAdded > 0) {
+          updateWedding(wedding.id, {
+            guestCount: wedding.guestCount + newGuestsAdded,
+            rsvpCount: wedding.rsvpCount + totalAttending,
+          });
+        }
+      } catch (error) {
+        // Silently fail - don't interrupt the user
+        console.log("Auto-sync failed:", error);
+      }
+    };
+
+    syncRSVPs();
+  }, [wedding?.qrCode]);
 
   const filteredGuests = guests.filter((guest) => {
     const matchesSearch = guest.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -39,7 +111,7 @@ export default function GuestListScreen() {
 
   if (!wedding) {
     return (
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-black">
         <View className="flex-1 items-center justify-center">
           <Text className="text-neutral-500">Wedding not found</Text>
         </View>

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, Pressable, ScrollView, Share, ActivityIndicator } from "react-native";
+import React from "react";
+import { View, Text, Pressable, ScrollView, Share } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
@@ -9,7 +9,6 @@ import useWeddingStore from "../state/weddingStore";
 import { LinearGradient } from "expo-linear-gradient";
 import QRCode from "react-native-qrcode-svg";
 import { format } from "date-fns";
-import { fetchRSVPsFromCloud, CloudflareRSVP } from "../api/rsvp-sync";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type RSVPLinkRouteProp = RouteProp<RootStackParamList, "RSVPLink">;
@@ -20,88 +19,13 @@ export default function RSVPLinkScreen() {
   const { weddingId } = route.params;
   const insets = useSafeAreaInsets();
 
-  const [syncing, setSyncing] = useState(false);
-  const [lastSyncCount, setLastSyncCount] = useState<number | null>(null);
-
   // Use individual selectors to avoid infinite loops
   const weddings = useWeddingStore((s) => s.weddings);
   const allGuests = useWeddingStore((s) => s.guests);
-  const addGuest = useWeddingStore((s) => s.addGuest);
-  const updateWedding = useWeddingStore((s) => s.updateWedding);
 
   // Filter outside selector
   const wedding = weddings.find((w) => w.id === weddingId);
   const guests = allGuests.filter((g) => g.weddingId === weddingId);
-
-  const handleSyncRSVPs = async () => {
-    if (!wedding) return;
-
-    setSyncing(true);
-    setLastSyncCount(null);
-
-    try {
-      const cloudRSVPs = await fetchRSVPsFromCloud(wedding.qrCode);
-
-      // Get existing guest emails/names to avoid duplicates
-      const existingGuests = new Set(
-        guests.map((g) => `${g.name.toLowerCase()}-${g.email?.toLowerCase() || ""}`)
-      );
-
-      let newGuestsAdded = 0;
-      let totalAttending = 0;
-
-      for (const rsvp of cloudRSVPs) {
-        const guestKey = `${rsvp.name.toLowerCase()}-${rsvp.email?.toLowerCase() || ""}`;
-
-        // Skip if guest already exists
-        if (existingGuests.has(guestKey)) {
-          continue;
-        }
-
-        // Add new guest
-        const guestId = `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-        addGuest({
-          id: guestId,
-          weddingId: wedding.id,
-          name: rsvp.name,
-          email: rsvp.email || undefined,
-          phone: rsvp.phone || undefined,
-          rsvpStatus: rsvp.attending ? "attending" : "declined",
-          plusOne: rsvp.plusOne,
-          plusOneName: rsvp.plusOneName || undefined,
-          mealType: rsvp.attending ? rsvp.mealType : undefined,
-          dietaryRestrictions: rsvp.dietaryRestrictions || undefined,
-          message: rsvp.message || undefined,
-          category: "other",
-          addedAt: rsvp.submittedAt || new Date().toISOString(),
-        });
-
-        newGuestsAdded++;
-        if (rsvp.attending) {
-          totalAttending += rsvp.plusOne ? 2 : 1;
-        }
-
-        // Add to existing set to prevent duplicates within same sync
-        existingGuests.add(guestKey);
-      }
-
-      // Update wedding counts
-      if (newGuestsAdded > 0) {
-        updateWedding(wedding.id, {
-          guestCount: wedding.guestCount + newGuestsAdded,
-          rsvpCount: wedding.rsvpCount + totalAttending,
-        });
-      }
-
-      setLastSyncCount(newGuestsAdded);
-    } catch (error) {
-      console.error("Failed to sync RSVPs:", error);
-      setLastSyncCount(-1); // Error state
-    } finally {
-      setSyncing(false);
-    }
-  };
 
   if (!wedding) {
     return (
@@ -113,7 +37,6 @@ export default function RSVPLinkScreen() {
     );
   }
 
-  // Use the same qrCode identifier for RSVP - could also create a separate rsvpCode if needed
   const rsvpUrl = `https://rsvp.mywedsync.com/${wedding.qrCode}?couple=${encodeURIComponent(wedding.coupleName)}`;
 
   const handleShare = async () => {
@@ -129,7 +52,6 @@ export default function RSVPLinkScreen() {
   };
 
   const handleCopyLink = async () => {
-    // Since we can't use Clipboard directly, we'll use share
     await Share.share({
       message: rsvpUrl,
       title: "RSVP Link",
@@ -172,35 +94,6 @@ export default function RSVPLinkScreen() {
             Guests can scan this QR code or use the link to RSVP
           </Text>
         </View>
-
-        {/* Sync Button */}
-        <Pressable
-          onPress={handleSyncRSVPs}
-          disabled={syncing}
-          className={`bg-emerald-900/30 border border-emerald-700 rounded-2xl p-4 mb-6 flex-row items-center justify-center ${syncing ? "opacity-50" : "active:opacity-70"}`}
-        >
-          {syncing ? (
-            <ActivityIndicator size="small" color="#10B981" />
-          ) : (
-            <Ionicons name="sync" size={22} color="#10B981" />
-          )}
-          <Text className="text-emerald-400 text-base font-semibold ml-3">
-            {syncing ? "Syncing RSVPs..." : "Sync New RSVPs"}
-          </Text>
-        </Pressable>
-
-        {/* Sync Status Message */}
-        {lastSyncCount !== null && (
-          <View className={`rounded-xl p-3 mb-4 ${lastSyncCount === -1 ? "bg-red-900/30" : "bg-neutral-800"}`}>
-            <Text className={`text-center text-sm ${lastSyncCount === -1 ? "text-red-400" : "text-neutral-300"}`}>
-              {lastSyncCount === -1
-                ? "Failed to sync. Please try again."
-                : lastSyncCount === 0
-                  ? "All RSVPs are already synced!"
-                  : `${lastSyncCount} new RSVP${lastSyncCount > 1 ? "s" : ""} added to your guest list!`}
-            </Text>
-          </View>
-        )}
 
         {/* RSVP Stats */}
         <View className="bg-neutral-900 rounded-2xl p-5 mb-6 border border-neutral-800">
@@ -267,7 +160,7 @@ export default function RSVPLinkScreen() {
             </View>
             <View className="flex-row">
               <Text className="text-[#F5B800] font-bold mr-3">4.</Text>
-              <Text className="text-neutral-300 flex-1">Tap &quot;Sync New RSVPs&quot; to pull responses into your guest list</Text>
+              <Text className="text-neutral-300 flex-1">Responses automatically appear in your guest list</Text>
             </View>
           </View>
         </View>
