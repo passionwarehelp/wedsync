@@ -26,6 +26,8 @@ import AdminCalendarScreen from "../screens/AdminCalendarScreen";
 import EmailAutomationScreen from "../screens/EmailAutomationScreen";
 import InvoiceDetailScreen from "../screens/InvoiceDetailScreen";
 import PhotographerUploadScreen from "../screens/PhotographerUploadScreen";
+import CoupleCalendarScreen from "../screens/CoupleCalendarScreen";
+import CoupleNotesScreen from "../screens/CoupleNotesScreen";
 
 export type RootStackParamList = {
   Auth: undefined;
@@ -50,6 +52,8 @@ export type RootStackParamList = {
   TimeTracking: undefined;
   AdminCalendar: undefined;
   EmailAutomation: undefined;
+  CoupleCalendar: { weddingId: string };
+  CoupleNotes: { weddingId: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -173,6 +177,10 @@ export default function RootNavigator() {
           <Stack.Screen name="TimeTracking" component={TimeTrackingScreen} />
           <Stack.Screen name="AdminCalendar" component={AdminCalendarScreen} />
           <Stack.Screen name="EmailAutomation" component={EmailAutomationScreen} />
+
+          {/* Couple Screens */}
+          <Stack.Screen name="CoupleCalendar" component={CoupleCalendarScreen} />
+          <Stack.Screen name="CoupleNotes" component={CoupleNotesScreen} />
 
           {/* Modals */}
           <Stack.Screen

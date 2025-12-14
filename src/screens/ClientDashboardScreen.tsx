@@ -41,6 +41,7 @@ export default function ClientDashboardScreen() {
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showQRPaywallModal, setShowQRPaywallModal] = useState(false);
 
   // Join wedding form
   const [inviteCode, setInviteCode] = useState("");
@@ -252,17 +253,56 @@ export default function ClientDashboardScreen() {
             <Ionicons name="chevron-forward" size={20} color="#6B7280" />
           </Pressable>
 
-          {/* QR Code - Only for self-managed weddings */}
+          {/* Calendar - Only for self-managed weddings */}
           {(coupleWedding as any).isSelfManaged && (
             <Pressable
-              onPress={() => navigation.navigate("QRCode", { weddingId: coupleWedding.id })}
+              onPress={() => navigation.navigate("CoupleCalendar", { weddingId: coupleWedding.id })}
+              className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
+            >
+              <View className="w-12 h-12 bg-[#C9A961]/10 rounded-full items-center justify-center">
+                <Ionicons name="calendar" size={24} color="#C9A961" />
+              </View>
+              <View className="flex-1 ml-4">
+                <Text className="text-neutral-100 text-lg font-medium">Calendar</Text>
+                <Text className="text-neutral-500 text-sm">Schedule appointments</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#6B7280" />
+            </Pressable>
+          )}
+
+          {/* Notes - Only for self-managed weddings */}
+          {(coupleWedding as any).isSelfManaged && (
+            <Pressable
+              onPress={() => navigation.navigate("CoupleNotes", { weddingId: coupleWedding.id })}
+              className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
+            >
+              <View className="w-12 h-12 bg-[#C9A961]/10 rounded-full items-center justify-center">
+                <Ionicons name="document-text" size={24} color="#C9A961" />
+              </View>
+              <View className="flex-1 ml-4">
+                <Text className="text-neutral-100 text-lg font-medium">Notes</Text>
+                <Text className="text-neutral-500 text-sm">Keep wedding notes & ideas</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#6B7280" />
+            </Pressable>
+          )}
+
+          {/* QR Code - Only for self-managed weddings with paywall */}
+          {(coupleWedding as any).isSelfManaged && (
+            <Pressable
+              onPress={() => setShowQRPaywallModal(true)}
               className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
             >
               <View className="w-12 h-12 bg-[#C9A961]/10 rounded-full items-center justify-center">
                 <Ionicons name="qr-code" size={24} color="#C9A961" />
               </View>
               <View className="flex-1 ml-4">
-                <Text className="text-neutral-100 text-lg font-medium">QR Code</Text>
+                <View className="flex-row items-center">
+                  <Text className="text-neutral-100 text-lg font-medium">QR Code</Text>
+                  <View className="bg-amber-900/50 px-2 py-0.5 rounded ml-2">
+                    <Text className="text-amber-400 text-xs font-medium">$50</Text>
+                  </View>
+                </View>
                 <Text className="text-neutral-500 text-sm">Guest photo uploads</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#6B7280" />
@@ -370,13 +410,14 @@ export default function ClientDashboardScreen() {
                 <View className="flex-1">
                   <Text className="text-neutral-100 text-xl font-bold mb-1">Create My Wedding</Text>
                   <Text className="text-neutral-400 text-sm leading-5">
-                    Plan your own wedding with guest management, seating charts, and more.
+                    Plan your own wedding with guest management, seating charts, calendar, and more.
                   </Text>
-                  <View className="flex-row items-center mt-3 bg-amber-900/30 px-3 py-2 rounded-lg self-start">
-                    <Ionicons name="pricetag" size={14} color="#F59E0B" />
-                    <Text className="text-amber-400 text-xs font-medium ml-1">
-                      $50 for QR code photo uploads
-                    </Text>
+                  <View className="flex-row flex-wrap mt-3">
+                    {["Guests", "Seating", "Tasks", "Calendar", "Notes"].map((tag) => (
+                      <View key={tag} className="bg-neutral-800 px-2 py-1 rounded mr-2 mb-1">
+                        <Text className="text-neutral-400 text-xs">{tag}</Text>
+                      </View>
+                    ))}
                   </View>
                 </View>
               </View>
@@ -465,7 +506,7 @@ export default function ClientDashboardScreen() {
               keyboardShouldPersistTaps="handled"
             >
               <View className="bg-neutral-900 rounded-t-3xl p-6">
-                <View className="flex-row items-center justify-between mb-2">
+                <View className="flex-row items-center justify-between mb-6">
                   <Text className="text-neutral-100 text-xl font-bold">Create Wedding</Text>
                   <Pressable onPress={() => {
                     setShowCreateModal(false);
@@ -475,17 +516,6 @@ export default function ClientDashboardScreen() {
                   }}>
                     <Ionicons name="close" size={24} color="#9CA3AF" />
                   </Pressable>
-                </View>
-
-                {/* Pricing Notice */}
-                <View className="bg-amber-900/20 border border-amber-900/50 rounded-xl p-4 mb-6">
-                  <View className="flex-row items-center mb-2">
-                    <Ionicons name="information-circle" size={20} color="#F59E0B" />
-                    <Text className="text-amber-400 font-semibold ml-2">Premium Feature</Text>
-                  </View>
-                  <Text className="text-amber-200/70 text-sm">
-                    QR code photo uploads require a one-time payment of $50. Guest management, tasks, and seating charts are included free.
-                  </Text>
                 </View>
 
                 {/* Partner 1 Name */}
@@ -602,6 +632,75 @@ export default function ClientDashboardScreen() {
               className="bg-red-900/30 rounded-xl py-4 items-center border border-red-900"
             >
               <Text className="text-red-400 font-semibold">Sign Out</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      {/* QR Code Paywall Modal */}
+      <Modal visible={showQRPaywallModal} transparent animationType="slide">
+        <View className="flex-1 justify-end bg-black/70">
+          <View className="bg-neutral-900 rounded-t-3xl p-6">
+            <View className="flex-row items-center justify-between mb-6">
+              <Text className="text-neutral-100 text-xl font-bold">QR Code Photo Album</Text>
+              <Pressable onPress={() => setShowQRPaywallModal(false)}>
+                <Ionicons name="close" size={24} color="#9CA3AF" />
+              </Pressable>
+            </View>
+
+            <View className="items-center mb-6">
+              <View className="w-20 h-20 rounded-full bg-[#C9A961]/20 items-center justify-center mb-4">
+                <Ionicons name="qr-code" size={40} color="#C9A961" />
+              </View>
+              <Text className="text-neutral-100 text-lg font-semibold text-center mb-2">
+                Shared Photo Album Access
+              </Text>
+              <Text className="text-neutral-400 text-center text-sm">
+                Allow your wedding guests to upload photos directly to your gallery using a QR code
+              </Text>
+            </View>
+
+            <View className="bg-neutral-800 rounded-xl p-4 mb-6">
+              <Text className="text-neutral-300 font-medium mb-3">What you get:</Text>
+              {[
+                "Custom QR code for your wedding",
+                "Guests can upload photos & videos",
+                "All uploads go directly to your gallery",
+                "Share QR code on invitations or at venue",
+              ].map((feature, index) => (
+                <View key={index} className="flex-row items-center mb-2">
+                  <Ionicons name="checkmark-circle" size={18} color="#C9A961" />
+                  <Text className="text-neutral-400 text-sm ml-2">{feature}</Text>
+                </View>
+              ))}
+            </View>
+
+            <View className="bg-[#C9A961]/10 rounded-xl p-4 mb-6 border border-[#C9A961]/30">
+              <View className="flex-row items-center justify-between">
+                <Text className="text-neutral-100 font-semibold">One-time payment</Text>
+                <Text className="text-[#C9A961] text-2xl font-bold">$50</Text>
+              </View>
+            </View>
+
+            <Pressable
+              onPress={() => {
+                // TODO: Integrate with payment system
+                setShowQRPaywallModal(false);
+                // For now, just navigate to QR code screen
+                if (coupleWeddingId) {
+                  navigation.navigate("QRCode", { weddingId: coupleWeddingId });
+                }
+              }}
+              className="bg-[#C9A961] rounded-xl py-4 items-center mb-3"
+            >
+              <Text className="text-black text-lg font-semibold">Get Access - $50</Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => setShowQRPaywallModal(false)}
+              className="py-3 items-center"
+            >
+              <Text className="text-neutral-500">Maybe later</Text>
             </Pressable>
           </View>
         </View>
