@@ -256,20 +256,67 @@ export default function ClientDashboardScreen() {
             <Ionicons name="chevron-forward" size={20} color="#6B7280" />
           </Pressable>
 
-          {/* Photo Gallery */}
-          <Pressable
-            onPress={() => navigation.navigate("PhotoGallery", { weddingId: coupleWedding.id })}
-            className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
-          >
-            <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
-              <Ionicons name="images" size={24} color="#F5B800" />
+          {/* Photo Gallery - Shows "coming soon" if photographer hasn't made it live */}
+          {coupleWedding.photoAlbumLive ? (
+            <Pressable
+              onPress={() => navigation.navigate("PhotoGallery", { weddingId: coupleWedding.id })}
+              className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
+            >
+              <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
+                <Ionicons name="images" size={24} color="#F5B800" />
+              </View>
+              <View className="flex-1 ml-4">
+                <Text className="text-neutral-100 text-lg font-medium">Photo Gallery</Text>
+                <Text className="text-neutral-500 text-sm">View wedding photos</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#6B7280" />
+            </Pressable>
+          ) : (
+            <View className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 opacity-60">
+              <View className="w-12 h-12 bg-neutral-800 rounded-full items-center justify-center">
+                <Ionicons name="images" size={24} color="#666" />
+              </View>
+              <View className="flex-1 ml-4">
+                <Text className="text-neutral-400 text-lg font-medium">Photo Gallery</Text>
+                <Text className="text-neutral-600 text-sm">Coming soon from your photographer</Text>
+              </View>
+              <Ionicons name="time-outline" size={20} color="#666" />
             </View>
-            <View className="flex-1 ml-4">
-              <Text className="text-neutral-100 text-lg font-medium">Photo Gallery</Text>
-              <Text className="text-neutral-500 text-sm">View wedding photos</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#6B7280" />
-          </Pressable>
+          )}
+
+          {/* QR Code Album - Only show if photographer enabled it (for photographer-managed weddings) */}
+          {!(coupleWedding as any).isSelfManaged && coupleWedding.qrCodeEnabled && (
+            <Pressable
+              onPress={() => navigation.navigate("QRCodeDesign", { weddingId: coupleWedding.id })}
+              className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
+            >
+              <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
+                <Ionicons name="qr-code" size={24} color="#F5B800" />
+              </View>
+              <View className="flex-1 ml-4">
+                <Text className="text-neutral-100 text-lg font-medium">Guest Photo Album</Text>
+                <Text className="text-neutral-500 text-sm">View photos from guests</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#6B7280" />
+            </Pressable>
+          )}
+
+          {/* Photo Frame - Only show if photographer enabled it */}
+          {coupleWedding.photoFrameEnabled && (
+            <Pressable
+              onPress={() => {/* Navigate to photo frame screen */}}
+              className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
+            >
+              <View className="w-12 h-12 bg-[#F5B800]/10 rounded-full items-center justify-center">
+                <Ionicons name="tablet-landscape-outline" size={24} color="#F5B800" />
+              </View>
+              <View className="flex-1 ml-4">
+                <Text className="text-neutral-100 text-lg font-medium">Photo Frame</Text>
+                <Text className="text-neutral-500 text-sm">Digital photo display</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#6B7280" />
+            </Pressable>
+          )}
 
           {/* Calendar - Only for self-managed weddings */}
           {(coupleWedding as any).isSelfManaged && (

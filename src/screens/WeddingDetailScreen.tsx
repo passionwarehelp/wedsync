@@ -182,6 +182,20 @@ export default function WeddingDetailScreen() {
             </View>
             <Ionicons name="chevron-forward" size={20} color="#6B7280" />
           </Pressable>
+
+          {/* Invite Couple Section */}
+          <Text className="text-neutral-400 text-xs font-semibold uppercase mb-3 mt-6">Invite Couple</Text>
+
+          <Pressable
+            onPress={() => navigation.navigate("InviteCouple", { weddingId })}
+            className="bg-[#F5B800] rounded-2xl p-5 flex-row items-center justify-center active:opacity-70"
+          >
+            <Ionicons name="person-add" size={24} color="#000000" />
+            <Text className="text-black text-lg font-semibold ml-3">Add Bride/Groom</Text>
+          </Pressable>
+          <Text className="text-neutral-500 text-sm text-center mt-3">
+            Send an invite code so the couple can access their wedding details
+          </Text>
         </View>
       </ScrollView>
     </View>
