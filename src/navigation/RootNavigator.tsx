@@ -28,6 +28,9 @@ import TimeTrackingScreen from "../screens/TimeTrackingScreen";
 import AdminCalendarScreen from "../screens/AdminCalendarScreen";
 import EmailAutomationScreen from "../screens/EmailAutomationScreen";
 import InvoiceDetailScreen from "../screens/InvoiceDetailScreen";
+import CreateInvoiceScreen from "../screens/CreateInvoiceScreen";
+import ClientsScreen from "../screens/ClientsScreen";
+import BusinessSettingsScreen from "../screens/BusinessSettingsScreen";
 import PhotographerUploadScreen from "../screens/PhotographerUploadScreen";
 import CoupleCalendarScreen from "../screens/CoupleCalendarScreen";
 import CoupleNotesScreen from "../screens/CoupleNotesScreen";
@@ -56,6 +59,9 @@ export type RootStackParamList = {
   RSVPLink: { weddingId: string };
   Invoices: undefined;
   InvoiceDetail: { invoiceId: string };
+  CreateInvoice: undefined;
+  Clients: undefined;
+  BusinessSettings: undefined;
   StaffManagement: undefined;
   TimeTracking: undefined;
   AdminCalendar: undefined;
@@ -181,6 +187,17 @@ export default function RootNavigator() {
           {/* Admin Screens */}
           <Stack.Screen name="Invoices" component={InvoicesScreen} />
           <Stack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} />
+          <Stack.Screen
+            name="CreateInvoice"
+            component={CreateInvoiceScreen}
+            options={{ presentation: "formSheet", sheetAllowedDetents: [0.95] }}
+          />
+          <Stack.Screen name="Clients" component={ClientsScreen} />
+          <Stack.Screen
+            name="BusinessSettings"
+            component={BusinessSettingsScreen}
+            options={{ presentation: "formSheet", sheetAllowedDetents: [0.95] }}
+          />
           <Stack.Screen name="StaffManagement" component={StaffManagementScreen} />
           <Stack.Screen name="TimeTracking" component={TimeTrackingScreen} />
           <Stack.Screen name="AdminCalendar" component={AdminCalendarScreen} />

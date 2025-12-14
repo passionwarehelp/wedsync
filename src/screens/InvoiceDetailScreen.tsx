@@ -1,122 +1,156 @@
-import React, { useState } from "react";
-import { View, Text, Pressable, ScrollView, TextInput, Alert } from "react-native";
+import React, { useState, useMemo } from "react";
+import { View, Text, Pressable, ScrollView, Modal, Linking } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigator";
-import useAdminStore from "../state/adminStore";
-import { Invoice, InvoiceItem } from "../types/wedding";
-import { format } from "date-fns";
+import useBusinessStore from "../state/businessStore";
+import { InvoiceStatus } from "../types/business";
 import { LinearGradient } from "expo-linear-gradient";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import { shareInvoice } from "../utils/invoice-pdf";
+import { sendInvoiceEmail } from "../utils/invoice-email";
+import * as Haptics from "expo-haptics";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type InvoiceDetailRouteProp = RouteProp<RootStackParamList, "InvoiceDetail">;
+
+const getStatusColor = (status: InvoiceStatus) => {
+  switch (status) {
+    case "paid":
+      return { bg: "bg-emerald-900/30", text: "text-emerald-400", border: "border-emerald-900" };
+    case "sent":
+      return { bg: "bg-blue-900/30", text: "text-blue-400", border: "border-blue-900" };
+    case "viewed":
+      return { bg: "bg-purple-900/30", text: "text-purple-400", border: "border-purple-900" };
+    case "overdue":
+      return { bg: "bg-red-900/30", text: "text-red-400", border: "border-red-900" };
+    case "draft":
+      return { bg: "bg-neutral-800", text: "text-neutral-400", border: "border-neutral-700" };
+    case "cancelled":
+      return { bg: "bg-neutral-800", text: "text-neutral-500", border: "border-neutral-700" };
+  }
+};
 
 export default function InvoiceDetailScreen() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<InvoiceDetailRouteProp>();
   const { invoiceId } = route.params;
 
-  const invoice = useAdminStore((s) => s.invoices.find((i) => i.id === invoiceId));
-  const updateInvoice = useAdminStore((s) => s.updateInvoice);
-  const deleteInvoice = useAdminStore((s) => s.deleteInvoice);
+  const allInvoices = useBusinessStore((s) => s.invoices);
+  const allClients = useBusinessStore((s) => s.clients);
+  const settings = useBusinessStore((s) => s.settings);
+  const updateInvoice = useBusinessStore((s) => s.updateInvoice);
+  const markInvoicePaid = useBusinessStore((s) => s.markInvoicePaid);
+  const deleteInvoice = useBusinessStore((s) => s.deleteInvoice);
 
-  const [clientName, setClientName] = useState(invoice?.clientName || "");
-  const [clientEmail, setClientEmail] = useState(invoice?.clientEmail || "");
-  const [items, setItems] = useState<InvoiceItem[]>(invoice?.items || []);
-  const [dueDate, setDueDate] = useState(new Date(invoice?.dueDate || Date.now()));
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [notes, setNotes] = useState(invoice?.notes || "");
-  const [taxRate, setTaxRate] = useState("10");
+  const invoice = useMemo(() => allInvoices.find((i) => i.id === invoiceId), [allInvoices, invoiceId]);
+  const client = useMemo(
+    () => (invoice ? allClients.find((c) => c.id === invoice.clientId) : null),
+    [allClients, invoice]
+  );
+
+  const [showActionsModal, setShowActionsModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Calculate if overdue
+  const displayStatus = useMemo(() => {
+    if (!invoice) return "draft";
+    if (
+      invoice.status !== "paid" &&
+      invoice.status !== "cancelled" &&
+      invoice.dueDate &&
+      new Date(invoice.dueDate) < new Date()
+    ) {
+      return "overdue" as InvoiceStatus;
+    }
+    return invoice.status;
+  }, [invoice]);
 
   if (!invoice) {
     return (
       <View className="flex-1 bg-black items-center justify-center">
-        <Text className="text-neutral-500">Invoice not found</Text>
+        <Ionicons name="document-text-outline" size={48} color="#666" />
+        <Text className="text-neutral-500 mt-4">Invoice not found</Text>
+        <Pressable onPress={() => navigation.goBack()} className="mt-4">
+          <Text className="text-[#F5B800]">Go Back</Text>
+        </Pressable>
       </View>
     );
   }
 
-  const addLineItem = () => {
-    const newItem: InvoiceItem = {
-      id: Date.now().toString(),
-      description: "",
-      quantity: 1,
-      rate: 0,
-      amount: 0,
-    };
-    setItems([...items, newItem]);
+  const statusColors = getStatusColor(displayStatus);
+
+  const handleMarkPaid = async () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    markInvoicePaid(invoiceId);
+    setShowActionsModal(false);
   };
 
-  const updateLineItem = (id: string, field: keyof InvoiceItem, value: any) => {
-    setItems(
-      items.map((item) => {
-        if (item.id === id) {
-          const updated = { ...item, [field]: value };
-          if (field === "quantity" || field === "rate") {
-            updated.amount = updated.quantity * updated.rate;
-          }
-          return updated;
-        }
-        return item;
-      })
-    );
-  };
-
-  const removeLineItem = (id: string) => {
-    setItems(items.filter((item) => item.id !== id));
-  };
-
-  const calculateTotals = () => {
-    const subtotal = items.reduce((sum, item) => sum + item.amount, 0);
-    const tax = subtotal * (parseFloat(taxRate) / 100);
-    const total = subtotal + tax;
-    return { subtotal, tax, total };
-  };
-
-  const saveInvoice = () => {
-    if (!clientName.trim()) {
-      Alert.alert("Error", "Please enter client name");
-      return;
-    }
-
-    const { subtotal, tax, total } = calculateTotals();
-
-    updateInvoice(invoice.id, {
-      clientName: clientName.trim(),
-      clientEmail: clientEmail.trim() || undefined,
-      items,
-      dueDate: dueDate.toISOString(),
-      notes: notes.trim() || undefined,
-      subtotal,
-      tax,
-      total,
+  const handleMarkSent = () => {
+    updateInvoice(invoiceId, {
+      status: "sent",
+      sentDate: new Date().toISOString()
     });
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setShowActionsModal(false);
+  };
 
-    Alert.alert("Success", "Invoice saved successfully");
-    navigation.goBack();
+  const handleShare = async () => {
+    if (!client) return;
+    setIsLoading(true);
+    try {
+      await shareInvoice(invoice, client, settings);
+    } catch (error) {
+      console.log("Share error:", error);
+    }
+    setIsLoading(false);
+  };
+
+  const handleSendEmail = async () => {
+    if (!client) return;
+    setIsLoading(true);
+    try {
+      await sendInvoiceEmail(invoice, client, settings);
+      updateInvoice(invoiceId, {
+        status: "sent",
+        sentDate: new Date().toISOString()
+      });
+    } catch (error) {
+      console.log("Email error:", error);
+    }
+    setIsLoading(false);
+    setShowActionsModal(false);
   };
 
   const handleDelete = () => {
-    Alert.alert("Delete Invoice", "Are you sure you want to delete this invoice?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: () => {
-          deleteInvoice(invoice.id);
-          navigation.goBack();
-        },
-      },
-    ]);
+    deleteInvoice(invoiceId);
+    navigation.goBack();
   };
 
-  const handleStatusChange = (status: Invoice["status"]) => {
-    updateInvoice(invoice.id, { status });
-  };
+  const handleOpenPaymentLink = (type: string) => {
+    const pm = settings.paymentMethods;
+    if (!pm) return;
 
-  const { subtotal, tax, total } = calculateTotals();
+    let url = "";
+    switch (type) {
+      case "venmo":
+        url = pm.venmoLink || `https://venmo.com/u/${pm.venmo}`;
+        break;
+      case "cashapp":
+        url = pm.cashappLink || `https://cash.app/${pm.cashapp}`;
+        break;
+      case "paypal":
+        url = pm.paypalLink || `https://paypal.me/${pm.paypal}`;
+        break;
+    }
+
+    if (url) {
+      Linking.openURL(url);
+    }
+    setShowPaymentModal(false);
+  };
 
   return (
     <View className="flex-1 bg-black">
@@ -124,213 +158,335 @@ export default function InvoiceDetailScreen() {
         colors={["#1F1F1F", "#000000"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={{ paddingTop: 60, paddingBottom: 24, paddingHorizontal: 20 }}
+        style={{ paddingTop: 60, paddingBottom: 20, paddingHorizontal: 20 }}
       >
-        <View className="flex-row items-center justify-between mb-6">
+        <View className="flex-row items-center justify-between mb-4">
           <Pressable onPress={() => navigation.goBack()}>
-            <Ionicons name="close" size={28} color="#F5B800" />
+            <Ionicons name="arrow-back" size={24} color="#F5B800" />
           </Pressable>
-          <Text className="text-[#F5B800] text-xl font-bold">{invoice.invoiceNumber}</Text>
-          <Pressable onPress={handleDelete}>
-            <Ionicons name="trash-outline" size={24} color="#ef4444" />
+          <Pressable onPress={() => setShowActionsModal(true)}>
+            <Ionicons name="ellipsis-horizontal" size={24} color="#F5B800" />
           </Pressable>
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
-          <View className="flex-row">
-            {(["draft", "sent", "paid", "overdue", "cancelled"] as const).map((status, index, array) => (
-              <Pressable
-                key={status}
-                onPress={() => handleStatusChange(status)}
-                className={`px-3 py-1 rounded-full${index < array.length - 1 ? " mr-2" : ""} ${
-                  invoice.status === status ? "bg-[#F5B800]" : "bg-neutral-800 border border-neutral-700"
-                }`}
-              >
-                <Text
-                  className={`text-[10px] font-semibold capitalize ${
-                    invoice.status === status ? "text-black" : "text-neutral-300"
-                  }`}
-                >
-                  {status}
-                </Text>
-              </Pressable>
-            ))}
+        <View className="flex-row items-start justify-between">
+          <View className="flex-1">
+            <Text className="text-[#F5B800] text-3xl font-bold">{invoice.invoiceNumber}</Text>
+            <Text className="text-neutral-400 mt-1">{invoice.clientName}</Text>
           </View>
-        </ScrollView>
+          <View className={`px-4 py-2 rounded-full border ${statusColors.bg} ${statusColors.border}`}>
+            <Text className={`text-sm font-semibold uppercase ${statusColors.text}`}>
+              {displayStatus}
+            </Text>
+          </View>
+        </View>
       </LinearGradient>
 
-      <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
-        <View className="pb-8">
-          {/* Client Info */}
-          <View className="mb-4">
-            <Text className="text-neutral-400 text-sm mb-2">Client Name *</Text>
-            <TextInput
-              value={clientName}
-              onChangeText={setClientName}
-              placeholder="Enter client name"
-              placeholderTextColor="#666666"
-              className="bg-neutral-900 text-neutral-100 rounded-xl p-4 border border-neutral-800"
-            />
-          </View>
-
-          <View className="mb-4">
-            <Text className="text-neutral-400 text-sm mb-2">Client Email</Text>
-            <TextInput
-              value={clientEmail}
-              onChangeText={setClientEmail}
-              placeholder="client@example.com"
-              placeholderTextColor="#666666"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              className="bg-neutral-900 text-neutral-100 rounded-xl p-4 border border-neutral-800"
-            />
-          </View>
-
-          {/* Due Date */}
-          <View className="mb-4">
-            <Text className="text-neutral-400 text-sm mb-2">Due Date</Text>
-            <Pressable
-              onPress={() => setShowDatePicker(true)}
-              className="bg-neutral-900 rounded-xl p-4 border border-neutral-800"
-            >
-              <Text className="text-neutral-100 text-base">{format(dueDate, "MMMM d, yyyy")}</Text>
-            </Pressable>
-            {showDatePicker && (
-              <DateTimePicker
-                value={dueDate}
-                mode="date"
-                display="inline"
-                themeVariant="dark"
-                onChange={(event, date) => {
-                  setShowDatePicker(false);
-                  if (date) setDueDate(date);
-                }}
-              />
-            )}
-          </View>
-
-          {/* Line Items */}
-          <View className="mb-4">
-            <View className="flex-row items-center justify-between mb-3">
-              <Text className="text-neutral-100 text-lg font-semibold">Items</Text>
-              <Pressable onPress={addLineItem} className="bg-[#F5B800] px-4 py-2 rounded-full">
-                <Text className="text-black font-semibold text-sm">Add Item</Text>
-              </Pressable>
+      <ScrollView className="flex-1 px-5 pt-4" showsVerticalScrollIndicator={false}>
+        {/* Amount Card */}
+        <View className="bg-neutral-900 rounded-2xl p-6 border border-neutral-800 mb-4">
+          <Text className="text-neutral-400 text-sm mb-2">Amount Due</Text>
+          <Text className="text-[#F5B800] text-4xl font-bold">${invoice.total.toFixed(2)}</Text>
+          {invoice.dueDate && (
+            <View className="flex-row items-center mt-3">
+              <Ionicons name="calendar-outline" size={16} color="#666" />
+              <Text className="text-neutral-500 ml-2">
+                {displayStatus === "overdue" ? "Was due " : "Due "}
+                {new Date(invoice.dueDate).toLocaleDateString()}
+              </Text>
             </View>
+          )}
+        </View>
 
-            {items.length === 0 ? (
-              <View className="bg-neutral-900 rounded-xl p-6 border border-neutral-800 items-center">
-                <Ionicons name="receipt-outline" size={32} color="#404040" />
-                <Text className="text-neutral-500 text-sm mt-2">No items added yet</Text>
-              </View>
-            ) : (
-              <View>
-                {items.map((item, index) => (
-                  <View key={item.id} className={`bg-neutral-900 rounded-xl p-4 border border-neutral-800${index < items.length - 1 ? " mb-2" : ""}`}>
-                    <View className="flex-row items-center justify-between mb-3">
-                      <Text className="text-neutral-400 text-xs">ITEM {index + 1}</Text>
-                      <Pressable onPress={() => removeLineItem(item.id)}>
-                        <Ionicons name="close-circle" size={20} color="#ef4444" />
-                      </Pressable>
-                    </View>
-
-                    <TextInput
-                      value={item.description}
-                      onChangeText={(text) => updateLineItem(item.id, "description", text)}
-                      placeholder="Description"
-                      placeholderTextColor="#666666"
-                      className="bg-neutral-800 text-neutral-100 rounded-lg p-3 mb-2 border border-neutral-700"
-                    />
-
-                    <View className="flex-row">
-                      <View className="flex-1 mr-2">
-                        <Text className="text-neutral-500 text-xs mb-1">Quantity</Text>
-                        <TextInput
-                          value={item.quantity.toString()}
-                          onChangeText={(text) => updateLineItem(item.id, "quantity", parseFloat(text) || 0)}
-                          placeholder="0"
-                          placeholderTextColor="#666666"
-                          keyboardType="numeric"
-                          className="bg-neutral-800 text-neutral-100 rounded-lg p-3 border border-neutral-700"
-                        />
-                      </View>
-
-                      <View className="flex-1 mr-2">
-                        <Text className="text-neutral-500 text-xs mb-1">Rate ($)</Text>
-                        <TextInput
-                          value={item.rate.toString()}
-                          onChangeText={(text) => updateLineItem(item.id, "rate", parseFloat(text) || 0)}
-                          placeholder="0.00"
-                          placeholderTextColor="#666666"
-                          keyboardType="decimal-pad"
-                          className="bg-neutral-800 text-neutral-100 rounded-lg p-3 border border-neutral-700"
-                        />
-                      </View>
-
-                      <View className="flex-1">
-                        <Text className="text-neutral-500 text-xs mb-1">Amount</Text>
-                        <View className="bg-neutral-800 rounded-lg p-3 border border-neutral-700 justify-center">
-                          <Text className="text-[#F5B800] font-semibold">${item.amount.toFixed(2)}</Text>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                ))}
-              </View>
-            )}
+        {/* Quick Actions */}
+        {invoice.status !== "paid" && invoice.status !== "cancelled" && (
+          <View className="flex-row gap-3 mb-4">
+            <Pressable
+              onPress={handleMarkPaid}
+              className="flex-1 bg-emerald-900/30 border border-emerald-900 rounded-2xl p-4 items-center"
+            >
+              <Ionicons name="checkmark-circle" size={24} color="#34D399" />
+              <Text className="text-emerald-400 font-medium mt-2">Mark Paid</Text>
+            </Pressable>
+            <Pressable
+              onPress={handleSendEmail}
+              disabled={isLoading || !client?.email}
+              className="flex-1 bg-blue-900/30 border border-blue-900 rounded-2xl p-4 items-center"
+            >
+              <Ionicons name="mail" size={24} color="#60A5FA" />
+              <Text className="text-blue-400 font-medium mt-2">
+                {isLoading ? "Sending..." : "Send Email"}
+              </Text>
+            </Pressable>
           </View>
+        )}
 
+        {/* Client Info */}
+        {client && (
+          <View className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800 mb-4">
+            <Text className="text-neutral-400 text-xs font-semibold uppercase mb-3">Client</Text>
+            <View className="flex-row items-center">
+              <View className="w-12 h-12 rounded-full bg-[#F5B800]/20 items-center justify-center mr-4">
+                <Text className="text-[#F5B800] font-bold text-xl">
+                  {client.name.charAt(0).toUpperCase()}
+                </Text>
+              </View>
+              <View className="flex-1">
+                <Text className="text-neutral-100 font-medium text-lg">{client.name}</Text>
+                {client.email && <Text className="text-neutral-500">{client.email}</Text>}
+                {client.phone && <Text className="text-neutral-500">{client.phone}</Text>}
+              </View>
+            </View>
+          </View>
+        )}
+
+        {/* Line Items */}
+        <View className="bg-neutral-900 rounded-2xl border border-neutral-800 mb-4 overflow-hidden">
+          <View className="p-4 border-b border-neutral-800">
+            <Text className="text-neutral-400 text-xs font-semibold uppercase">Items</Text>
+          </View>
+          {invoice.items.map((item, index) => (
+            <View
+              key={index}
+              className={`p-4 flex-row items-center justify-between ${
+                index < invoice.items.length - 1 ? "border-b border-neutral-800" : ""
+              }`}
+            >
+              <View className="flex-1">
+                <Text className="text-neutral-100 font-medium">{item.serviceName}</Text>
+                <Text className="text-neutral-500 text-sm">
+                  {item.quantity} × ${item.price.toFixed(2)}
+                </Text>
+              </View>
+              <Text className="text-neutral-100 font-semibold">${item.total.toFixed(2)}</Text>
+            </View>
+          ))}
           {/* Totals */}
-          <View className="bg-neutral-900 rounded-xl p-4 border border-neutral-800 mb-4">
+          <View className="p-4 bg-neutral-800/50">
             <View className="flex-row justify-between mb-2">
               <Text className="text-neutral-400">Subtotal</Text>
-              <Text className="text-neutral-100 font-semibold">${subtotal.toFixed(2)}</Text>
+              <Text className="text-neutral-100">${invoice.subtotal.toFixed(2)}</Text>
             </View>
-
-            <View className="flex-row justify-between items-center mb-2">
-              <View className="flex-row items-center">
-                <Text className="text-neutral-400 mr-2">Tax</Text>
-                <TextInput
-                  value={taxRate}
-                  onChangeText={setTaxRate}
-                  keyboardType="decimal-pad"
-                  className="bg-neutral-800 text-neutral-100 rounded px-2 py-1 w-16 text-sm border border-neutral-700"
-                />
-                <Text className="text-neutral-400 ml-1">%</Text>
+            {invoice.tax && invoice.tax > 0 && (
+              <View className="flex-row justify-between mb-2">
+                <Text className="text-neutral-400">Tax</Text>
+                <Text className="text-neutral-100">${invoice.tax.toFixed(2)}</Text>
               </View>
-              <Text className="text-neutral-100 font-semibold">${tax.toFixed(2)}</Text>
-            </View>
-
-            <View className="border-t border-neutral-800 pt-3 mt-1">
-              <View className="flex-row justify-between">
-                <Text className="text-neutral-100 text-lg font-bold">Total</Text>
-                <Text className="text-[#F5B800] text-xl font-bold">${total.toFixed(2)}</Text>
-              </View>
+            )}
+            <View className="flex-row justify-between pt-2 border-t border-neutral-700">
+              <Text className="text-neutral-100 font-bold">Total</Text>
+              <Text className="text-[#F5B800] font-bold text-lg">${invoice.total.toFixed(2)}</Text>
             </View>
           </View>
+        </View>
 
-          {/* Notes */}
-          <View className="mb-4">
-            <Text className="text-neutral-400 text-sm mb-2">Notes</Text>
-            <TextInput
-              value={notes}
-              onChangeText={setNotes}
-              placeholder="Additional notes..."
-              placeholderTextColor="#666666"
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-              className="bg-neutral-900 text-neutral-100 rounded-xl p-4 border border-neutral-800"
-              style={{ minHeight: 100 }}
-            />
+        {/* Notes */}
+        {invoice.notes && (
+          <View className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800 mb-4">
+            <Text className="text-neutral-400 text-xs font-semibold uppercase mb-2">Notes</Text>
+            <Text className="text-neutral-300">{invoice.notes}</Text>
           </View>
+        )}
 
-          {/* Save Button */}
-          <Pressable onPress={saveInvoice} className="bg-[#F5B800] rounded-2xl p-5 items-center active:opacity-70">
-            <Text className="text-black text-lg font-bold">Save Invoice</Text>
+        {/* Payment Methods */}
+        {settings.paymentMethods && Object.values(settings.paymentMethods).some((v) => v) && (
+          <Pressable
+            onPress={() => setShowPaymentModal(true)}
+            className="bg-[#F5B800] rounded-2xl p-4 items-center mb-4"
+          >
+            <Text className="text-black font-bold text-lg">View Payment Options</Text>
           </Pressable>
+        )}
+
+        {/* Dates */}
+        <View className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800 mb-8">
+          <Text className="text-neutral-400 text-xs font-semibold uppercase mb-3">Timeline</Text>
+          <View className="flex-row items-center mb-2">
+            <Ionicons name="create-outline" size={16} color="#666" />
+            <Text className="text-neutral-500 ml-2">
+              Created {new Date(invoice.createdAt).toLocaleDateString()}
+            </Text>
+          </View>
+          {invoice.sentDate && (
+            <View className="flex-row items-center mb-2">
+              <Ionicons name="send-outline" size={16} color="#666" />
+              <Text className="text-neutral-500 ml-2">
+                Sent {new Date(invoice.sentDate).toLocaleDateString()}
+              </Text>
+            </View>
+          )}
+          {invoice.paidDate && (
+            <View className="flex-row items-center">
+              <Ionicons name="checkmark-circle-outline" size={16} color="#34D399" />
+              <Text className="text-emerald-400 ml-2">
+                Paid {new Date(invoice.paidDate).toLocaleDateString()}
+              </Text>
+            </View>
+          )}
         </View>
       </ScrollView>
+
+      {/* Actions Modal */}
+      <Modal visible={showActionsModal} transparent animationType="slide">
+        <Pressable className="flex-1 bg-black/70" onPress={() => setShowActionsModal(false)}>
+          <View className="flex-1 justify-end">
+            <View className="bg-neutral-900 rounded-t-3xl p-6">
+              <View className="w-10 h-1 bg-neutral-700 rounded-full self-center mb-6" />
+
+              {invoice.status === "draft" && (
+                <Pressable
+                  onPress={handleMarkSent}
+                  className="flex-row items-center py-4 border-b border-neutral-800"
+                >
+                  <Ionicons name="send" size={22} color="#60A5FA" />
+                  <Text className="text-neutral-100 text-lg ml-4">Mark as Sent</Text>
+                </Pressable>
+              )}
+
+              {invoice.status !== "paid" && invoice.status !== "cancelled" && (
+                <Pressable
+                  onPress={handleMarkPaid}
+                  className="flex-row items-center py-4 border-b border-neutral-800"
+                >
+                  <Ionicons name="checkmark-circle" size={22} color="#34D399" />
+                  <Text className="text-neutral-100 text-lg ml-4">Mark as Paid</Text>
+                </Pressable>
+              )}
+
+              <Pressable
+                onPress={handleShare}
+                className="flex-row items-center py-4 border-b border-neutral-800"
+              >
+                <Ionicons name="share-outline" size={22} color="#F5B800" />
+                <Text className="text-neutral-100 text-lg ml-4">Share Invoice</Text>
+              </Pressable>
+
+              {client?.email && (
+                <Pressable
+                  onPress={handleSendEmail}
+                  className="flex-row items-center py-4 border-b border-neutral-800"
+                >
+                  <Ionicons name="mail-outline" size={22} color="#F5B800" />
+                  <Text className="text-neutral-100 text-lg ml-4">Send via Email</Text>
+                </Pressable>
+              )}
+
+              <Pressable
+                onPress={() => {
+                  setShowActionsModal(false);
+                  setShowDeleteModal(true);
+                }}
+                className="flex-row items-center py-4"
+              >
+                <Ionicons name="trash-outline" size={22} color="#EF4444" />
+                <Text className="text-red-400 text-lg ml-4">Delete Invoice</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Pressable>
+      </Modal>
+
+      {/* Payment Options Modal */}
+      <Modal visible={showPaymentModal} transparent animationType="slide">
+        <Pressable className="flex-1 bg-black/70" onPress={() => setShowPaymentModal(false)}>
+          <View className="flex-1 justify-end">
+            <View className="bg-neutral-900 rounded-t-3xl p-6">
+              <View className="w-10 h-1 bg-neutral-700 rounded-full self-center mb-6" />
+              <Text className="text-neutral-100 text-xl font-bold mb-4">Payment Options</Text>
+
+              {settings.paymentMethods?.venmo && (
+                <Pressable
+                  onPress={() => handleOpenPaymentLink("venmo")}
+                  className="flex-row items-center py-4 border-b border-neutral-800"
+                >
+                  <View className="w-10 h-10 rounded-full bg-blue-500 items-center justify-center">
+                    <Text className="text-white font-bold">V</Text>
+                  </View>
+                  <View className="ml-4">
+                    <Text className="text-neutral-100 text-lg">Venmo</Text>
+                    <Text className="text-neutral-500">{settings.paymentMethods.venmo}</Text>
+                  </View>
+                </Pressable>
+              )}
+
+              {settings.paymentMethods?.cashapp && (
+                <Pressable
+                  onPress={() => handleOpenPaymentLink("cashapp")}
+                  className="flex-row items-center py-4 border-b border-neutral-800"
+                >
+                  <View className="w-10 h-10 rounded-full bg-green-500 items-center justify-center">
+                    <Text className="text-white font-bold">$</Text>
+                  </View>
+                  <View className="ml-4">
+                    <Text className="text-neutral-100 text-lg">Cash App</Text>
+                    <Text className="text-neutral-500">{settings.paymentMethods.cashapp}</Text>
+                  </View>
+                </Pressable>
+              )}
+
+              {settings.paymentMethods?.paypal && (
+                <Pressable
+                  onPress={() => handleOpenPaymentLink("paypal")}
+                  className="flex-row items-center py-4 border-b border-neutral-800"
+                >
+                  <View className="w-10 h-10 rounded-full bg-blue-600 items-center justify-center">
+                    <Text className="text-white font-bold">P</Text>
+                  </View>
+                  <View className="ml-4">
+                    <Text className="text-neutral-100 text-lg">PayPal</Text>
+                    <Text className="text-neutral-500">{settings.paymentMethods.paypal}</Text>
+                  </View>
+                </Pressable>
+              )}
+
+              {settings.paymentMethods?.zelle && (
+                <View className="flex-row items-center py-4 border-b border-neutral-800">
+                  <View className="w-10 h-10 rounded-full bg-purple-600 items-center justify-center">
+                    <Text className="text-white font-bold">Z</Text>
+                  </View>
+                  <View className="ml-4">
+                    <Text className="text-neutral-100 text-lg">Zelle</Text>
+                    <Text className="text-neutral-500">{settings.paymentMethods.zelle}</Text>
+                  </View>
+                </View>
+              )}
+
+              {settings.paymentMethods?.other && (
+                <View className="py-4">
+                  <Text className="text-neutral-400 text-sm mb-2">Other Instructions</Text>
+                  <Text className="text-neutral-100">{settings.paymentMethods.other}</Text>
+                </View>
+              )}
+            </View>
+          </View>
+        </Pressable>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal visible={showDeleteModal} transparent animationType="fade">
+        <View className="flex-1 bg-black/70 items-center justify-center px-6">
+          <View className="bg-neutral-900 rounded-2xl p-6 w-full">
+            <Text className="text-neutral-100 text-xl font-bold mb-2">Delete Invoice?</Text>
+            <Text className="text-neutral-400 mb-6">
+              This will permanently delete invoice {invoice.invoiceNumber}. This action cannot be undone.
+            </Text>
+            <View className="flex-row gap-3">
+              <Pressable
+                onPress={() => setShowDeleteModal(false)}
+                className="flex-1 bg-neutral-800 rounded-xl py-3 items-center"
+              >
+                <Text className="text-neutral-100 font-semibold">Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleDelete}
+                className="flex-1 bg-red-600 rounded-xl py-3 items-center"
+              >
+                <Text className="text-white font-semibold">Delete</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }

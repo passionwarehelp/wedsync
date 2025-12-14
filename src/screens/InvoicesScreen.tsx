@@ -98,7 +98,7 @@ export default function InvoicesScreen() {
             </Text>
           </View>
           <Pressable
-            onPress={() => navigation.navigate("CreateInvoice" as any)}
+            onPress={() => navigation.navigate("CreateInvoice")}
             className="bg-[#F5B800] rounded-full w-12 h-12 items-center justify-center"
           >
             <Ionicons name="add" size={28} color="#000000" />
@@ -179,7 +179,7 @@ export default function InvoicesScreen() {
             </Text>
             {selectedFilter === "all" && (
               <Pressable
-                onPress={() => navigation.navigate("CreateInvoice" as any)}
+                onPress={() => navigation.navigate("CreateInvoice")}
                 className="mt-6 bg-[#F5B800] px-6 py-3 rounded-xl"
               >
                 <Text className="text-black font-semibold">Create Invoice</Text>
