@@ -10,8 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigator";
 import { LinearGradient } from "expo-linear-gradient";
 import useWeddingStore from "../state/weddingStore";
@@ -21,7 +20,7 @@ import ViewShot from "react-native-view-shot";
 import * as MediaLibrary from "expo-media-library";
 import * as Sharing from "expo-sharing";
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type Props = NativeStackScreenProps<RootStackParamList, "QRCodeDesign">;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -106,9 +105,7 @@ const DESIGN_TEMPLATES: DesignTemplate[] = [
   },
 ];
 
-export default function QRCodeDesignScreen() {
-  const navigation = useNavigation<NavigationProp>();
-  const route = useRoute<RouteProp<RootStackParamList, "QRCodeDesign">>();
+export default function QRCodeDesignScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   const viewShotRef = useRef<ViewShot>(null);
 
