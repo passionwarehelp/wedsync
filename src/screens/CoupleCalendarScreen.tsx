@@ -53,6 +53,7 @@ export default function CoupleCalendarScreen() {
   const [newTime, setNewTime] = useState<Date | null>(null);
   const [newLocation, setNewLocation] = useState("");
   const [newNotes, setNewNotes] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -284,15 +285,15 @@ export default function CoupleCalendarScreen() {
 
                 <View className="mb-4">
                   <Text className="text-neutral-300 text-sm font-medium mb-2">Date</Text>
-                  <View className="bg-neutral-800 rounded-xl px-4 py-3 border border-neutral-700">
-                    <DateTimePicker
-                      value={newDate}
-                      mode="date"
-                      display="compact"
-                      themeVariant="dark"
-                      onChange={(e, date) => date && setNewDate(date)}
-                    />
-                  </View>
+                  <Pressable
+                    onPress={() => setShowDatePicker(true)}
+                    className="bg-neutral-800 rounded-xl px-4 py-4 border border-neutral-700 flex-row items-center"
+                  >
+                    <Ionicons name="calendar-outline" size={20} color="#C9A961" />
+                    <Text className="text-neutral-100 text-base ml-3">
+                      {format(newDate, "MMMM d, yyyy")}
+                    </Text>
+                  </Pressable>
                 </View>
 
                 <View className="mb-4">
@@ -352,6 +353,30 @@ export default function CoupleCalendarScreen() {
             </ScrollView>
           </View>
         </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Date Picker Modal */}
+      <Modal visible={showDatePicker} transparent animationType="slide">
+        <View className="flex-1 justify-end bg-black/70">
+          <View className="bg-neutral-900 rounded-t-3xl p-6">
+            <View className="flex-row items-center justify-between mb-4">
+              <Pressable onPress={() => setShowDatePicker(false)}>
+                <Text className="text-neutral-400">Cancel</Text>
+              </Pressable>
+              <Text className="text-neutral-100 text-lg font-semibold">Select Date</Text>
+              <Pressable onPress={() => setShowDatePicker(false)}>
+                <Text className="text-[#C9A961] font-semibold">Done</Text>
+              </Pressable>
+            </View>
+            <DateTimePicker
+              value={newDate}
+              mode="date"
+              display="spinner"
+              themeVariant="dark"
+              onChange={(e, date) => date && setNewDate(date)}
+            />
+          </View>
+        </View>
       </Modal>
 
       {/* Time Picker Modal */}
