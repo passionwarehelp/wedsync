@@ -2,9 +2,10 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import { Wedding } from "../types/wedding";
+import useAuthStore from "../state/authStore";
 
 // Import screens
+import AuthScreen from "../screens/AuthScreen";
 import ProDashboardScreen from "../screens/ProDashboardScreen";
 import ClientDashboardScreen from "../screens/ClientDashboardScreen";
 import AdminDashboardScreen from "../screens/AdminDashboardScreen";
@@ -27,6 +28,7 @@ import InvoiceDetailScreen from "../screens/InvoiceDetailScreen";
 import PhotographerUploadScreen from "../screens/PhotographerUploadScreen";
 
 export type RootStackParamList = {
+  Auth: undefined;
   MainTabs: undefined;
   ProDashboard: undefined;
   AdminDashboard: undefined;
@@ -53,7 +55,7 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
-function MainTabs() {
+function PhotographerTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -92,54 +94,107 @@ function MainTabs() {
   );
 }
 
+function CoupleTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: "#000000",
+          borderTopColor: "#1F1F1F",
+          borderTopWidth: 1,
+          paddingTop: 8,
+          paddingBottom: 8,
+          height: 70,
+        },
+        tabBarActiveTintColor: "#C9A961",
+        tabBarInactiveTintColor: "#666666",
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: "600",
+        },
+      }}
+    >
+      <Tab.Screen
+        name="My Wedding"
+        component={ClientDashboardScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => <Ionicons name="heart" size={size} color={color} />,
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+function MainTabs() {
+  const userRole = useAuthStore((s) => s.user?.role);
+
+  if (userRole === "couple") {
+    return <CoupleTabs />;
+  }
+
+  return <PhotographerTabs />;
+}
+
 export default function RootNavigator() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: "#ffffff" },
+        contentStyle: { backgroundColor: "#000000" },
       }}
-      initialRouteName="MainTabs"
     >
-      <Stack.Screen name="MainTabs" component={MainTabs} />
-      <Stack.Screen name="ProDashboard" component={ProDashboardScreen} />
-      <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} />
-      <Stack.Screen name="ClientDashboard" component={ClientDashboardScreen} />
-      <Stack.Screen name="WeddingDetail" component={WeddingDetailScreen} />
-      <Stack.Screen name="GuestList" component={GuestListScreen} />
-      <Stack.Screen name="Tasks" component={TasksScreen} />
-      <Stack.Screen name="SeatingChart" component={SeatingChartScreen} />
-      <Stack.Screen name="PhotoGallery" component={PhotoGalleryScreen} />
-      <Stack.Screen name="QRCode" component={QRCodeScreen} />
-      <Stack.Screen name="PhotographerUpload" component={PhotographerUploadScreen} />
+      {!isAuthenticated ? (
+        <Stack.Screen
+          name="Auth"
+          component={AuthScreen}
+          options={{ animationTypeForReplace: "pop" }}
+        />
+      ) : (
+        <>
+          <Stack.Screen name="MainTabs" component={MainTabs} />
+          <Stack.Screen name="ProDashboard" component={ProDashboardScreen} />
+          <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} />
+          <Stack.Screen name="ClientDashboard" component={ClientDashboardScreen} />
+          <Stack.Screen name="WeddingDetail" component={WeddingDetailScreen} />
+          <Stack.Screen name="GuestList" component={GuestListScreen} />
+          <Stack.Screen name="Tasks" component={TasksScreen} />
+          <Stack.Screen name="SeatingChart" component={SeatingChartScreen} />
+          <Stack.Screen name="PhotoGallery" component={PhotoGalleryScreen} />
+          <Stack.Screen name="QRCode" component={QRCodeScreen} />
+          <Stack.Screen name="PhotographerUpload" component={PhotographerUploadScreen} />
 
-      {/* Admin Screens */}
-      <Stack.Screen name="Invoices" component={InvoicesScreen} />
-      <Stack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} />
-      <Stack.Screen name="StaffManagement" component={StaffManagementScreen} />
-      <Stack.Screen name="TimeTracking" component={TimeTrackingScreen} />
-      <Stack.Screen name="AdminCalendar" component={AdminCalendarScreen} />
-      <Stack.Screen name="EmailAutomation" component={EmailAutomationScreen} />
+          {/* Admin Screens */}
+          <Stack.Screen name="Invoices" component={InvoicesScreen} />
+          <Stack.Screen name="InvoiceDetail" component={InvoiceDetailScreen} />
+          <Stack.Screen name="StaffManagement" component={StaffManagementScreen} />
+          <Stack.Screen name="TimeTracking" component={TimeTrackingScreen} />
+          <Stack.Screen name="AdminCalendar" component={AdminCalendarScreen} />
+          <Stack.Screen name="EmailAutomation" component={EmailAutomationScreen} />
 
-      {/* Modals */}
-      <Stack.Screen
-        name="CreateWedding"
-        component={CreateWeddingScreen}
-        options={{ presentation: "formSheet", sheetAllowedDetents: [0.9] }}
-      />
-      <Stack.Screen
-        name="AddGuest"
-        component={AddGuestScreen}
-        options={{ presentation: "formSheet", sheetAllowedDetents: [0.85] }}
-      />
-      <Stack.Screen
-        name="AddTask"
-        component={AddTaskScreen}
-        options={{ presentation: "formSheet", sheetAllowedDetents: [0.75] }}
-      />
+          {/* Modals */}
+          <Stack.Screen
+            name="CreateWedding"
+            component={CreateWeddingScreen}
+            options={{ presentation: "formSheet", sheetAllowedDetents: [0.9] }}
+          />
+          <Stack.Screen
+            name="AddGuest"
+            component={AddGuestScreen}
+            options={{ presentation: "formSheet", sheetAllowedDetents: [0.85] }}
+          />
+          <Stack.Screen
+            name="AddTask"
+            component={AddTaskScreen}
+            options={{ presentation: "formSheet", sheetAllowedDetents: [0.75] }}
+          />
 
-      {/* Guest Upload Portal */}
-      <Stack.Screen name="GuestUpload" component={GuestUploadScreen} />
+          {/* Guest Upload Portal */}
+          <Stack.Screen name="GuestUpload" component={GuestUploadScreen} />
+        </>
+      )}
     </Stack.Navigator>
   );
 }
