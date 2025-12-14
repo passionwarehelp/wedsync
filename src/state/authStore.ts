@@ -10,6 +10,7 @@ interface User {
   name: string;
   role: UserRole;
   createdAt: string;
+  coupleWeddingId?: string; // For couples - the wedding they're linked to
 }
 
 interface AuthStore {
