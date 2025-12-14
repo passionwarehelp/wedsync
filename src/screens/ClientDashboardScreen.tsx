@@ -257,7 +257,7 @@ export default function ClientDashboardScreen() {
           </Pressable>
 
           {/* Photo Gallery - Shows "coming soon" if photographer hasn't made it live */}
-          {coupleWedding.photoAlbumLive ? (
+          {coupleWedding.photoAlbumLive !== false ? (
             <Pressable
               onPress={() => navigation.navigate("PhotoGallery", { weddingId: coupleWedding.id })}
               className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
@@ -285,7 +285,7 @@ export default function ClientDashboardScreen() {
           )}
 
           {/* QR Code Album - Only show if photographer enabled it (for photographer-managed weddings) */}
-          {!(coupleWedding as any).isSelfManaged && coupleWedding.qrCodeEnabled && (
+          {!(coupleWedding as any).isSelfManaged && coupleWedding.qrCodeEnabled !== false && (
             <Pressable
               onPress={() => navigation.navigate("QRCodeDesign", { weddingId: coupleWedding.id })}
               className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
@@ -302,7 +302,7 @@ export default function ClientDashboardScreen() {
           )}
 
           {/* Photo Frame - Only show if photographer enabled it */}
-          {coupleWedding.photoFrameEnabled && (
+          {coupleWedding.photoFrameEnabled === true && (
             <Pressable
               onPress={() => {/* Navigate to photo frame screen */}}
               className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"

@@ -94,11 +94,11 @@ export default function WeddingDetailScreen() {
               <View className="flex-1 ml-4">
                 <Text className="text-neutral-100 text-lg font-medium">QR Code Album</Text>
                 <Text className="text-neutral-500 text-sm mt-1">
-                  {wedding.qrCodeEnabled ? "Guests can upload photos" : "Disabled for guests"}
+                  {wedding.qrCodeEnabled !== false ? "Guests can upload photos" : "Disabled for guests"}
                 </Text>
               </View>
               <Switch
-                value={wedding.qrCodeEnabled}
+                value={wedding.qrCodeEnabled !== false}
                 onValueChange={handleToggleQRCode}
                 trackColor={{ false: "#404040", true: "#F5B800" }}
                 thumbColor="#FFFFFF"
@@ -107,7 +107,7 @@ export default function WeddingDetailScreen() {
           </View>
 
           {/* QR Code View Button - Only show when enabled */}
-          {wedding.qrCodeEnabled && (
+          {wedding.qrCodeEnabled !== false && (
             <Pressable
               onPress={() => navigation.navigate("QRCode", { weddingId })}
               className="bg-neutral-900 rounded-2xl p-5 flex-row items-center border border-neutral-800 mb-3 active:opacity-70"
@@ -132,11 +132,11 @@ export default function WeddingDetailScreen() {
               <View className="flex-1 ml-4">
                 <Text className="text-neutral-100 text-lg font-medium">Photo Frame</Text>
                 <Text className="text-neutral-500 text-sm mt-1">
-                  {wedding.photoFrameEnabled ? "Digital frame display active" : "Disabled"}
+                  {wedding.photoFrameEnabled === true ? "Digital frame display active" : "Disabled"}
                 </Text>
               </View>
               <Switch
-                value={wedding.photoFrameEnabled}
+                value={wedding.photoFrameEnabled === true}
                 onValueChange={handleTogglePhotoFrame}
                 trackColor={{ false: "#404040", true: "#F5B800" }}
                 thumbColor="#FFFFFF"
@@ -156,11 +156,11 @@ export default function WeddingDetailScreen() {
               <View className="flex-1 ml-4">
                 <Text className="text-neutral-100 text-lg font-medium">Album Visibility</Text>
                 <Text className="text-neutral-500 text-sm mt-1">
-                  {wedding.photoAlbumLive ? "Couple can view your photos" : "Photos hidden from couple"}
+                  {wedding.photoAlbumLive !== false ? "Couple can view your photos" : "Photos hidden from couple"}
                 </Text>
               </View>
               <Switch
-                value={wedding.photoAlbumLive}
+                value={wedding.photoAlbumLive !== false}
                 onValueChange={handleTogglePhotoAlbum}
                 trackColor={{ false: "#404040", true: "#F5B800" }}
                 thumbColor="#FFFFFF"
