@@ -10,8 +10,7 @@
   ],
   "exclude": [
     "node_modules",
-    "backend/node_modules",
-    "backend/generated",
+    "backend",
     ".expo"
   ]
 }
