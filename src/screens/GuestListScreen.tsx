@@ -61,12 +61,21 @@ export default function GuestListScreen() {
 
         <View className="flex-row items-center justify-between mb-5">
           <Text className="text-[#F5B800] text-2xl font-bold">Guest List</Text>
-          <Pressable
-            onPress={() => navigation.navigate("AddGuest", { weddingId })}
-            className="bg-[#F5B800] rounded-full w-11 h-11 items-center justify-center shadow-md"
-          >
-            <Ionicons name="add" size={26} color="#000000" />
-          </Pressable>
+          <View className="flex-row items-center">
+            <Pressable
+              onPress={() => navigation.navigate("RSVPLink", { weddingId })}
+              className="bg-neutral-800 rounded-full px-4 h-11 flex-row items-center justify-center mr-3 border border-neutral-700"
+            >
+              <Ionicons name="mail-outline" size={18} color="#F5B800" />
+              <Text className="text-[#F5B800] font-semibold ml-2">Invite</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => navigation.navigate("AddGuest", { weddingId })}
+              className="bg-[#F5B800] rounded-full w-11 h-11 items-center justify-center shadow-md"
+            >
+              <Ionicons name="add" size={26} color="#000000" />
+            </Pressable>
+          </View>
         </View>
 
         <View className="bg-neutral-900 rounded-2xl flex-row items-center px-4 py-3 mb-4 border border-neutral-800">

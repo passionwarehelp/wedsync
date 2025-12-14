@@ -32,6 +32,7 @@ WedSync is designed for **wedding professionals** (planners, videographers, phot
 - **Status Filters** - View all, attending, declined, or pending guests
 - **Contact Information** - Store emails and phone numbers
 - **Add Guests** - Beautiful modal form with all necessary fields
+- **Invite Button** - Quick access to send RSVP invites directly from guest list
 
 ### RSVP Link System ✅ (NEW)
 - **Shareable RSVP Links** - Send a link to guests for web-based RSVP
@@ -161,6 +162,7 @@ The app is running in the Vibecode environment. Simply:
 ## 📱 What's New
 
 ### Latest Updates
+- ✅ **Invite Button on Guest List** - Quick access to send RSVP invites directly from guest list screen
 - ✅ **RSVP Link System** - Guests can RSVP via shareable web link without downloading the app
 - ✅ **Web-Based RSVP Form** - Complete form with attendance, +1s, meal preferences, dietary restrictions
 - ✅ **RSVP QR Code** - Printable QR code for RSVP (separate from photo upload QR)
