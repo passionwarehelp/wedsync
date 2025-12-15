@@ -14,16 +14,16 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import useAuthStore, { UserRole } from "../state/authStore";
 import { useAuth } from "../lib/useAuth";
+import type { UserRole } from "../lib/sessionManager";
 
 type AuthMode = "welcome" | "login" | "signup" | "role-select";
 
 export default function AuthScreen() {
   const insets = useSafeAreaInsets();
 
-  // Use the new professional auth hook
-  const { signIn: authSignIn, signUp: authSignUp, isPending, error: authError } = useAuth();
+  // Use the auth hook
+  const { signIn: authSignIn, signUp: authSignUp, isPending } = useAuth();
 
   const [mode, setMode] = useState<AuthMode>("welcome");
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
@@ -39,19 +39,17 @@ export default function AuthScreen() {
       return;
     }
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters");
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
       return;
     }
 
     setError("");
 
     try {
-      await authSignUp(email, password, name);
-      // After successful signup, you can store the role in your local state if needed
-      // For now, Better Auth handles the user creation
-    } catch (err) {
-      setError(authError?.message || "Something went wrong. Please try again.");
+      await authSignUp(email, password, name, selectedRole);
+    } catch (err: any) {
+      setError(err?.message || "Something went wrong. Please try again.");
     }
   };
 
@@ -65,8 +63,8 @@ export default function AuthScreen() {
 
     try {
       await authSignIn(email, password);
-    } catch (err) {
-      setError(authError?.message || "Invalid email or password");
+    } catch (err: any) {
+      setError(err?.message || "Invalid email or password");
     }
   };
 
@@ -98,10 +96,10 @@ export default function AuthScreen() {
             {/* Features */}
             <View className="mb-12">
               {[
-                { icon: "camera", text: "Professional photo management" },
+                { icon: "videocam", text: "Professional media management" },
                 { icon: "people", text: "Guest list & RSVP tracking" },
                 { icon: "grid", text: "Seating chart builder" },
-                { icon: "qr-code", text: "QR code photo sharing" },
+                { icon: "qr-code", text: "QR code media sharing" },
               ].map((feature, index) => (
                 <View key={index} className="flex-row items-center mb-4">
                   <View className="w-10 h-10 rounded-full bg-[#F5B800]/10 items-center justify-center mr-4">
@@ -157,24 +155,24 @@ export default function AuthScreen() {
 
             {/* Role Options */}
             <View className="flex-1">
-              {/* Photographer Option */}
+              {/* Photographer/Videographer Option */}
               <Pressable
                 onPress={() => handleRoleSelect("photographer")}
                 className="bg-neutral-900 rounded-3xl p-6 mb-4 border-2 border-neutral-800 active:border-[#F5B800]"
               >
                 <View className="flex-row items-start">
                   <View className="w-16 h-16 rounded-2xl bg-[#F5B800]/20 items-center justify-center mr-4">
-                    <Ionicons name="camera" size={32} color="#F5B800" />
+                    <Ionicons name="videocam" size={32} color="#F5B800" />
                   </View>
                   <View className="flex-1">
-                    <Text className="text-neutral-100 text-xl font-bold mb-1">Photographer</Text>
+                    <Text className="text-neutral-100 text-xl font-bold mb-1">Photographer / Videographer</Text>
                     <Text className="text-neutral-400 text-sm leading-5">
-                      I photograph weddings and want to manage multiple events, share photos, and coordinate with couples.
+                      I capture weddings and want to manage multiple events, share media, and coordinate with couples.
                     </Text>
                   </View>
                 </View>
                 <View className="flex-row flex-wrap mt-4">
-                  {["Manage Events", "Photo Gallery", "Client Portal", "Invoicing"].map((tag) => (
+                  {["Manage Events", "Media Gallery", "Client Portal", "Invoicing"].map((tag) => (
                     <View key={tag} className="bg-neutral-800 px-3 py-1 rounded-full mr-2 mb-2">
                       <Text className="text-neutral-400 text-xs">{tag}</Text>
                     </View>
@@ -194,12 +192,12 @@ export default function AuthScreen() {
                   <View className="flex-1">
                     <Text className="text-neutral-100 text-xl font-bold mb-1">Bride / Groom</Text>
                     <Text className="text-neutral-400 text-sm leading-5">
-                      I am planning my wedding and want to organize guests, seating, tasks, and view photos from my photographer.
+                      I am planning my wedding and want to organize guests, seating, tasks, and view media from my photographer/videographer.
                     </Text>
                   </View>
                 </View>
                 <View className="flex-row flex-wrap mt-4">
-                  {["Guest List", "Seating Chart", "RSVP", "Photo Access"].map((tag) => (
+                  {["Guest List", "Seating Chart", "RSVP", "Media Access"].map((tag) => (
                     <View key={tag} className="bg-neutral-800 px-3 py-1 rounded-full mr-2 mb-2">
                       <Text className="text-neutral-400 text-xs">{tag}</Text>
                     </View>
@@ -238,7 +236,7 @@ export default function AuthScreen() {
                 {mode === "login"
                   ? "Sign in to continue to WedSync"
                   : selectedRole === "photographer"
-                    ? "Join as a wedding photographer"
+                    ? "Join as a wedding photographer/videographer"
                     : "Start planning your perfect day"}
               </Text>
             </View>
@@ -259,12 +257,12 @@ export default function AuthScreen() {
                   <View className="flex-row items-center mb-6">
                     <View className="flex-row items-center bg-[#F5B800]/10 px-4 py-2 rounded-full">
                       <Ionicons
-                        name={selectedRole === "photographer" ? "camera" : "heart"}
+                        name={selectedRole === "photographer" ? "videocam" : "heart"}
                         size={16}
                         color="#F5B800"
                       />
                       <Text className="text-[#F5B800] font-medium ml-2 capitalize">
-                        {selectedRole === "photographer" ? "Photographer" : "Bride / Groom"}
+                        {selectedRole === "photographer" ? "Photographer / Videographer" : "Bride / Groom"}
                       </Text>
                     </View>
                   </View>

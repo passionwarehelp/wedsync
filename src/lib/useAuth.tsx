@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import * as sessionManager from "./sessionManager";
-import type { User } from "./sessionManager";
+import type { User, UserRole } from "./sessionManager";
 
 // Global state shared across all hook instances
 let globalUser: User | null = null;
@@ -48,18 +48,36 @@ export function useAuth() {
   }, [loadSession]);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    const user = await sessionManager.signIn(email, password);
-    setUser(user);
-    setGlobalUser(user);
-    return user;
+    setError(null);
+    setIsPending(true);
+    try {
+      const user = await sessionManager.signIn(email, password);
+      setUser(user);
+      setGlobalUser(user);
+      setIsPending(false);
+      return user;
+    } catch (err) {
+      setError(err as Error);
+      setIsPending(false);
+      throw err;
+    }
   }, []);
 
   const signUp = useCallback(
-    async (email: string, password: string, name: string) => {
-      const user = await sessionManager.signUp(email, password, name);
-      setUser(user);
-      setGlobalUser(user);
-      return user;
+    async (email: string, password: string, name: string, role: UserRole = "photographer") => {
+      setError(null);
+      setIsPending(true);
+      try {
+        const user = await sessionManager.signUp(email, password, name, role);
+        setUser(user);
+        setGlobalUser(user);
+        setIsPending(false);
+        return user;
+      } catch (err) {
+        setError(err as Error);
+        setIsPending(false);
+        throw err;
+      }
     },
     []
   );
