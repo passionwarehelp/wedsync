@@ -4,11 +4,12 @@ const expoConfig = require("eslint-config-expo/flat");
 
 module.exports = defineConfig([
   {
-    ignores: ["backend/**/*"],
+    ignores: ["backend/**/*", "dist/**/*", "dist/*"],
   },
   expoConfig,
   {
     ignores: [
+      "dist/**/*",
       "dist/*",
       "index.ts",
       "rootStore.example.ts",

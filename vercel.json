@@ -1,19 +1,13 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ],
+  "buildCommand": "bun run vercel-build",
+  "outputDirectory": "dist",
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/"
+      "dest": "/",
+      "headers": {
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://wedsync-api.onrender.com https://wedsync-upload.passionwarehelp.workers.dev https://media.mywedsync.com;"
+      }
     }
-  ],
-  "buildCommand": "bun run build:web"
+  ]
 }
