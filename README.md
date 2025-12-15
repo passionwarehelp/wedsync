@@ -8,6 +8,27 @@ WedSync is a black-tie tech experience for wedding professionals - an elegant, m
 
 WedSync is designed for **wedding professionals** (planners, videographers, photographers, venue coordinators) to manage their clients' weddings with style and efficiency. It's not for couples directly - it's your secret weapon to deliver an exceptional, stress-free experience.
 
+## 🔐 Authentication System
+
+**Professional-Grade Authentication** using Better Auth v1.3.24 with Bun + Hono backend:
+- **Cross-Platform Login** - Works on phone, tablet, and web
+- **Secure Token Storage** - Uses expo-secure-store for iOS/Android
+- **Email & Password Auth** - Simple, secure authentication
+- **Session Management** - Automatic token refresh and persistence
+- **Backend API** - Separate Hono server deployed on Render
+- **PostgreSQL Database** - Supabase for user data storage
+
+**Setup Status:**
+- ✅ Backend infrastructure created (in `/backend` folder)
+- ✅ Frontend auth hooks implemented (`/src/lib/useAuth.tsx`)
+- ✅ AuthScreen updated to use new auth system
+- ⏳ Backend needs to be deployed to Render (see deployment guide)
+- ⏳ Environment variable needs backend URL after deployment
+
+**Deployment Guides:**
+- See `AUTHENTICATION_SETUP_GUIDE.md` for detailed setup instructions
+- See `QUICK_START.md` for quick deployment checklist
+
 ## ✨ Current Features (Implemented)
 
 ### Professional Dashboard

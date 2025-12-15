@@ -15,13 +15,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import useAuthStore, { UserRole } from "../state/authStore";
+import { useAuth } from "../lib/useAuth";
 
 type AuthMode = "welcome" | "login" | "signup" | "role-select";
 
 export default function AuthScreen() {
   const insets = useSafeAreaInsets();
-  const signUp = useAuthStore((s) => s.signUp);
-  const signIn = useAuthStore((s) => s.signIn);
+
+  // Use the new professional auth hook
+  const { signIn: authSignIn, signUp: authSignUp, isPending, error: authError } = useAuth();
 
   const [mode, setMode] = useState<AuthMode>("welcome");
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
@@ -29,7 +31,6 @@ export default function AuthScreen() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleSignUp = async () => {
@@ -38,20 +39,19 @@ export default function AuthScreen() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters");
       return;
     }
 
-    setIsLoading(true);
     setError("");
 
     try {
-      await signUp(email, password, name, selectedRole);
+      await authSignUp(email, password, name);
+      // After successful signup, you can store the role in your local state if needed
+      // For now, Better Auth handles the user creation
     } catch (err) {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
+      setError(authError?.message || "Something went wrong. Please try again.");
     }
   };
 
@@ -61,15 +61,12 @@ export default function AuthScreen() {
       return;
     }
 
-    setIsLoading(true);
     setError("");
 
     try {
-      await signIn(email, password);
+      await authSignIn(email, password);
     } catch (err) {
-      setError("Invalid email or password");
-    } finally {
-      setIsLoading(false);
+      setError(authError?.message || "Invalid email or password");
     }
   };
 
@@ -361,12 +358,12 @@ export default function AuthScreen() {
                 {/* Submit Button */}
                 <Pressable
                   onPress={mode === "login" ? handleSignIn : handleSignUp}
-                  disabled={isLoading}
+                  disabled={isPending}
                   className={`rounded-2xl py-4 items-center mb-6 ${
-                    isLoading ? "bg-[#F5B800]/50" : "bg-[#F5B800] active:opacity-80"
+                    isPending ? "bg-[#F5B800]/50" : "bg-[#F5B800] active:opacity-80"
                   }`}
                 >
-                  {isLoading ? (
+                  {isPending ? (
                     <ActivityIndicator color="#000" />
                   ) : (
                     <Text className="text-black text-lg font-semibold">
