@@ -134,22 +134,24 @@ WedSync is designed for **wedding professionals** (planners, videographers, phot
 src/
 ├── components/        # Reusable UI components
 ├── screens/          # Main app screens
-│   ├── ProDashboardScreen.tsx      ✅ Black Theme
-│   ├── WeddingDetailScreen.tsx     ✅ Black Theme
-│   ├── GuestListScreen.tsx         ✅ Black Theme
-│   ├── AddGuestScreen.tsx          ✅ Black Theme
-│   ├── TasksScreen.tsx             ✅ Black Theme
-│   ├── CreateWeddingScreen.tsx     ✅ Black Theme
-│   ├── PhotoGalleryScreen.tsx      ✅ Black Theme + Videos
-│   ├── PhotographerUploadScreen.tsx ✅ Black Theme + Videos
-│   ├── QRCodeScreen.tsx            ✅ Black Theme + Production URL
-│   ├── GuestUploadScreen.tsx       ✅ Black Theme + R2 Upload + Videos
-│   ├── GuestRSVPScreen.tsx         ✅ Black Theme + Web RSVP Form
-│   ├── RSVPLinkScreen.tsx          ✅ Black Theme + Share RSVP Link
-│   ├── TimelineScreen.tsx          🚧 To be styled
-│   ├── VendorsScreen.tsx           🚧 To be styled
-│   ├── SeatingChartScreen.tsx      ✅ Black Theme + Drag & Drop
-│   └── AddGuestScreen.tsx          ✅ Black Theme
+│   ├── ProDashboardScreen.tsx          ✅ Black Theme
+│   ├── ClientDashboardScreen.tsx       ✅ Black Theme (Mobile)
+│   ├── ClientDashboardScreen.web.tsx   ✅ Black Theme (Desktop/Web)
+│   ├── WeddingDetailScreen.tsx         ✅ Black Theme
+│   ├── GuestListScreen.tsx             ✅ Black Theme
+│   ├── AddGuestScreen.tsx              ✅ Black Theme
+│   ├── TasksScreen.tsx                 ✅ Black Theme
+│   ├── CreateWeddingScreen.tsx         ✅ Black Theme
+│   ├── PhotoGalleryScreen.tsx          ✅ Black Theme + Videos
+│   ├── PhotographerUploadScreen.tsx    ✅ Black Theme + Videos
+│   ├── QRCodeScreen.tsx                ✅ Black Theme + Production URL
+│   ├── GuestUploadScreen.tsx           ✅ Black Theme + R2 Upload + Videos
+│   ├── GuestRSVPScreen.tsx             ✅ Black Theme + Web RSVP Form
+│   ├── RSVPLinkScreen.tsx              ✅ Black Theme + Share RSVP Link
+│   ├── TimelineScreen.tsx              🚧 To be styled
+│   ├── VendorsScreen.tsx               🚧 To be styled
+│   ├── SeatingChartScreen.tsx          ✅ Black Theme + Drag & Drop
+│   └── AdminDashboardScreen.tsx        ✅ Black Theme
 ├── navigation/       # Navigation configuration
 ├── state/           # Zustand stores
 │   ├── weddingStore.ts  ✅ Complete
@@ -191,6 +193,8 @@ The app is running in the Vibecode environment. Simply:
 ## 📱 What's New
 
 ### Latest Updates
+- ✅ **Web Dashboard for Couples** - Desktop-optimized dashboard with 2-column grid layout for larger screens
+- ✅ **Responsive Design** - Automatically adapts to screen size (mobile, tablet, desktop)
 - ✅ **Invite Button on Guest List** - Quick access to send RSVP invites directly from guest list screen
 - ✅ **RSVP Link System** - Guests can RSVP via shareable web link without downloading the app
 - ✅ **Web-Based RSVP Form** - Complete form with attendance, +1s, meal preferences, dietary restrictions
@@ -218,11 +222,10 @@ The app is running in the Vibecode environment. Simply:
 
 1. Complete Timeline view with black theme
 2. Implement Vendor tracking with dark styling
-3. Build Seating Chart with black theme
-4. Add more animations and haptics
-5. Implement client portal view
-6. Add photo/video download functionality
-7. Implement guest name capture on upload
+3. Add more animations and haptics
+4. Add photo/video download functionality
+5. Implement guest name capture on upload
+6. Enhance web dashboard with more features
 
 ---
 
