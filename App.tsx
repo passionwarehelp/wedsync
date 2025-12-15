@@ -49,9 +49,11 @@ export default function App() {
       <SafeAreaProvider>
         <NavigationContainer
           linking={{
-            prefixes: ["wedsync://"],
+            prefixes: ["wedsync://", "https://mywedsync.com", "https://www.mywedsync.com"],
             config: {
               screens: {
+                Auth: "",
+                ClientDashboard: "dashboard",
                 GuestUpload: "upload/:qrCode",
               },
             },
