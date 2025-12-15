@@ -1,8 +1,34 @@
 import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // IMPORTANT: Replace with your deployed backend URL after deploying to Render
 const BACKEND = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 const PROJECT = process.env.EXPO_PUBLIC_PROJECT_ID || "wedsync";
+
+// Platform-aware storage helper
+const storage = {
+  async getItem(key: string): Promise<string | null> {
+    if (Platform.OS === "web") {
+      return AsyncStorage.getItem(key);
+    }
+    return SecureStore.getItemAsync(key);
+  },
+  async setItem(key: string, value: string): Promise<void> {
+    if (Platform.OS === "web") {
+      await AsyncStorage.setItem(key, value);
+    } else {
+      await SecureStore.setItemAsync(key, value);
+    }
+  },
+  async removeItem(key: string): Promise<void> {
+    if (Platform.OS === "web") {
+      await AsyncStorage.removeItem(key);
+    } else {
+      await SecureStore.deleteItemAsync(key);
+    }
+  },
+};
 
 export type User = {
   id: string;
@@ -35,9 +61,9 @@ export async function signIn(email: string, password: string): Promise<User> {
 
   // CRITICAL: iOS blocks Set-Cookie header - use token from response body
   if (data.token) {
-    await SecureStore.setItemAsync(`${PROJECT}_token`, data.token);
+    await storage.setItem(`${PROJECT}_token`, data.token);
   }
-  await SecureStore.setItemAsync(`${PROJECT}_user`, JSON.stringify(data.user));
+  await storage.setItem(`${PROJECT}_user`, JSON.stringify(data.user));
 
   return data.user;
 }
@@ -62,9 +88,9 @@ export async function signUp(
 
   // Store token and user data
   if (data.token) {
-    await SecureStore.setItemAsync(`${PROJECT}_token`, data.token);
+    await storage.setItem(`${PROJECT}_token`, data.token);
   }
-  await SecureStore.setItemAsync(`${PROJECT}_user`, JSON.stringify(data.user));
+  await storage.setItem(`${PROJECT}_user`, JSON.stringify(data.user));
 
   return data.user;
 }
@@ -73,8 +99,8 @@ export async function signUp(
  * Get current session from secure storage
  */
 export async function getSession(): Promise<Session | null> {
-  const token = await SecureStore.getItemAsync(`${PROJECT}_token`);
-  const userStr = await SecureStore.getItemAsync(`${PROJECT}_user`);
+  const token = await storage.getItem(`${PROJECT}_token`);
+  const userStr = await storage.getItem(`${PROJECT}_user`);
 
   if (!token || !userStr) return null;
 
@@ -91,6 +117,6 @@ export async function getSession(): Promise<Session | null> {
  * Sign out - clear all stored data
  */
 export async function signOut(): Promise<void> {
-  await SecureStore.deleteItemAsync(`${PROJECT}_token`);
-  await SecureStore.deleteItemAsync(`${PROJECT}_user`);
+  await storage.removeItem(`${PROJECT}_token`);
+  await storage.removeItem(`${PROJECT}_user`);
 }
