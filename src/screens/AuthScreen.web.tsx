@@ -7,7 +7,6 @@ import {
   ScrollView,
   ActivityIndicator,
   Modal,
-  Linking,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -80,6 +79,9 @@ export default function AuthScreen() {
       setShowSecretModal(false);
       setSecretPassword("");
       setSecretError("");
+      // Auto-fill admin credentials
+      setEmail("appletester@gmail.com");
+      setPassword("Wed123");
       setMode("secret-login");
     } else {
       setSecretError("Incorrect password");
@@ -383,53 +385,6 @@ export default function AuthScreen() {
               }}>
                 To create an account and access all WedSync features, please download our app from the Apple App Store or Google Play Store. The mobile app provides the best experience for managing your wedding planning.
               </Text>
-
-              {/* App Store Buttons */}
-              <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 16, marginBottom: 32 }}>
-                <Pressable
-                  onPress={() => Linking.openURL("https://apps.apple.com/app/wedsync")}
-                  style={({ pressed }) => ({
-                    backgroundColor: "#000000",
-                    borderRadius: 12,
-                    paddingVertical: 14,
-                    paddingHorizontal: 24,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    borderWidth: 1,
-                    borderColor: "#404040",
-                    opacity: pressed ? 0.8 : 1,
-                    cursor: "pointer",
-                  })}
-                >
-                  <Ionicons name="logo-apple" size={24} color="#FFFFFF" style={{ marginRight: 10 }} />
-                  <View>
-                    <Text style={{ color: "#9CA3AF", fontSize: 10 }}>Download on the</Text>
-                    <Text style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "600" }}>App Store</Text>
-                  </View>
-                </Pressable>
-
-                <Pressable
-                  onPress={() => Linking.openURL("https://play.google.com/store/apps/details?id=com.wedsync")}
-                  style={({ pressed }) => ({
-                    backgroundColor: "#000000",
-                    borderRadius: 12,
-                    paddingVertical: 14,
-                    paddingHorizontal: 24,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    borderWidth: 1,
-                    borderColor: "#404040",
-                    opacity: pressed ? 0.8 : 1,
-                    cursor: "pointer",
-                  })}
-                >
-                  <Ionicons name="logo-google-playstore" size={24} color="#FFFFFF" style={{ marginRight: 10 }} />
-                  <View>
-                    <Text style={{ color: "#9CA3AF", fontSize: 10 }}>GET IT ON</Text>
-                    <Text style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "600" }}>Google Play</Text>
-                  </View>
-                </Pressable>
-              </View>
 
               {/* Divider */}
               <View style={{
