@@ -1,24 +1,36 @@
 # Professional Authentication Setup Guide
-## Better Auth + Hono Backend + Expo Frontend
+## Better Auth + Hono Backend + Expo Frontend + Web Dashboard
 
-This guide will walk you through setting up professional authentication that works across phone, tablet, and web.
+This guide will walk you through setting up professional authentication that works across:
+- 📱 **Mobile App** (iOS/Android) - For photographers on the go
+- 🌐 **Web Dashboard** - For photographers to manage from their computer
+- 💻 **Tablet** - Full experience on iPad/tablets
 
 ---
 
 ## Overview
 
 **What we're building:**
-- Backend API server (Hono + Bun) with Better Auth
+- Backend API server (Hono + Bun) with Better Auth v1.3.24
 - PostgreSQL database (Supabase) for user data
-- Frontend authentication (Expo + React Native) with secure token storage
+- Mobile app authentication (Expo + React Native) with secure token storage
+- **Web dashboard** for photographers to manage weddings from desktop
 - Cross-platform login (iOS, Android, Web)
 
 **Tech Stack:**
-- **Backend:** Bun + Hono + Better Auth + Prisma
+- **Backend:** Bun + Hono + Better Auth v1.3.24 + Prisma
 - **Database:** PostgreSQL (Supabase)
-- **Frontend:** Expo SDK 53 + React Native
-- **Token Storage:** expo-secure-store
-- **Hosting:** Render.com
+- **Mobile App:** Expo SDK 53 + React Native 0.76.7
+- **Web Dashboard:** React (to be built) with same auth backend
+- **Token Storage:** expo-secure-store (mobile), localStorage (web)
+- **Hosting:** Render.com (backend), Vercel/Netlify (web dashboard)
+
+**Why This Architecture:**
+- ✅ Same authentication system for mobile app AND web dashboard
+- ✅ Photographers can login from phone, tablet, or computer
+- ✅ All data syncs across devices
+- ✅ Professional, scalable infrastructure
+- ✅ Easy to maintain - one backend serves both platforms
 
 ---
 
@@ -236,27 +248,114 @@ I'll update `src/screens/AuthScreen.tsx` to use the new auth system
 
 ---
 
-## Step 6: Custom Domain (Optional)
+## Step 6: Set Up Web Dashboard for Photographers (Future)
 
-### 6.1 Add Custom Domain in Render
+**Important:** The web dashboard will use the SAME backend and authentication system you just set up. This means photographers can login from their phone OR computer and access the same wedding data.
+
+### 6.1 Web Dashboard Overview
+
+**What it will include:**
+- Full wedding management interface (desktop optimized)
+- Photo upload and gallery management from computer
+- Guest list management with bulk import
+- Invoice creation and management
+- Seating chart builder with drag-and-drop
+- Reports and analytics
+- Same login as mobile app
+
+**Tech Stack (Recommended):**
+- **Framework:** Next.js 14+ with React
+- **Styling:** Tailwind CSS (same design system as mobile)
+- **Auth:** Same Better Auth backend (already set up!)
+- **Hosting:** Vercel (free tier works great)
+- **Domain:** `app.wedsync.com` or `dashboard.wedsync.com`
+
+### 6.2 How Auth Will Work
+
+The web dashboard will connect to the same backend API:
+
+```typescript
+// In your web app
+const response = await fetch(`${BACKEND_URL}/api/auth/sign-in/email`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email, password }),
+  credentials: 'include', // Important for cookies
+});
+```
+
+**Storage:**
+- Mobile: Uses `expo-secure-store` for tokens
+- Web: Uses `localStorage` or cookies for tokens
+- Both authenticate against the same backend
+
+### 6.3 When to Build the Web Dashboard
+
+**Recommended Timeline:**
+1. ✅ **Phase 1** (Now): Get mobile app working with authentication
+2. ⏳ **Phase 2** (Next): Build core mobile features (weddings, guests, photos)
+3. 🔮 **Phase 3** (Later): Build web dashboard using same backend
+
+**Why wait?**
+- Focus on mobile experience first
+- Backend is already ready for web dashboard
+- Can reuse all API endpoints
+- Better to perfect one platform before adding another
+
+### 6.4 Web Dashboard Quick Start (When Ready)
+
+When you're ready to build the web dashboard:
+
+1. **Create Next.js app:**
+   ```bash
+   npx create-next-app@latest wedsync-dashboard
+   cd wedsync-dashboard
+   ```
+
+2. **Install auth client:**
+   ```bash
+   npm install better-auth
+   ```
+
+3. **Create auth client** (`lib/auth.ts`):
+   ```typescript
+   import { createAuthClient } from "better-auth/react";
+
+   export const authClient = createAuthClient({
+     baseURL: process.env.NEXT_PUBLIC_BACKEND_URL, // Your Render URL
+   });
+   ```
+
+4. **Create login page** with same email/password fields
+5. **Use the same backend API** for all data
+6. **Deploy to Vercel** (connects to GitHub like Render)
+
+The backend you built in this guide will serve BOTH mobile and web!
+
+---
+
+## Step 7: Custom Domain (Optional)
+
+### 7.1 Add Custom Domain in Render
 1. Go to your Render service
 2. Click "Settings" > "Custom Domain"
 3. Add your domain (e.g., `api.wedsync.com`)
 
-### 6.2 Update DNS
+### 7.2 Update DNS
 In your domain registrar (Cloudflare, GoDaddy, etc.):
 1. Add CNAME record:
    - **Name:** `api` (or whatever subdomain you chose)
    - **Value:** The value Render provides
    - **TTL:** Auto or 3600
 
-### 6.3 Wait for SSL
+### 7.3 Wait for SSL
 Render automatically provisions SSL certificate (takes 5-10 minutes)
 
-### 6.4 Update Environment Variables
+### 7.4 Update Environment Variables
 Update in both places:
 - Render: `BACKEND_URL` = `https://api.wedsync.com`
-- Frontend `.env`: `EXPO_PUBLIC_BACKEND_URL` = `https://api.wedsync.com`
+- Mobile `.env`: `EXPO_PUBLIC_BACKEND_URL` = `https://api.wedsync.com`
+- Web (future): `NEXT_PUBLIC_BACKEND_URL` = `https://api.wedsync.com`
 
 ---
 

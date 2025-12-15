@@ -17,6 +17,13 @@ WedSync is designed for **wedding professionals** (planners, videographers, phot
 - **Session Management** - Automatic token refresh and persistence
 - **Backend API** - Separate Hono server deployed on Render
 - **PostgreSQL Database** - Supabase for user data storage
+- **Web Dashboard Ready** - Same backend will power future web dashboard for photographers
+
+**Architecture:**
+- 📱 **Mobile App** (Current) - Photographers manage weddings on the go
+- 🌐 **Web Dashboard** (Future) - Photographers manage from desktop/laptop
+- 🔄 **Shared Backend** - Same API serves both mobile and web
+- 💾 **Synced Data** - Login from any device, access all wedding data
 
 **Setup Status:**
 - ✅ Backend infrastructure created (in `/backend` folder)
@@ -24,9 +31,10 @@ WedSync is designed for **wedding professionals** (planners, videographers, phot
 - ✅ AuthScreen updated to use new auth system
 - ⏳ Backend needs to be deployed to Render (see deployment guide)
 - ⏳ Environment variable needs backend URL after deployment
+- 🔮 Web dashboard to be built later (will use same backend)
 
 **Deployment Guides:**
-- See `AUTHENTICATION_SETUP_GUIDE.md` for detailed setup instructions
+- See `AUTHENTICATION_SETUP_GUIDE.md` for detailed setup instructions (includes web dashboard info)
 - See `QUICK_START.md` for quick deployment checklist
 
 ## ✨ Current Features (Implemented)
