@@ -79,6 +79,10 @@ const useAuthStore = create<AuthStore>()(
     {
       name: "auth-storage",
       storage: createJSONStorage(() => AsyncStorage),
+      skipHydration: false,
+      onRehydrateStorage: () => (state) => {
+        console.log("[AuthStore] Hydration finished", state);
+      },
     }
   )
 );

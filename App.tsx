@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
 import RootNavigator from "./src/navigation/RootNavigator";
 import Splash from "./src/components/Splash";
+import { View, Text, Platform } from "react-native";
 
 // Keep splash screen visible
 SplashScreen.preventAutoHideAsync();
@@ -33,6 +34,12 @@ const openai_api_key = Constants.expoConfig.extra.apikey;
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    console.log("[App] Platform:", Platform.OS);
+    console.log("[App] Initializing app...");
+  }, []);
 
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
@@ -40,29 +47,58 @@ export default function App() {
     }
   }, [appIsReady]);
 
-  if (!appIsReady) {
-    return <Splash onReady={() => setAppIsReady(true)} />;
+  if (error) {
+    return (
+      <View style={{ flex: 1, backgroundColor: "#000000", alignItems: "center", justifyContent: "center", padding: 20 }}>
+        <Text style={{ color: "#FF0000", fontSize: 18, fontWeight: "bold", marginBottom: 10 }}>Error Loading App</Text>
+        <Text style={{ color: "#FFFFFF", fontSize: 14, textAlign: "center" }}>{error}</Text>
+      </View>
+    );
   }
 
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <SafeAreaProvider>
-        <NavigationContainer
-          linking={{
-            prefixes: ["wedsync://", "https://mywedsync.com", "https://www.mywedsync.com"],
-            config: {
-              screens: {
-                Auth: "",
-                ClientDashboard: "dashboard",
-                GuestUpload: "upload/:qrCode",
+  if (!appIsReady) {
+    return (
+      <Splash
+        onReady={() => {
+          console.log("[App] Splash screen ready, showing main app");
+          setAppIsReady(true);
+        }}
+      />
+    );
+  }
+
+  try {
+    return (
+      <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
+        <SafeAreaProvider>
+          <NavigationContainer
+            linking={{
+              prefixes: ["wedsync://", "https://mywedsync.com", "https://www.mywedsync.com"],
+              config: {
+                screens: {
+                  Auth: "",
+                  ClientDashboard: "dashboard",
+                  GuestUpload: "upload/:qrCode",
+                },
               },
-            },
-          }}
-        >
-          <RootNavigator />
-          <StatusBar style="light" />
-        </NavigationContainer>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
-  );
+            }}
+            onReady={() => console.log("[Navigation] Ready")}
+            onStateChange={(state) => console.log("[Navigation] State changed:", state?.routes?.[0]?.name)}
+          >
+            <RootNavigator />
+            <StatusBar style="light" />
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    );
+  } catch (err) {
+    console.error("[App] Render error:", err);
+    setError(err instanceof Error ? err.message : "Unknown error");
+    return (
+      <View style={{ flex: 1, backgroundColor: "#000000", alignItems: "center", justifyContent: "center", padding: 20 }}>
+        <Text style={{ color: "#FF0000", fontSize: 18, fontWeight: "bold", marginBottom: 10 }}>Render Error</Text>
+        <Text style={{ color: "#FFFFFF", fontSize: 14, textAlign: "center" }}>{err instanceof Error ? err.message : "Unknown error"}</Text>
+      </View>
+    );
+  }
 }
