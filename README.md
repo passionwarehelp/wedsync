@@ -190,11 +190,34 @@ The app is running in the Vibecode environment. Simply:
 4. Add guests, tasks, vendors, and more
 5. Everything auto-saves to device storage
 
+### Web Access (Computer/Browser)
+
+Users can access WedSync from their computers! See the **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** for full instructions on deploying to a custom domain like `wedsync.com`.
+
+**Quick Web Deployment:**
+```bash
+# Build for web
+bun run build:web
+
+# Deploy to Vercel (easiest)
+vercel --prod
+
+# Add custom domain in Vercel dashboard
+```
+
+Once deployed, users can:
+- Visit `https://wedsync.com` (or your domain)
+- Login with their account
+- Get the desktop-optimized dashboard automatically
+- Manage their wedding from any computer
+
 ## 📱 What's New
 
 ### Latest Updates
 - ✅ **Web Dashboard for Couples** - Desktop-optimized dashboard with 2-column grid layout for larger screens
 - ✅ **Responsive Design** - Automatically adapts to screen size (mobile, tablet, desktop)
+- ✅ **Production Deployment Ready** - Complete guides for deploying to `wedsync.com` (see [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md))
+- ✅ **Custom Domain Support** - Deploy to Vercel, Netlify, or your own server with custom domains
 - ✅ **Invite Button on Guest List** - Quick access to send RSVP invites directly from guest list screen
 - ✅ **RSVP Link System** - Guests can RSVP via shareable web link without downloading the app
 - ✅ **Web-Based RSVP Form** - Complete form with attendance, +1s, meal preferences, dietary restrictions
