@@ -21,6 +21,11 @@
     "android": {
       "edgeToEdgeEnabled": true,
       "backgroundColor": "#000000"
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/image-1764392032.png",
+      "backgroundColor": "#000000"
     }
   }
 }
