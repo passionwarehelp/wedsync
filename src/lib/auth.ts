@@ -1,11 +1,8 @@
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
-import Constants from "expo-constants";
 
-// Get the backend URL - prefer localhost for local dev, then Render for production
-const BACKEND_URL =
-  process.env.EXPO_PUBLIC_BACKEND_URL ||
-  "https://wedsync-backend.onrender.com";
+// Backend URL - Render production
+const BACKEND_URL = "https://wedsync-backend.onrender.com";
 
 console.log("[Auth] Using backend URL:", BACKEND_URL);
 
@@ -72,34 +69,55 @@ export async function signUpWithEmail(
   password: string,
   name: string
 ): Promise<AuthSession> {
+  console.log("[Auth] Signing up with email:", email);
+
   const response = await fetch(`${BACKEND_URL}/api/auth/sign-up/email`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ email, password, name }),
-    credentials: "include",
   });
 
-  const data = await response.json();
+  // Get response text first
+  const responseText = await response.text();
+  console.log("[Auth] Sign up response status:", response.status);
+  console.log("[Auth] Sign up response text:", responseText);
+
+  // Handle empty response
+  if (!responseText) {
+    throw new Error("Server returned empty response. Please try again.");
+  }
+
+  // Parse JSON
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch (e) {
+    console.error("[Auth] Failed to parse response:", responseText);
+    throw new Error("Invalid server response. Please try again.");
+  }
 
   if (!response.ok) {
     throw new Error(data.message || data.error || "Sign up failed");
   }
 
+  // Handle response format: { token, user }
   if (data.user && data.token) {
     await tokenStorage.set(TOKEN_KEY, data.token);
     await tokenStorage.set(USER_KEY, JSON.stringify(data.user));
     return { user: data.user, token: data.token };
   }
 
-  // Better Auth returns session in a different format
+  // Handle response format: { session: { token }, user }
   if (data.session && data.user) {
-    await tokenStorage.set(TOKEN_KEY, data.session.token);
+    const token = data.session.token || data.session.id;
+    await tokenStorage.set(TOKEN_KEY, token);
     await tokenStorage.set(USER_KEY, JSON.stringify(data.user));
-    return { user: data.user, token: data.session.token };
+    return { user: data.user, token };
   }
 
+  console.error("[Auth] Unexpected response format:", data);
   throw new Error("Invalid response from server");
 }
 
@@ -110,34 +128,55 @@ export async function signInWithEmail(
   email: string,
   password: string
 ): Promise<AuthSession> {
+  console.log("[Auth] Signing in with email:", email);
+
   const response = await fetch(`${BACKEND_URL}/api/auth/sign-in/email`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ email, password }),
-    credentials: "include",
   });
 
-  const data = await response.json();
+  // Get response text first
+  const responseText = await response.text();
+  console.log("[Auth] Sign in response status:", response.status);
+  console.log("[Auth] Sign in response text:", responseText);
+
+  // Handle empty response
+  if (!responseText) {
+    throw new Error("Server returned empty response. Please try again.");
+  }
+
+  // Parse JSON
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch (e) {
+    console.error("[Auth] Failed to parse response:", responseText);
+    throw new Error("Invalid server response. Please try again.");
+  }
 
   if (!response.ok) {
     throw new Error(data.message || data.error || "Sign in failed");
   }
 
+  // Handle response format: { token, user }
   if (data.user && data.token) {
     await tokenStorage.set(TOKEN_KEY, data.token);
     await tokenStorage.set(USER_KEY, JSON.stringify(data.user));
     return { user: data.user, token: data.token };
   }
 
-  // Better Auth returns session in a different format
+  // Handle response format: { session: { token }, user }
   if (data.session && data.user) {
-    await tokenStorage.set(TOKEN_KEY, data.session.token);
+    const token = data.session.token || data.session.id;
+    await tokenStorage.set(TOKEN_KEY, token);
     await tokenStorage.set(USER_KEY, JSON.stringify(data.user));
-    return { user: data.user, token: data.session.token };
+    return { user: data.user, token };
   }
 
+  console.error("[Auth] Unexpected response format:", data);
   throw new Error("Invalid response from server");
 }
 
@@ -154,7 +193,6 @@ export async function signOutUser(): Promise<void> {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        credentials: "include",
       });
     }
   } catch (e) {
@@ -200,17 +238,20 @@ export async function validateSession(): Promise<AuthSession | null> {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      credentials: "include",
     });
 
     if (!response.ok) {
-      // Session invalid, clear tokens
       await tokenStorage.remove(TOKEN_KEY);
       await tokenStorage.remove(USER_KEY);
       return null;
     }
 
-    const data = await response.json();
+    const responseText = await response.text();
+    if (!responseText) {
+      return getStoredSession();
+    }
+
+    const data = JSON.parse(responseText);
     if (data.user) {
       await tokenStorage.set(USER_KEY, JSON.stringify(data.user));
       return { user: data.user, token };
@@ -219,7 +260,6 @@ export async function validateSession(): Promise<AuthSession | null> {
     return null;
   } catch (e) {
     console.error("[Auth] Error validating session:", e);
-    // Return stored session if validation fails (offline mode)
     return getStoredSession();
   }
 }
