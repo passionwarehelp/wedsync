@@ -1,7 +1,41 @@
 import { useState, useEffect, useCallback } from "react";
-import * as sessionManager from "./sessionManager";
-import type { User, UserRole } from "./sessionManager";
+import {
+  signInWithEmail,
+  signUpWithEmail,
+  signOutUser,
+  getStoredSession,
+  validateSession,
+  AuthUser,
+  AuthSession,
+} from "./auth";
 import useAuthStore from "../state/authStore";
+
+export type UserRole = "photographer" | "couple";
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role?: UserRole;
+  emailVerified: boolean;
+  image: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Convert AuthUser to User format
+function toUser(authUser: AuthUser, role: UserRole = "photographer"): User {
+  return {
+    id: authUser.id,
+    email: authUser.email,
+    name: authUser.name || "",
+    role,
+    emailVerified: authUser.emailVerified,
+    image: authUser.image,
+    createdAt: authUser.createdAt,
+    updatedAt: authUser.updatedAt,
+  };
+}
 
 // Global state shared across all hook instances
 let globalUser: User | null = null;
@@ -19,7 +53,7 @@ function setGlobalUser(user: User | null) {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: (user.role as "photographer" | "couple") || "photographer",
+        role: user.role || "photographer",
         createdAt: user.createdAt,
       },
     });
@@ -33,8 +67,7 @@ function setGlobalUser(user: User | null) {
 
 /**
  * Auth hook with global state
- * All instances of useAuth share the same user state
- * Syncs with authStore for navigation
+ * Uses Better Auth backend for cross-device authentication
  */
 export function useAuth() {
   const [user, setUser] = useState<User | null>(globalUser);
@@ -54,11 +87,27 @@ export function useAuth() {
   const loadSession = useCallback(async () => {
     setIsPending(true);
     try {
-      const session = await sessionManager.getSession();
-      const newUser = session?.user || null;
-      setUser(newUser);
-      setGlobalUser(newUser);
+      // First try to get stored session for quick load
+      const storedSession = await getStoredSession();
+      if (storedSession) {
+        const user = toUser(storedSession.user);
+        setUser(user);
+        setGlobalUser(user);
+      }
+
+      // Then validate with backend (if online)
+      const validSession = await validateSession();
+      if (validSession) {
+        const user = toUser(validSession.user);
+        setUser(user);
+        setGlobalUser(user);
+      } else if (!storedSession) {
+        // No valid session
+        setUser(null);
+        setGlobalUser(null);
+      }
     } catch (err) {
+      console.error("[Auth] Error loading session:", err);
       setError(err as Error);
     }
     setIsPending(false);
@@ -72,13 +121,14 @@ export function useAuth() {
     setError(null);
     setIsPending(true);
     try {
-      const user = await sessionManager.signIn(email, password);
+      const session = await signInWithEmail(email, password);
+      const user = toUser(session.user);
       setUser(user);
       setGlobalUser(user);
       setIsPending(false);
       return user;
-    } catch (err) {
-      setError(err as Error);
+    } catch (err: any) {
+      setError(err);
       setIsPending(false);
       throw err;
     }
@@ -89,13 +139,14 @@ export function useAuth() {
       setError(null);
       setIsPending(true);
       try {
-        const user = await sessionManager.signUp(email, password, name, role);
+        const session = await signUpWithEmail(email, password, name);
+        const user = toUser(session.user, role);
         setUser(user);
         setGlobalUser(user);
         setIsPending(false);
         return user;
-      } catch (err) {
-        setError(err as Error);
+      } catch (err: any) {
+        setError(err);
         setIsPending(false);
         throw err;
       }
@@ -104,7 +155,7 @@ export function useAuth() {
   );
 
   const signOut = useCallback(async () => {
-    await sessionManager.signOut();
+    await signOutUser();
     setUser(null);
     setGlobalUser(null);
   }, []);
