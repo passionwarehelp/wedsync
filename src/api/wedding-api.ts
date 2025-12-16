@@ -30,6 +30,7 @@ async function authFetch(endpoint: string, options: RequestInit = {}) {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
+        Origin: "https://wedsync.app",
         ...options.headers,
       },
     });
