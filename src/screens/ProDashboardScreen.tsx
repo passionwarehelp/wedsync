@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from "react";
-import { View, Text, Pressable, ScrollView, TextInput } from "react-native";
+import React, { useState, useMemo, useEffect } from "react";
+import { View, Text, Pressable, ScrollView, TextInput, ActivityIndicator, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigator";
 import useWeddingStore from "../state/weddingStore";
@@ -17,8 +17,26 @@ export default function ProDashboardScreen() {
   const navigation = useNavigation<NavigationProp>();
   const allWeddings = useWeddingStore((s) => s.weddings);
   const deleteWedding = useWeddingStore((s) => s.deleteWedding);
+  const fetchWeddings = useWeddingStore((s) => s.fetchWeddings);
+  const isLoadingWeddings = useWeddingStore((s) => s.isLoadingWeddings);
   const userId = useAuthStore((s) => s.user?.id);
   const [searchQuery, setSearchQuery] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Fetch weddings when screen is focused or user changes
+  useFocusEffect(
+    React.useCallback(() => {
+      if (userId) {
+        fetchWeddings();
+      }
+    }, [userId])
+  );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchWeddings();
+    setRefreshing(false);
+  };
 
   // Only show weddings created by this user
   const myWeddings = useMemo(() => {
@@ -79,7 +97,18 @@ export default function ProDashboardScreen() {
         </View>
       </LinearGradient>
 
-      <ScrollView className="flex-1 px-5 pt-6" showsVerticalScrollIndicator={false}>
+      <ScrollView
+        className="flex-1 px-5 pt-6"
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#F5B800"
+            colors={["#F5B800"]}
+          />
+        }
+      >
         {filteredWeddings.length === 0 ? (
           <View className="items-center justify-center py-20">
             <Ionicons name="calendar-outline" size={64} color="#404040" />

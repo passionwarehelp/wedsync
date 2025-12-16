@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Pressable, ScrollView, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback, Switch } from "react-native";
+import { View, Text, TextInput, Pressable, ScrollView, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback, Switch, ActivityIndicator, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -23,39 +23,49 @@ export default function CreateWeddingScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [venue, setVenue] = useState("");
   const [qrCodeEnabled, setQrCodeEnabled] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
 
   const isValid = partnerOneName.trim() && partnerTwoName.trim();
 
-  const handleCreate = () => {
-    if (!isValid || !userId) {
+  const handleCreate = async () => {
+    if (!isValid || !userId || isCreating) {
       return;
     }
 
-    const newWedding = {
-      id: Date.now().toString(),
-      coupleName: `${partnerOneName} & ${partnerTwoName}`,
-      partnerOneName: partnerOneName.trim(),
-      partnerTwoName: partnerTwoName.trim(),
-      weddingDate: weddingDate.toISOString(),
-      venue: venue.trim(),
-      status: "planning" as const,
-      createdAt: new Date().toISOString(),
-      createdBy: userId,
-      qrCode: `WS-${Date.now()}`,
-      qrCodeEnabled,
-      photoAlbumLive: false,
-      photoFrameEnabled: false,
-      guestCount: 0,
-      rsvpCount: 0,
-      tasksCompleted: 0,
-      totalTasks: 0,
-    };
+    setIsCreating(true);
 
-    addWedding(newWedding);
-    navigation.goBack();
-    setTimeout(() => {
-      navigation.navigate("WeddingDetail", { weddingId: newWedding.id });
-    }, 100);
+    try {
+      const weddingData = {
+        coupleName: `${partnerOneName} & ${partnerTwoName}`,
+        partnerOneName: partnerOneName.trim(),
+        partnerTwoName: partnerTwoName.trim(),
+        weddingDate: weddingDate.toISOString(),
+        venue: venue.trim(),
+        status: "planning" as const,
+        qrCode: `WS-${Date.now()}`,
+        qrCodeEnabled,
+        photoAlbumLive: false,
+        photoFrameEnabled: false,
+        guestCount: 0,
+        rsvpCount: 0,
+        tasksCompleted: 0,
+        totalTasks: 0,
+      };
+
+      const newWedding = await addWedding(weddingData);
+
+      if (newWedding) {
+        navigation.goBack();
+        setTimeout(() => {
+          navigation.navigate("WeddingDetail", { weddingId: newWedding.id });
+        }, 100);
+      }
+    } catch (error: any) {
+      console.error("[CreateWedding] Error:", error);
+      Alert.alert("Error", error.message || "Failed to create wedding. Please try again.");
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (
@@ -68,10 +78,14 @@ export default function CreateWeddingScreen() {
                 <Ionicons name="close" size={28} color="#F3F4F6" />
               </Pressable>
               <Text className="text-neutral-100 text-xl font-semibold">Create Wedding</Text>
-              <Pressable onPress={handleCreate} disabled={!isValid}>
-                <Text className={`text-base font-semibold ${isValid ? "text-[#F5B800]" : "text-neutral-600"}`}>
-                  Done
-                </Text>
+              <Pressable onPress={handleCreate} disabled={!isValid || isCreating}>
+                {isCreating ? (
+                  <ActivityIndicator size="small" color="#F5B800" />
+                ) : (
+                  <Text className={`text-base font-semibold ${isValid ? "text-[#F5B800]" : "text-neutral-600"}`}>
+                    Done
+                  </Text>
+                )}
               </Pressable>
             </View>
           </View>
@@ -169,12 +183,16 @@ export default function CreateWeddingScreen() {
               {/* Create Button */}
               <Pressable
                 onPress={handleCreate}
-                disabled={!isValid}
-                className={`rounded-xl py-4 items-center ${isValid ? "bg-[#F5B800]" : "bg-neutral-700"}`}
+                disabled={!isValid || isCreating}
+                className={`rounded-xl py-4 items-center ${isValid && !isCreating ? "bg-[#F5B800]" : "bg-neutral-700"}`}
               >
-                <Text className={`text-lg font-semibold ${isValid ? "text-black" : "text-neutral-500"}`}>
-                  Create Wedding
-                </Text>
+                {isCreating ? (
+                  <ActivityIndicator color="#000" />
+                ) : (
+                  <Text className={`text-lg font-semibold ${isValid ? "text-black" : "text-neutral-500"}`}>
+                    Create Wedding
+                  </Text>
+                )}
               </Pressable>
             </ScrollView>
           </KeyboardAvoidingView>

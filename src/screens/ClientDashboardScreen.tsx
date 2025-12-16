@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,10 +9,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigator";
 import { LinearGradient } from "expo-linear-gradient";
@@ -32,6 +33,24 @@ export default function ClientDashboardScreen() {
   // Wedding store
   const weddings = useWeddingStore((s) => s.weddings);
   const addWedding = useWeddingStore((s) => s.addWedding);
+  const fetchWeddings = useWeddingStore((s) => s.fetchWeddings);
+  const isLoadingWeddings = useWeddingStore((s) => s.isLoadingWeddings);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Fetch weddings when screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      if (user?.id) {
+        fetchWeddings();
+      }
+    }, [user?.id])
+  );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchWeddings();
+    setRefreshing(false);
+  };
 
   // Check if user has a wedding (either joined or created)
   const coupleWeddingId = useAuthStore((s) => s.user?.coupleWeddingId);
@@ -85,43 +104,46 @@ export default function ClientDashboardScreen() {
     }, 1000);
   };
 
-  const handleCreateWedding = () => {
+  const handleCreateWedding = async () => {
     if (!partnerOneName.trim() || !partnerTwoName.trim() || !user?.id) {
       return;
     }
 
-    const newWedding = {
-      id: Date.now().toString(),
-      coupleName: `${partnerOneName.trim()} & ${partnerTwoName.trim()}`,
-      partnerOneName: partnerOneName.trim(),
-      partnerTwoName: partnerTwoName.trim(),
-      weddingDate: weddingDate.toISOString(),
-      venue: venue.trim(),
-      status: "planning" as const,
-      createdAt: new Date().toISOString(),
-      createdBy: user.id,
-      qrCode: `WS-${Date.now()}`,
-      qrCodeEnabled: true,
-      photoAlbumLive: true,
-      photoFrameEnabled: false,
-      guestCount: 0,
-      rsvpCount: 0,
-      tasksCompleted: 0,
-      totalTasks: 0,
-    };
+    try {
+      const weddingData = {
+        coupleName: `${partnerOneName.trim()} & ${partnerTwoName.trim()}`,
+        partnerOneName: partnerOneName.trim(),
+        partnerTwoName: partnerTwoName.trim(),
+        weddingDate: weddingDate.toISOString(),
+        venue: venue.trim(),
+        status: "planning" as const,
+        qrCode: `WS-${Date.now()}`,
+        qrCodeEnabled: true,
+        photoAlbumLive: true,
+        photoFrameEnabled: false,
+        guestCount: 0,
+        rsvpCount: 0,
+        tasksCompleted: 0,
+        totalTasks: 0,
+      };
 
-    addWedding(newWedding);
+      const newWedding = await addWedding(weddingData);
 
-    // Link wedding to couple
-    useAuthStore.setState((state) => ({
-      user: state.user ? { ...state.user, coupleWeddingId: newWedding.id } : null,
-    }));
+      if (newWedding) {
+        // Link wedding to couple
+        useAuthStore.setState((state) => ({
+          user: state.user ? { ...state.user, coupleWeddingId: newWedding.id } : null,
+        }));
+      }
 
-    setShowCreateModal(false);
-    setPartnerOneName("");
-    setPartnerTwoName("");
-    setVenue("");
-    setWeddingDate(new Date());
+      setShowCreateModal(false);
+      setPartnerOneName("");
+      setPartnerTwoName("");
+      setVenue("");
+      setWeddingDate(new Date());
+    } catch (error) {
+      console.error("[ClientDashboard] Error creating wedding:", error);
+    }
   };
 
   const isCreateValid = partnerOneName.trim() && partnerTwoName.trim();
@@ -166,7 +188,18 @@ export default function ClientDashboardScreen() {
           </View>
         </LinearGradient>
 
-        <ScrollView className="flex-1 px-5 pt-4" showsVerticalScrollIndicator={false}>
+        <ScrollView
+          className="flex-1 px-5 pt-4"
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor="#F5B800"
+              colors={["#F5B800"]}
+            />
+          }
+        >
           {/* Quick Stats */}
           <View className="flex-row mb-6">
             <View className="flex-1 bg-neutral-900 rounded-xl p-4 mr-2 border border-neutral-800">

@@ -10,31 +10,32 @@ WedSync is designed for **wedding professionals** (planners, videographers, phot
 
 ## 🔐 Authentication System
 
-**Cross-Device Authentication** with Cloud Sync via Cloudflare KV:
+**Cross-Device Authentication** with Better Auth + PostgreSQL:
 - **Cross-Platform Login** - Works on phone, tablet, and web - same account everywhere
-- **Cloud User Storage** - Users stored in Cloudflare KV for cross-device sync
-- **Secure Token Storage** - Uses expo-secure-store for iOS/Android
+- **Cloud Backend** - Bun + Hono backend on Render with Better Auth
+- **PostgreSQL Database** - Supabase for data persistence
+- **Secure Token Storage** - Uses expo-secure-store for iOS/Android, localStorage for web
 - **Email & Password Auth** - Simple, secure authentication
 - **Session Management** - Automatic token refresh and persistence
-- **Local Fallback** - Works offline with local storage backup
-- **Web Dashboard Ready** - Same auth works for future web dashboard
 
-**Architecture:**
+**Backend Architecture:**
 - 📱 **Mobile App** (Current) - Media professionals manage weddings on the go
 - 🌐 **Web Dashboard** (Supported) - Access from desktop/laptop browser
-- ☁️ **Cloud Auth** - Cloudflare Worker with KV for cross-device user sync
-- 💾 **Synced Data** - Login from any device, access all wedding data
+- ☁️ **Backend API** - Bun + Hono on Render (wedsync-backend.onrender.com)
+- 💾 **Database** - PostgreSQL on Supabase with Prisma ORM
+- 🔄 **Cross-Device Sync** - Weddings sync across all devices via backend API
 
-**Setup Status:**
-- ✅ Cloud auth worker created (in `/cloudflare-workers` folder)
-- ✅ Frontend auth hooks implemented (`/src/lib/useAuth.tsx`)
-- ✅ Cross-device login supported
-- ✅ Local fallback for offline use
-- ⏳ Deploy `wedsync-auth` worker to Cloudflare for production
+**Backend Repo:** https://github.com/passionwarehelp/wedsync-backend
 
-**Deployment:**
-- Deploy `cloudflare-workers/wedsync-auth-worker.js` to Cloudflare Workers
-- Create KV namespace `WEDSYNC_USERS` and bind to worker
+## 🔄 Wedding Data Sync
+
+Weddings are now stored in the backend database and sync across all devices:
+- **Create Wedding** - Saves to PostgreSQL via `/api/weddings` POST endpoint
+- **View Weddings** - Fetched from backend on screen focus and pull-to-refresh
+- **Update Wedding** - Syncs changes via `/api/weddings/:id` PUT endpoint
+- **Delete Wedding** - Removes from database via `/api/weddings/:id` DELETE endpoint
+
+Other data (guests, tasks, timeline, vendors, photos) are still stored locally and will be synced in future updates.
 
 ## ✨ Current Features (Implemented)
 
@@ -44,6 +45,7 @@ WedSync is designed for **wedding professionals** (planners, videographers, phot
 - **Status Tracking** - Track planning status and upcoming events
 - **Quick Stats** - See guest counts and task progress at a glance
 - **Premium Black & Gold UI** - Luxurious dark theme with gold accents
+- **Pull to Refresh** - Refresh weddings from backend
 
 ### Wedding Detail View
 - **Client Information** - Partner names, wedding date, venue details

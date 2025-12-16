@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { signOutUser } from "../lib/auth";
 
 export type UserRole = "photographer" | "couple";
 
@@ -20,7 +21,7 @@ interface AuthStore {
   // Actions
   signUp: (email: string, password: string, name: string, role: UserRole) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => void;
+  signOut: () => Promise<void>;
 }
 
 const useAuthStore = create<AuthStore>()(
@@ -69,7 +70,14 @@ const useAuthStore = create<AuthStore>()(
         }
       },
 
-      signOut: () => {
+      signOut: async () => {
+        // Sign out from backend
+        await signOutUser();
+
+        // Clear weddings store (import dynamically to avoid circular deps)
+        const { default: useWeddingStore } = await import("./weddingStore");
+        useWeddingStore.getState().clearWeddings();
+
         set({
           isAuthenticated: false,
           user: null,
