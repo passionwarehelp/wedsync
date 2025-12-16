@@ -5,7 +5,7 @@ import Constants from "expo-constants";
 // Get the backend URL - prefer localhost for local dev, then Render for production
 const BACKEND_URL =
   process.env.EXPO_PUBLIC_BACKEND_URL ||
-  "https://wedsync-api.onrender.com";
+  "https://wedsync-backend.onrender.com";
 
 console.log("[Auth] Using backend URL:", BACKEND_URL);
 
