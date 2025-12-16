@@ -14,8 +14,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useAuth } from "../lib/useAuth";
-import type { UserRole } from "../lib/sessionManager";
+import { useAuth, UserRole } from "../lib/useAuth";
 
 type AuthMode = "welcome" | "login" | "signup" | "role-select";
 

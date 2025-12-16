@@ -2,11 +2,10 @@ import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 import Constants from "expo-constants";
 
-// Get the Vibecode backend URL
+// Get the backend URL - prefer localhost for local dev, then Render for production
 const BACKEND_URL =
-  Constants.expoConfig?.extra?.backendUrl ||
-  process.env.EXPO_PUBLIC_VIBECODE_BACKEND_URL ||
-  "https://preview-zqfeujwwfqce.share.sandbox.dev";
+  process.env.EXPO_PUBLIC_BACKEND_URL ||
+  "https://wedsync-api.onrender.com";
 
 console.log("[Auth] Using backend URL:", BACKEND_URL);
 
