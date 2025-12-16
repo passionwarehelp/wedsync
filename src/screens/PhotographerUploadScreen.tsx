@@ -113,7 +113,7 @@ export default function PhotographerUploadScreen() {
             uri: result.publicUrl,
             mediaType: result.mediaType || "photo",
             uploadedBy: "pro",
-            uploadedByName: "Photographer",
+            uploadedByName: "Media Pro",
             uploadedAt: new Date().toISOString(),
             isFavorite: false,
             isApproved: true,

@@ -185,8 +185,8 @@ export default function AdminDashboardScreen() {
               <View className="flex-row items-center justify-between">
                 <Text className="text-neutral-400">Account Type</Text>
                 <View className="flex-row items-center">
-                  <Ionicons name="camera" size={16} color="#F5B800" />
-                  <Text className="text-[#F5B800] font-medium ml-2">Photographer</Text>
+                  <Ionicons name="videocam" size={16} color="#F5B800" />
+                  <Text className="text-[#F5B800] font-medium ml-2">Media Professional</Text>
                 </View>
               </View>
             </View>

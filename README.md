@@ -10,32 +10,31 @@ WedSync is designed for **wedding professionals** (planners, videographers, phot
 
 ## 🔐 Authentication System
 
-**Professional-Grade Authentication** using Better Auth v1.3.24 with Bun + Hono backend:
-- **Cross-Platform Login** - Works on phone, tablet, and web
+**Cross-Device Authentication** with Cloud Sync via Cloudflare KV:
+- **Cross-Platform Login** - Works on phone, tablet, and web - same account everywhere
+- **Cloud User Storage** - Users stored in Cloudflare KV for cross-device sync
 - **Secure Token Storage** - Uses expo-secure-store for iOS/Android
 - **Email & Password Auth** - Simple, secure authentication
 - **Session Management** - Automatic token refresh and persistence
-- **Backend API** - Separate Hono server deployed on Render
-- **PostgreSQL Database** - Supabase for user data storage
-- **Web Dashboard Ready** - Same backend will power future web dashboard for photographers
+- **Local Fallback** - Works offline with local storage backup
+- **Web Dashboard Ready** - Same auth works for future web dashboard
 
 **Architecture:**
-- 📱 **Mobile App** (Current) - Photographers manage weddings on the go
-- 🌐 **Web Dashboard** (Future) - Photographers manage from desktop/laptop
-- 🔄 **Shared Backend** - Same API serves both mobile and web
+- 📱 **Mobile App** (Current) - Media professionals manage weddings on the go
+- 🌐 **Web Dashboard** (Supported) - Access from desktop/laptop browser
+- ☁️ **Cloud Auth** - Cloudflare Worker with KV for cross-device user sync
 - 💾 **Synced Data** - Login from any device, access all wedding data
 
 **Setup Status:**
-- ✅ Backend infrastructure created (in `/backend` folder)
+- ✅ Cloud auth worker created (in `/cloudflare-workers` folder)
 - ✅ Frontend auth hooks implemented (`/src/lib/useAuth.tsx`)
-- ✅ AuthScreen updated to use new auth system
-- ⏳ Backend needs to be deployed to Render (see deployment guide)
-- ⏳ Environment variable needs backend URL after deployment
-- 🔮 Web dashboard to be built later (will use same backend)
+- ✅ Cross-device login supported
+- ✅ Local fallback for offline use
+- ⏳ Deploy `wedsync-auth` worker to Cloudflare for production
 
-**Deployment Guides:**
-- See `AUTHENTICATION_SETUP_GUIDE.md` for detailed setup instructions (includes web dashboard info)
-- See `QUICK_START.md` for quick deployment checklist
+**Deployment:**
+- Deploy `cloudflare-workers/wedsync-auth-worker.js` to Cloudflare Workers
+- Create KV namespace `WEDSYNC_USERS` and bind to worker
 
 ## ✨ Current Features (Implemented)
 
@@ -91,11 +90,11 @@ WedSync is designed for **wedding professionals** (planners, videographers, phot
 - **Dark Calendar Picker** - Fixed readability with dark theme
 - **Unique QR Codes** - Auto-generated for each wedding
 
-### Photo Management ✅
-- **Photographer Upload** - Upload multiple photos and videos from device library
-- **Photo Gallery** - Beautiful grid view with 3-column layout
+### Media Management ✅
+- **Professional Upload** - Upload multiple photos and videos from device library
+- **Media Gallery** - Beautiful grid view with 3-column layout
 - **Video Support** - Full video upload and playback with expo-video
-- **Favorites System** - Mark and filter favorite photos
+- **Favorites System** - Mark and filter favorite media
 - **Media Filters** - Filter by All/Photos/Videos/Favorites
 - **Full-Screen View** - Tap any photo or video for detailed view
 - **Upload Metadata** - Track who uploaded and when
@@ -252,12 +251,12 @@ Once deployed, users can:
 
 ---
 
-## 📸 Photo & Video Upload System
+## 📸 Media Upload System
 
 ### Current Implementation
 - **Cloud Storage**: Photos and videos uploaded to Cloudflare R2 via authenticated Worker
 - **Guest Uploads**: QR code system with unique codes per wedding
-- **Photographer Uploads**: Professional upload interface with batch support
+- **Professional Uploads**: Media professional upload interface with batch support
 - **Media Organization**: Organized by `wedding_<id>/photos/` and `wedding_<id>/videos/`
 - **Progress Tracking**: Real-time upload progress with percentage
 - **Video Support**: Full video upload and playback with expo-video
@@ -286,11 +285,11 @@ Once deployed, users can:
    - CORS enabled for app uploads
 
 ### How It Works Now
-- Photographers and guests select photos/videos from device
+- Media professionals and guests select photos/videos from device
 - Media automatically uploads to R2 via Worker
 - Organized by wedding ID and media type
 - Public URLs generated for viewing
-- Photo metadata stored in Zustand
+- Media metadata stored in Zustand
 - Video playback with expo-video
 - Progress tracking during upload
 

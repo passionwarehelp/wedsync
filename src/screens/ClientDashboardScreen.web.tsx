@@ -75,7 +75,7 @@ export default function ClientDashboardScreen() {
         setShowJoinModal(false);
         setInviteCode("");
       } else {
-        setJoinError("Invalid invite code. Please check with your photographer.");
+        setJoinError("Invalid invite code. Please check with your media professional.");
       }
       setIsJoining(false);
     }, 1000);
@@ -503,17 +503,17 @@ export default function ClientDashboardScreen() {
                 </View>
                 <View style={{ flex: 1, marginLeft: 16 }}>
                   <Text style={{ color: "#666", fontSize: 18, fontWeight: "600" }}>
-                    Photo Gallery
+                    Media Gallery
                   </Text>
                   <Text style={{ color: "#444", fontSize: 14, marginTop: 2 }}>
-                    Coming soon from your photographer
+                    Coming soon from your media professional
                   </Text>
                 </View>
                 <Ionicons name="time-outline" size={22} color="#666" />
               </View>
             )}
 
-            {/* QR Code Album - Show for photographer-managed weddings */}
+            {/* QR Code Album - Show for professional-managed weddings */}
             {!(coupleWedding as any).isSelfManaged && coupleWedding.qrCodeEnabled !== false && (
               <Pressable
                 onPress={() => navigation.navigate("QRCodeDesign", { weddingId: coupleWedding.id })}
@@ -542,10 +542,10 @@ export default function ClientDashboardScreen() {
                 </View>
                 <View style={{ flex: 1, marginLeft: 16 }}>
                   <Text style={{ color: "#E5E5E5", fontSize: 18, fontWeight: "600" }}>
-                    Guest Photo Album
+                    Guest Media Album
                   </Text>
                   <Text style={{ color: "#6B7280", fontSize: 14, marginTop: 2 }}>
-                    View photos from guests
+                    View photos & videos from guests
                   </Text>
                 </View>
                 <Ionicons name="chevron-forward" size={22} color="#6B7280" />
@@ -772,7 +772,7 @@ export default function ClientDashboardScreen() {
               Welcome, {user?.name}
             </Text>
             <Text style={{ color: "#9CA3AF", fontSize: 16, textAlign: "center", lineHeight: 24 }}>
-              Join your photographer{"'"}s wedding or create your own to get started
+              Join your media professional{"'"}s wedding or create your own to get started
             </Text>
           </View>
 
@@ -808,7 +808,7 @@ export default function ClientDashboardScreen() {
                   Join My Wedding
                 </Text>
                 <Text style={{ color: "#9CA3AF", fontSize: 14, lineHeight: 20 }}>
-                  Enter the invite code from your photographer to access your wedding details.
+                  Enter the invite code from your media professional to access your wedding details.
                 </Text>
               </View>
             </View>
@@ -887,7 +887,7 @@ export default function ClientDashboardScreen() {
             </View>
 
             <Text style={{ color: "#9CA3AF", fontSize: 14, marginBottom: 20 }}>
-              Enter the invite code provided by your photographer
+              Enter the invite code provided by your media professional
             </Text>
 
             {joinError ? (

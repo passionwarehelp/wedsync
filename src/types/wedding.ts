@@ -24,9 +24,9 @@ export interface Wedding {
   qrCode: string;
   qrCodeEnabled: boolean; // Toggle for QR code scanner album feature
 
-  // Photographer features
-  photoAlbumLive: boolean; // When true, bride/groom can see photographer's uploaded photos
-  photoFrameEnabled: boolean; // Toggle for photo frame feature
+  // Media Professional features
+  photoAlbumLive: boolean; // When true, bride/groom can see media professional's uploaded photos/videos
+  photoFrameEnabled: boolean; // Toggle for media frame feature
 
   // Stats
   guestCount: number;

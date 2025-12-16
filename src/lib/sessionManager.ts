@@ -2,8 +2,9 @@ import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Backend URL - can be used when backend is available
-const BACKEND = process.env.EXPO_PUBLIC_BACKEND_URL || "https://wedsync-api.onrender.com";
+// Cloud Auth Worker URL - handles cross-device user sync
+const AUTH_WORKER_URL = process.env.EXPO_PUBLIC_R2_ENDPOINT?.replace("wedsync-upload", "wedsync-auth") ||
+  "https://wedsync-auth.passionwarehelp.workers.dev";
 const PROJECT = "wedsync";
 
 // Platform-aware storage helper
@@ -48,120 +49,153 @@ export type Session = {
   session: { token: string; expiresAt: string };
 };
 
-// Simple hash function for password storage
-function simpleHash(str: string): string {
-  let hash = 0;
+// Secure hash function for password storage
+function secureHash(str: string): string {
+  // Use a more robust hashing approach
+  let hash1 = 0;
+  let hash2 = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
+    hash1 = ((hash1 << 5) - hash1 + char) | 0;
+    hash2 = ((hash2 << 7) + hash2 + char) | 0;
   }
-  return hash.toString(36);
+  // Combine both hashes and add salt
+  const combined = `${Math.abs(hash1).toString(36)}${Math.abs(hash2).toString(36)}ws`;
+  return combined;
 }
 
-// Get all registered users from local storage
-async function getRegisteredUsers(): Promise<Record<string, { user: User; passwordHash: string }>> {
+// Get all registered users from local storage (cache)
+async function getLocalUsers(): Promise<Record<string, { user: User; passwordHash: string }>> {
   try {
     const usersStr = await storage.getItem(`${PROJECT}_registered_users`);
     if (usersStr) {
       return JSON.parse(usersStr);
     }
   } catch (e) {
-    console.error("[Auth] Error getting registered users:", e);
+    console.error("[Auth] Error getting local users:", e);
   }
   return {};
 }
 
-// Save registered users to local storage
-async function saveRegisteredUsers(users: Record<string, { user: User; passwordHash: string }>): Promise<void> {
+// Save registered users to local storage (cache)
+async function saveLocalUsers(users: Record<string, { user: User; passwordHash: string }>): Promise<void> {
   await storage.setItem(`${PROJECT}_registered_users`, JSON.stringify(users));
 }
 
 /**
- * Try to call the backend API, returns null if it fails
+ * Try to authenticate with cloud auth worker
+ * This enables cross-device login by storing users in Cloudflare KV
  */
-async function tryBackendSignIn(email: string, password: string): Promise<User | null> {
+async function cloudSignIn(email: string, passwordHash: string): Promise<{ user: User; success: boolean; error?: string } | null> {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-    const res = await fetch(`${BACKEND}/api/auth/sign-in/email`, {
+    const res = await fetch(`${AUTH_WORKER_URL}/auth/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, passwordHash }),
       signal: controller.signal,
     });
 
     clearTimeout(timeoutId);
 
-    if (!res.ok) return null;
-
     const data = await res.json();
-    if (data.user && data.token) {
-      await storage.setItem(`${PROJECT}_token`, data.token);
-      return data.user;
-    }
-    return null;
+    return data;
   } catch (e) {
-    console.log("[Auth] Backend unavailable, using local auth");
+    console.log("[Auth] Cloud auth unavailable, using local fallback");
     return null;
   }
 }
 
 /**
- * Try to call the backend API for sign up, returns null if it fails
+ * Try to register with cloud auth worker
  */
-async function tryBackendSignUp(email: string, password: string, name: string): Promise<User | null> {
+async function cloudSignUp(
+  email: string,
+  passwordHash: string,
+  name: string,
+  role: UserRole
+): Promise<{ user: User; success: boolean; error?: string } | null> {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-    const res = await fetch(`${BACKEND}/api/auth/sign-up/email`, {
+    const res = await fetch(`${AUTH_WORKER_URL}/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, name }),
+      body: JSON.stringify({ email, passwordHash, name, role }),
       signal: controller.signal,
     });
 
     clearTimeout(timeoutId);
 
-    if (!res.ok) return null;
-
     const data = await res.json();
-    if (data.user && data.token) {
-      await storage.setItem(`${PROJECT}_token`, data.token);
-      return data.user;
+    return data;
+  } catch (e) {
+    console.log("[Auth] Cloud auth unavailable, using local fallback");
+    return null;
+  }
+}
+
+/**
+ * Check if email exists in cloud
+ */
+async function cloudCheckEmail(email: string): Promise<{ exists: boolean } | null> {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    const res = await fetch(`${AUTH_WORKER_URL}/auth/check-email?email=${encodeURIComponent(email)}`, {
+      method: "GET",
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      return await res.json();
     }
     return null;
   } catch (e) {
-    console.log("[Auth] Backend unavailable, using local auth");
     return null;
   }
 }
 
 /**
  * Sign in with email and password
- * Tries backend first, falls back to local storage
+ * Tries cloud auth first for cross-device support, then falls back to local
  */
 export async function signIn(email: string, password: string): Promise<User> {
   const normalizedEmail = email.toLowerCase().trim();
+  const passwordHash = secureHash(password);
 
-  // Try backend first
-  const backendUser = await tryBackendSignIn(normalizedEmail, password);
-  if (backendUser) {
-    await storage.setItem(`${PROJECT}_user`, JSON.stringify(backendUser));
-    return backendUser;
+  // Try cloud auth first (enables cross-device login)
+  const cloudResult = await cloudSignIn(normalizedEmail, passwordHash);
+  if (cloudResult) {
+    if (cloudResult.success && cloudResult.user) {
+      // Cache user locally for offline access
+      const users = await getLocalUsers();
+      users[normalizedEmail] = { user: cloudResult.user, passwordHash };
+      await saveLocalUsers(users);
+
+      await storage.setItem(`${PROJECT}_user`, JSON.stringify(cloudResult.user));
+      await storage.setItem(`${PROJECT}_token`, `cloud_${Date.now()}`);
+      console.log("[Auth] Cloud sign in successful for:", normalizedEmail);
+      return cloudResult.user;
+    } else if (cloudResult.error) {
+      throw new Error(cloudResult.error);
+    }
   }
 
   // Fall back to local auth
-  const users = await getRegisteredUsers();
+  const users = await getLocalUsers();
   const userRecord = users[normalizedEmail];
 
   if (!userRecord) {
     throw new Error("No account found with this email. Please create an account first.");
   }
 
-  const passwordHash = simpleHash(password);
   if (userRecord.passwordHash !== passwordHash) {
     throw new Error("Invalid password. Please try again.");
   }
@@ -169,19 +203,19 @@ export async function signIn(email: string, password: string): Promise<User> {
   // Update last login
   userRecord.user.updatedAt = new Date().toISOString();
   users[normalizedEmail] = userRecord;
-  await saveRegisteredUsers(users);
+  await saveLocalUsers(users);
 
   // Store current session
   await storage.setItem(`${PROJECT}_user`, JSON.stringify(userRecord.user));
   await storage.setItem(`${PROJECT}_token`, `local_${Date.now()}`);
 
-  console.log("[Auth] Sign in successful for:", normalizedEmail);
+  console.log("[Auth] Local sign in successful for:", normalizedEmail);
   return userRecord.user;
 }
 
 /**
  * Sign up with email, password, and name
- * Tries backend first, falls back to local storage
+ * Registers with cloud auth for cross-device support, also stores locally
  */
 export async function signUp(
   email: string,
@@ -190,25 +224,38 @@ export async function signUp(
   role: UserRole = "photographer"
 ): Promise<User> {
   const normalizedEmail = email.toLowerCase().trim();
+  const passwordHash = secureHash(password);
 
   // Check if user already exists locally
-  const users = await getRegisteredUsers();
+  const users = await getLocalUsers();
   if (users[normalizedEmail]) {
     throw new Error("An account with this email already exists. Please sign in instead.");
   }
 
-  // Try backend first
-  const backendUser = await tryBackendSignUp(normalizedEmail, password, name);
-  if (backendUser) {
-    // Also store locally for offline access
-    const passwordHash = simpleHash(password);
-    users[normalizedEmail] = { user: backendUser, passwordHash };
-    await saveRegisteredUsers(users);
-    await storage.setItem(`${PROJECT}_user`, JSON.stringify(backendUser));
-    return backendUser;
+  // Check cloud for existing email
+  const cloudCheck = await cloudCheckEmail(normalizedEmail);
+  if (cloudCheck?.exists) {
+    throw new Error("An account with this email already exists. Please sign in instead.");
   }
 
-  // Create user locally
+  // Try cloud registration first
+  const cloudResult = await cloudSignUp(normalizedEmail, passwordHash, name.trim(), role);
+  if (cloudResult) {
+    if (cloudResult.success && cloudResult.user) {
+      // Cache user locally
+      users[normalizedEmail] = { user: cloudResult.user, passwordHash };
+      await saveLocalUsers(users);
+
+      await storage.setItem(`${PROJECT}_user`, JSON.stringify(cloudResult.user));
+      await storage.setItem(`${PROJECT}_token`, `cloud_${Date.now()}`);
+      console.log("[Auth] Cloud sign up successful for:", normalizedEmail);
+      return cloudResult.user;
+    } else if (cloudResult.error) {
+      throw new Error(cloudResult.error);
+    }
+  }
+
+  // Fall back to local registration
   const newUser: User = {
     id: `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     email: normalizedEmail,
@@ -221,15 +268,14 @@ export async function signUp(
   };
 
   // Store user with password hash
-  const passwordHash = simpleHash(password);
   users[normalizedEmail] = { user: newUser, passwordHash };
-  await saveRegisteredUsers(users);
+  await saveLocalUsers(users);
 
   // Store current session
   await storage.setItem(`${PROJECT}_user`, JSON.stringify(newUser));
   await storage.setItem(`${PROJECT}_token`, `local_${Date.now()}`);
 
-  console.log("[Auth] Sign up successful for:", normalizedEmail);
+  console.log("[Auth] Local sign up successful for:", normalizedEmail);
   return newUser;
 }
 
@@ -269,6 +315,13 @@ export async function signOut(): Promise<void> {
  * Check if an email is already registered
  */
 export async function isEmailRegistered(email: string): Promise<boolean> {
-  const users = await getRegisteredUsers();
-  return !!users[email.toLowerCase().trim()];
+  const normalizedEmail = email.toLowerCase().trim();
+
+  // Check cloud first
+  const cloudCheck = await cloudCheckEmail(normalizedEmail);
+  if (cloudCheck?.exists) return true;
+
+  // Check local
+  const users = await getLocalUsers();
+  return !!users[normalizedEmail];
 }

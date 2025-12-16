@@ -134,10 +134,10 @@ export default function AuthScreen() {
             {/* Features */}
             <View style={{ marginBottom: 48, width: "100%" }}>
               {[
-                { icon: "camera", text: "Professional photo management" },
+                { icon: "videocam", text: "Professional media management" },
                 { icon: "people", text: "Guest list & RSVP tracking" },
                 { icon: "grid", text: "Seating chart builder" },
-                { icon: "qr-code", text: "QR code photo sharing" },
+                { icon: "qr-code", text: "QR code media sharing" },
               ].map((feature, index) => (
                 <View key={index} style={{ flexDirection: "row", alignItems: "center", marginBottom: 16 }}>
                   <View style={{
@@ -406,10 +406,10 @@ export default function AuthScreen() {
 
               <View style={{ width: "100%" }}>
                 {[
-                  { icon: "camera", title: "Photo Management", desc: "Professional-grade photo organization and sharing for wedding photographers and couples." },
+                  { icon: "videocam", title: "Media Management", desc: "Professional-grade photo and video organization and sharing for wedding videographers and couples." },
                   { icon: "people", title: "Guest Management", desc: "Easily manage your guest list, track RSVPs, and send invitations." },
                   { icon: "grid", title: "Seating Charts", desc: "Create beautiful seating arrangements with our intuitive drag-and-drop builder." },
-                  { icon: "qr-code", title: "QR Photo Sharing", desc: "Let guests upload photos directly to your wedding gallery via QR codes." },
+                  { icon: "qr-code", title: "QR Media Sharing", desc: "Let guests upload photos and videos directly to your wedding gallery via QR codes." },
                 ].map((item, index) => (
                   <View key={index} style={{
                     flexDirection: "row",

@@ -96,7 +96,7 @@ export default function PhotoGalleryScreen() {
 
         <View className="flex-row items-center justify-between mb-4">
           <View className="flex-1">
-            <Text className="text-[#F5B800] text-3xl font-bold mb-2">Gallery</Text>
+            <Text className="text-[#F5B800] text-3xl font-bold mb-2">Media Gallery</Text>
             <Text className="text-neutral-400 text-base">{wedding.coupleName}</Text>
           </View>
           <Pressable

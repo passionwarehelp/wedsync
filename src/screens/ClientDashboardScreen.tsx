@@ -79,7 +79,7 @@ export default function ClientDashboardScreen() {
         setShowJoinModal(false);
         setInviteCode("");
       } else {
-        setJoinError("Invalid invite code. Please check with your photographer.");
+        setJoinError("Invalid invite code. Please check with your media professional.");
       }
       setIsJoining(false);
     }, 1000);
@@ -256,7 +256,7 @@ export default function ClientDashboardScreen() {
             <Ionicons name="chevron-forward" size={20} color="#6B7280" />
           </Pressable>
 
-          {/* Photo Gallery - Shows "coming soon" if photographer hasn't made it live */}
+          {/* Media Gallery - Shows "coming soon" if media professional hasn't made it live */}
           {coupleWedding.photoAlbumLive !== false ? (
             <Pressable
               onPress={() => navigation.navigate("PhotoGallery", { weddingId: coupleWedding.id })}
@@ -266,8 +266,8 @@ export default function ClientDashboardScreen() {
                 <Ionicons name="images" size={24} color="#F5B800" />
               </View>
               <View className="flex-1 ml-4">
-                <Text className="text-neutral-100 text-lg font-medium">Photo Gallery</Text>
-                <Text className="text-neutral-500 text-sm">View wedding photos</Text>
+                <Text className="text-neutral-100 text-lg font-medium">Media Gallery</Text>
+                <Text className="text-neutral-500 text-sm">View wedding photos & videos</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#6B7280" />
             </Pressable>
@@ -277,14 +277,14 @@ export default function ClientDashboardScreen() {
                 <Ionicons name="images" size={24} color="#666" />
               </View>
               <View className="flex-1 ml-4">
-                <Text className="text-neutral-400 text-lg font-medium">Photo Gallery</Text>
-                <Text className="text-neutral-600 text-sm">Coming soon from your photographer</Text>
+                <Text className="text-neutral-400 text-lg font-medium">Media Gallery</Text>
+                <Text className="text-neutral-600 text-sm">Coming soon from your media professional</Text>
               </View>
               <Ionicons name="time-outline" size={20} color="#666" />
             </View>
           )}
 
-          {/* QR Code Album - Only show if photographer enabled it (for photographer-managed weddings) */}
+          {/* QR Code Album - Only show if media professional enabled it (for professional-managed weddings) */}
           {!(coupleWedding as any).isSelfManaged && coupleWedding.qrCodeEnabled !== false && (
             <Pressable
               onPress={() => navigation.navigate("QRCodeDesign", { weddingId: coupleWedding.id })}
@@ -294,14 +294,14 @@ export default function ClientDashboardScreen() {
                 <Ionicons name="qr-code" size={24} color="#F5B800" />
               </View>
               <View className="flex-1 ml-4">
-                <Text className="text-neutral-100 text-lg font-medium">Guest Photo Album</Text>
-                <Text className="text-neutral-500 text-sm">View photos from guests</Text>
+                <Text className="text-neutral-100 text-lg font-medium">Guest Media Album</Text>
+                <Text className="text-neutral-500 text-sm">View photos & videos from guests</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#6B7280" />
             </Pressable>
           )}
 
-          {/* Photo Frame - Only show if photographer enabled it */}
+          {/* Media Frame - Only show if media professional enabled it */}
           {coupleWedding.photoFrameEnabled === true && (
             <Pressable
               onPress={() => {/* Navigate to photo frame screen */}}
@@ -436,7 +436,7 @@ export default function ClientDashboardScreen() {
                 Get Started
               </Text>
               <Text className="text-neutral-400 text-center">
-                Join your photographer{"'"}s wedding or create your own
+                Join your media professional{"'"}s wedding or create your own
               </Text>
             </View>
 
@@ -452,7 +452,7 @@ export default function ClientDashboardScreen() {
                 <View className="flex-1">
                   <Text className="text-neutral-100 text-xl font-bold mb-1">Join My Wedding</Text>
                   <Text className="text-neutral-400 text-sm leading-5">
-                    Enter the invite code from your photographer to access your wedding details.
+                    Enter the invite code from your media professional to access your wedding details.
                   </Text>
                 </View>
               </View>
@@ -503,7 +503,7 @@ export default function ClientDashboardScreen() {
               </View>
 
               <Text className="text-neutral-400 text-sm mb-4">
-                Enter the invite code provided by your photographer
+                Enter the invite code provided by your media professional
               </Text>
 
               {joinError ? (
