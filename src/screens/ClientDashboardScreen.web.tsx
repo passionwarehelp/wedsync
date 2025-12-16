@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,16 +10,16 @@ import {
   Platform,
   ActivityIndicator,
   Dimensions,
+  RefreshControl,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigator";
 import { LinearGradient } from "expo-linear-gradient";
 import useAuthStore from "../state/authStore";
 import useWeddingStore from "../state/weddingStore";
 import { format } from "date-fns";
-import DateTimePicker from "@react-native-community/datetimepicker";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -31,6 +31,23 @@ export default function ClientDashboardScreen() {
   // Wedding store
   const weddings = useWeddingStore((s) => s.weddings);
   const addWedding = useWeddingStore((s) => s.addWedding);
+  const fetchWeddings = useWeddingStore((s) => s.fetchWeddings);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Fetch weddings on mount and when user changes
+  useFocusEffect(
+    useCallback(() => {
+      if (user?.id) {
+        fetchWeddings();
+      }
+    }, [user?.id])
+  );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchWeddings();
+    setRefreshing(false);
+  };
 
   // Check if user has a wedding
   const coupleWeddingId = useAuthStore((s) => s.user?.coupleWeddingId);
@@ -51,7 +68,6 @@ export default function ClientDashboardScreen() {
   const [partnerOneName, setPartnerOneName] = useState("");
   const [partnerTwoName, setPartnerTwoName] = useState("");
   const [weddingDate, setWeddingDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [venue, setVenue] = useState("");
 
   const handleJoinWedding = async () => {
@@ -81,42 +97,52 @@ export default function ClientDashboardScreen() {
     }, 1000);
   };
 
-  const handleCreateWedding = () => {
-    if (!partnerOneName.trim() || !partnerTwoName.trim() || !user?.id) {
+  const [isCreating, setIsCreating] = useState(false);
+
+  const handleCreateWedding = async () => {
+    if (!partnerOneName.trim() || !partnerTwoName.trim() || !user?.id || isCreating) {
       return;
     }
 
-    const newWedding = {
-      id: Date.now().toString(),
-      coupleName: `${partnerOneName.trim()} & ${partnerTwoName.trim()}`,
-      partnerOneName: partnerOneName.trim(),
-      partnerTwoName: partnerTwoName.trim(),
-      weddingDate: weddingDate.toISOString(),
-      venue: venue.trim(),
-      status: "planning" as const,
-      createdAt: new Date().toISOString(),
-      createdBy: user.id,
-      qrCode: `WS-${Date.now()}`,
-      qrCodeEnabled: true,
-      photoAlbumLive: true,
-      photoFrameEnabled: false,
-      guestCount: 0,
-      rsvpCount: 0,
-      tasksCompleted: 0,
-      totalTasks: 0,
-    };
+    setIsCreating(true);
 
-    addWedding(newWedding);
+    try {
+      const weddingData = {
+        coupleName: `${partnerOneName.trim()} & ${partnerTwoName.trim()}`,
+        partnerOneName: partnerOneName.trim(),
+        partnerTwoName: partnerTwoName.trim(),
+        weddingDate: weddingDate.toISOString(),
+        venue: venue.trim(),
+        status: "planning" as const,
+        qrCode: `WS-${Date.now()}`,
+        qrCodeEnabled: true,
+        photoAlbumLive: true,
+        photoFrameEnabled: false,
+        guestCount: 0,
+        rsvpCount: 0,
+        tasksCompleted: 0,
+        totalTasks: 0,
+        isSelfManaged: true,
+      };
 
-    useAuthStore.setState((state) => ({
-      user: state.user ? { ...state.user, coupleWeddingId: newWedding.id } : null,
-    }));
+      const newWedding = await addWedding(weddingData);
 
-    setShowCreateModal(false);
-    setPartnerOneName("");
-    setPartnerTwoName("");
-    setVenue("");
-    setWeddingDate(new Date());
+      if (newWedding) {
+        useAuthStore.setState((state) => ({
+          user: state.user ? { ...state.user, coupleWeddingId: newWedding.id } : null,
+        }));
+      }
+
+      setShowCreateModal(false);
+      setPartnerOneName("");
+      setPartnerTwoName("");
+      setVenue("");
+      setWeddingDate(new Date());
+    } catch (error) {
+      console.error("[ClientDashboard Web] Error creating wedding:", error);
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const isCreateValid = partnerOneName.trim() && partnerTwoName.trim();
@@ -1336,8 +1362,7 @@ export default function ClientDashboardScreen() {
                 <Text style={{ color: "#D1D5DB", fontSize: 14, fontWeight: "500", marginBottom: 8 }}>
                   Wedding Date
                 </Text>
-                <Pressable
-                  onPress={() => setShowDatePicker(true)}
+                <View
                   style={{
                     backgroundColor: "#1a1a1a",
                     borderRadius: 12,
@@ -1350,24 +1375,27 @@ export default function ClientDashboardScreen() {
                   }}
                 >
                   <Ionicons name="calendar-outline" size={20} color="#F5B800" />
-                  <Text style={{ color: "#E5E5E5", fontSize: 16, marginLeft: 12 }}>
-                    {format(weddingDate, "MMMM d, yyyy")}
-                  </Text>
-                </Pressable>
-                {showDatePicker && (
-                  <View style={{ marginTop: 12 }}>
-                    <DateTimePicker
-                      value={weddingDate}
-                      mode="date"
-                      display="spinner"
-                      themeVariant="dark"
-                      onChange={(event, date) => {
-                        setShowDatePicker(false);
-                        if (date) setWeddingDate(date);
-                      }}
-                    />
-                  </View>
-                )}
+                  <input
+                    type="date"
+                    value={format(weddingDate, "yyyy-MM-dd")}
+                    onChange={(e) => {
+                      const newDate = new Date(e.target.value + "T12:00:00");
+                      if (!isNaN(newDate.getTime())) {
+                        setWeddingDate(newDate);
+                      }
+                    }}
+                    style={{
+                      backgroundColor: "transparent",
+                      border: "none",
+                      color: "#E5E5E5",
+                      fontSize: 16,
+                      marginLeft: 12,
+                      flex: 1,
+                      outline: "none",
+                      cursor: "pointer",
+                    }}
+                  />
+                </View>
               </View>
 
               {/* Venue */}

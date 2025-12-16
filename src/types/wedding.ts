@@ -265,3 +265,25 @@ export interface ScheduledEmail {
   sentAt?: string;
   recipients: string[];
 }
+
+export interface CalendarEvent {
+  id: string;
+  userId: string; // Owner of the event
+  weddingId?: string; // Optional - link to specific wedding
+
+  title: string;
+  description?: string;
+
+  date: string; // ISO date string
+  startTime?: string; // Optional time HH:mm
+  endTime?: string;
+  allDay: boolean;
+
+  type: "meeting" | "appointment" | "deadline" | "wedding" | "personal" | "other";
+  color?: string; // Custom color for the event
+
+  location?: string;
+  notes?: string;
+
+  createdAt: string;
+}

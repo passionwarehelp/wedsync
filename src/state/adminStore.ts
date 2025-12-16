@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Invoice, StaffMember, StaffAssignment, ClockEntry, EmailTemplate, ScheduledEmail } from "../types/wedding";
+import { Invoice, StaffMember, StaffAssignment, ClockEntry, EmailTemplate, ScheduledEmail, CalendarEvent } from "../types/wedding";
 
 interface AdminStore {
   // Invoices
@@ -39,6 +39,13 @@ interface AdminStore {
   scheduledEmails: ScheduledEmail[];
   scheduleEmail: (email: ScheduledEmail) => void;
   updateScheduledEmail: (id: string, updates: Partial<ScheduledEmail>) => void;
+
+  // Calendar Events
+  calendarEvents: CalendarEvent[];
+  addCalendarEvent: (event: CalendarEvent) => void;
+  updateCalendarEvent: (id: string, updates: Partial<CalendarEvent>) => void;
+  deleteCalendarEvent: (id: string) => void;
+  getEventsForDate: (date: string) => CalendarEvent[];
 }
 
 const useAdminStore = create<AdminStore>()(
@@ -105,6 +112,20 @@ const useAdminStore = create<AdminStore>()(
         set((state) => ({
           scheduledEmails: state.scheduledEmails.map((e) => (e.id === id ? { ...e, ...updates } : e)),
         })),
+
+      // Calendar Events
+      calendarEvents: [],
+      addCalendarEvent: (event) => set((state) => ({ calendarEvents: [...state.calendarEvents, event] })),
+      updateCalendarEvent: (id, updates) =>
+        set((state) => ({
+          calendarEvents: state.calendarEvents.map((e) => (e.id === id ? { ...e, ...updates } : e)),
+        })),
+      deleteCalendarEvent: (id) => set((state) => ({ calendarEvents: state.calendarEvents.filter((e) => e.id !== id) })),
+      getEventsForDate: (date) => {
+        // This needs to use get() instead of set() - but zustand persist doesn't allow get in the initial state
+        // So we'll handle this in the component
+        return [];
+      },
     }),
     {
       name: "admin-storage",

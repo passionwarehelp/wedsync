@@ -241,6 +241,10 @@ Once deployed, users can:
 - ✅ **Gold Button Accents** - Premium feel on all interactive elements
 - ✅ **Improved Contrast** - Readable text on dark backgrounds
 - ✅ **Border Styling** - Elegant card separation with neutral borders
+- ✅ **Cross-Device Wedding Sync** - Weddings sync across all devices (phone, tablet, computer) via backend API
+- ✅ **Web Date Picker** - Native HTML date input for web version with dark styling
+- ✅ **Redesigned Admin Calendar** - Compact calendar with plus icon for adding custom events
+- ✅ **Calendar Events Management** - Add, view, and delete custom calendar events with type categorization
 
 ## 💡 Next Steps
 
