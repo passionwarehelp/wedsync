@@ -45,8 +45,8 @@ export default function AuthScreen() {
 
     try {
       await authSignIn(email, password);
-    } catch (err) {
-      setError(authError?.message || "Invalid email or password");
+    } catch (err: any) {
+      setError(err?.message || "Invalid email or password");
     }
   };
 
