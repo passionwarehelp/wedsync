@@ -14,25 +14,47 @@ async function getToken(): Promise<string | null> {
 
 async function authFetch(endpoint: string, options: RequestInit = {}) {
   const token = await getToken();
+  console.log("[WeddingAPI] Token exists:", !!token, "Platform:", Platform.OS);
+
   if (!token) {
+    console.log("[WeddingAPI] No token found, throwing error");
     throw new Error("Not authenticated");
   }
 
-  const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-      ...options.headers,
-    },
-  });
+  const url = `${BACKEND_URL}${endpoint}`;
+  console.log("[WeddingAPI] Fetching:", url);
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: "Request failed" }));
-    throw new Error(error.error || error.message || "Request failed");
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+        ...options.headers,
+      },
+    });
+
+    console.log("[WeddingAPI] Response status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log("[WeddingAPI] Error response:", errorText);
+      let error;
+      try {
+        error = JSON.parse(errorText);
+      } catch {
+        error = { error: errorText || "Request failed" };
+      }
+      throw new Error(error.error || error.message || "Request failed");
+    }
+
+    const data = await response.json();
+    console.log("[WeddingAPI] Success, data keys:", Object.keys(data));
+    return data;
+  } catch (fetchError: any) {
+    console.log("[WeddingAPI] Fetch error:", fetchError.message);
+    throw fetchError;
   }
-
-  return response.json();
 }
 
 export interface BackendWedding {
