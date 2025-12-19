@@ -148,6 +148,9 @@ function CoupleTabs() {
 
 function MainTabs() {
   const userRole = useAuthStore((s) => s.user?.role);
+  const userId = useAuthStore((s) => s.user?.id);
+
+  console.log("[Navigation] MainTabs - userRole:", userRole, "userId:", userId);
 
   if (userRole === "couple") {
     return <CoupleTabs />;

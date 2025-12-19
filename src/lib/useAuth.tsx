@@ -47,13 +47,20 @@ function setGlobalUser(user: User | null) {
 
   // Sync with authStore for navigation
   if (user) {
+    // Preserve the existing role from authStore if the incoming user doesn't have one
+    // This is important because the backend doesn't store user roles
+    const existingUser = useAuthStore.getState().user;
+    const preservedRole = user.role || existingUser?.role || "couple";
+
+    console.log("[Auth] setGlobalUser - user:", user.email, "existingRole:", existingUser?.role, "newRole:", user.role, "preservedRole:", preservedRole);
+
     useAuthStore.setState({
       isAuthenticated: true,
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role || "photographer",
+        role: preservedRole,
         createdAt: user.createdAt,
       },
     });

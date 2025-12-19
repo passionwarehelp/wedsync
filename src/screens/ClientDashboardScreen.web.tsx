@@ -32,11 +32,37 @@ export default function ClientDashboardScreen() {
   const weddings = useWeddingStore((s) => s.weddings);
   const addWedding = useWeddingStore((s) => s.addWedding);
   const fetchWeddings = useWeddingStore((s) => s.fetchWeddings);
+  const isLoadingWeddings = useWeddingStore((s) => s.isLoadingWeddings);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Fetch weddings on mount and when user changes
+  // Fetch weddings on mount - use useEffect for web since useFocusEffect may not work properly
+  useEffect(() => {
+    console.log("[ClientDashboard Web] useEffect - user:", user?.id, "user email:", user?.email);
+
+    // Check if we have a token but no user - this can happen on web if auth-storage has isAuthenticated but useAuth hasn't run
+    const checkTokenAndFetch = async () => {
+      const token = localStorage.getItem("better-auth.session_token");
+      console.log("[ClientDashboard Web] Token exists:", !!token);
+
+      if (user?.id) {
+        console.log("[ClientDashboard Web] Fetching weddings for user:", user.id);
+        fetchWeddings();
+      } else if (token) {
+        // We have a token but no user - try to fetch anyway (the API will use the token)
+        console.log("[ClientDashboard Web] No user id but token exists, trying to fetch weddings");
+        fetchWeddings();
+      } else {
+        console.log("[ClientDashboard Web] No user id and no token, not fetching weddings");
+      }
+    };
+
+    checkTokenAndFetch();
+  }, [user?.id]);
+
+  // Also use useFocusEffect as backup
   useFocusEffect(
     useCallback(() => {
+      console.log("[ClientDashboard Web] useFocusEffect - user:", user?.id);
       if (user?.id) {
         fetchWeddings();
       }

@@ -83,9 +83,11 @@ const useWeddingStore = create<WeddingStore>()(
       weddingsError: null,
 
       fetchWeddings: async () => {
+        console.log("[WeddingStore] fetchWeddings called");
         set({ isLoadingWeddings: true, weddingsError: null });
         try {
           const weddings = await weddingApi.fetchWeddings();
+          console.log("[WeddingStore] Fetched weddings:", weddings.length);
           set({ weddings, isLoadingWeddings: false });
         } catch (error: any) {
           console.error("[WeddingStore] Error fetching weddings:", error);

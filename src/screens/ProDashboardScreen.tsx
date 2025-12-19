@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { View, Text, Pressable, ScrollView, TextInput, ActivityIndicator, RefreshControl } from "react-native";
+import { View, Text, Pressable, ScrollView, TextInput, ActivityIndicator, RefreshControl, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -20,12 +20,36 @@ export default function ProDashboardScreen() {
   const fetchWeddings = useWeddingStore((s) => s.fetchWeddings);
   const isLoadingWeddings = useWeddingStore((s) => s.isLoadingWeddings);
   const userId = useAuthStore((s) => s.user?.id);
+  const userRole = useAuthStore((s) => s.user?.role);
   const [searchQuery, setSearchQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+
+  // Fetch weddings on mount
+  useEffect(() => {
+    console.log("[ProDashboard] useEffect - userId:", userId, "userRole:", userRole);
+
+    // On web, check if we have a token and try to fetch even if userId is not set yet
+    const checkAndFetch = async () => {
+      if (userId) {
+        console.log("[ProDashboard] Fetching weddings for user:", userId);
+        fetchWeddings();
+      } else if (Platform.OS === "web") {
+        const token = localStorage.getItem("better-auth.session_token");
+        console.log("[ProDashboard] Web - Token exists:", !!token);
+        if (token) {
+          console.log("[ProDashboard] No userId but token exists, trying to fetch");
+          fetchWeddings();
+        }
+      }
+    };
+
+    checkAndFetch();
+  }, [userId]);
 
   // Fetch weddings when screen is focused or user changes
   useFocusEffect(
     React.useCallback(() => {
+      console.log("[ProDashboard] useFocusEffect - userId:", userId);
       if (userId) {
         fetchWeddings();
       }
