@@ -131,13 +131,22 @@ export async function signOutUser(): Promise<void> {
     try {
       await fetch(`${BACKEND_URL}/api/auth/sign-out`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
     } catch (e) {
       // Ignore errors
     }
   }
   await deleteToken(TOKEN_KEY);
+
+  // Clear all auth-related storage on web
+  if (Platform.OS === "web") {
+    localStorage.removeItem("auth-storage");
+    localStorage.removeItem("wedding-storage");
+  }
 }
 
 export async function getStoredSession(): Promise<AuthSession | null> {

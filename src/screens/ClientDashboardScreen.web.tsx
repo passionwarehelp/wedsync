@@ -49,9 +49,11 @@ export default function ClientDashboardScreen() {
     setRefreshing(false);
   };
 
-  // Check if user has a wedding
+  // Check if user has a wedding - use first wedding from server or local coupleWeddingId
   const coupleWeddingId = useAuthStore((s) => s.user?.coupleWeddingId);
-  const coupleWedding = weddings.find((w) => w.id === coupleWeddingId);
+  const coupleWedding = weddings.length > 0
+    ? (weddings.find((w) => w.id === coupleWeddingId) || weddings[0])
+    : undefined;
 
   // Modal states
   const [showJoinModal, setShowJoinModal] = useState(false);
