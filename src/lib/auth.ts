@@ -49,44 +49,80 @@ export async function signUpWithEmail(
   password: string,
   name: string
 ): Promise<AuthSession> {
-  const response = await fetch(`${BACKEND_URL}/api/auth/sign-up/email`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password, name }),
-  });
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/auth/sign-up/email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, name }),
+    });
 
-  const text = await response.text();
-  if (!text) throw new Error("Empty response from server");
+    const text = await response.text();
+    if (!text) throw new Error("Empty response from server");
 
-  const data = JSON.parse(text);
-  if (!response.ok) throw new Error(data.message || data.error || "Sign up failed");
+    // Check if response is HTML (backend not properly configured)
+    if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
+      throw new Error("Backend authentication service is not available. Please contact support.");
+    }
 
-  const token = data.token || data.session?.token;
-  if (token) await setToken(TOKEN_KEY, token);
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error("Backend returned invalid response. Please try again later.");
+    }
 
-  return { user: data.user, token };
+    if (!response.ok) throw new Error(data.message || data.error || "Sign up failed");
+
+    const token = data.token || data.session?.token;
+    if (token) await setToken(TOKEN_KEY, token);
+
+    return { user: data.user, token };
+  } catch (error: any) {
+    if (error.message?.includes("JSON")) {
+      throw new Error("Backend authentication service is not available. Please contact support.");
+    }
+    throw error;
+  }
 }
 
 export async function signInWithEmail(
   email: string,
   password: string
 ): Promise<AuthSession> {
-  const response = await fetch(`${BACKEND_URL}/api/auth/sign-in/email`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/auth/sign-in/email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-  const text = await response.text();
-  if (!text) throw new Error("Empty response from server");
+    const text = await response.text();
+    if (!text) throw new Error("Empty response from server");
 
-  const data = JSON.parse(text);
-  if (!response.ok) throw new Error(data.message || data.error || "Sign in failed");
+    // Check if response is HTML (backend not properly configured)
+    if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
+      throw new Error("Backend authentication service is not available. Please contact support.");
+    }
 
-  const token = data.token || data.session?.token;
-  if (token) await setToken(TOKEN_KEY, token);
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error("Backend returned invalid response. Please try again later.");
+    }
 
-  return { user: data.user, token };
+    if (!response.ok) throw new Error(data.message || data.error || "Sign in failed");
+
+    const token = data.token || data.session?.token;
+    if (token) await setToken(TOKEN_KEY, token);
+
+    return { user: data.user, token };
+  } catch (error: any) {
+    if (error.message?.includes("JSON")) {
+      throw new Error("Backend authentication service is not available. Please contact support.");
+    }
+    throw error;
+  }
 }
 
 export async function signOutUser(): Promise<void> {
